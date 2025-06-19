@@ -16,10 +16,50 @@ struct CookingScreen<Environment: EnvironmentProtocol>: View {
     }
 
     var body: some View {
-        Text(presenter.state.recipe.title ?? "")
-        Button("終了") {
-            dismiss()
+        VStack {
+            Text(presenter.state.recipe.title ?? "")
+
+            instructions
+
+            ProgressView(
+                "\(presenter.state.currentInstructionStep) / \(presenter.state.recipe.instructions?.count ?? 0)",
+                value: Double(presenter.state.currentInstructionStep),
+                total: Double(presenter.state.recipe.instructions?.count ?? 1)
+            )
+            .padding()
+
+            Button("終了") {
+                dismiss()
+            }
         }
+    }
+
+    private var instructions: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            LazyHStack {
+                ForEach(presenter.state.recipe.instructions ?? []) { instruction in
+                    instructionCard(instruction: instruction)
+                }
+            }
+            .scrollTargetLayout()
+        }
+        .scrollPosition(id: $presenter.state.currentInstructionID)
+        .scrollTargetBehavior(.viewAligned)
+        .safeAreaPadding(.horizontal, 16)
+    }
+
+    private func instructionCard(instruction: Components.Schemas.Instruction) -> some View {
+        VStack {
+            Text(instruction.description)
+            Spacer()
+        }
+        .padding()
+        .frame(maxHeight: .infinity)
+        .containerRelativeFrame(.horizontal)
+        .background(
+            Color.secondary,
+            in: .rect(cornerRadius: 8)
+        )
     }
 }
 

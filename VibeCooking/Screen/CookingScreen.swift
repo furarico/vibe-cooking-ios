@@ -28,9 +28,17 @@ struct CookingScreen<Environment: EnvironmentProtocol>: View {
             )
             .padding()
 
+            Text(presenter.state.transcript)
+
             Button("終了") {
                 dismiss()
             }
+        }
+        .task {
+            presenter.dispatch(.onAppear)
+        }
+        .onDisappear {
+            presenter.dispatch(.onDisappear)
         }
     }
 

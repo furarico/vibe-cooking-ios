@@ -6,6 +6,11 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F163B31F2E04300000E1FF6A /* OpenAPIRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = F163B31E2E04300000E1FF6A /* OpenAPIRuntime */; };
+		F163B3212E04300000E1FF6A /* OpenAPIURLSession in Frameworks */ = {isa = PBXBuildFile; productRef = F163B3202E04300000E1FF6A /* OpenAPIURLSession */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		F1742FC62E04249900DA907C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -65,6 +70,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F163B3212E04300000E1FF6A /* OpenAPIURLSession in Frameworks */,
+				F163B31F2E04300000E1FF6A /* OpenAPIRuntime in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -85,12 +92,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F163B31D2E04300000E1FF6A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		F1742FAE2E04249800DA907C = {
 			isa = PBXGroup;
 			children = (
 				F1742FB92E04249800DA907C /* VibeCooking */,
 				F1742FC82E04249900DA907C /* VibeCookingTests */,
 				F1742FD22E04249900DA907C /* VibeCookingUITests */,
+				F163B31D2E04300000E1FF6A /* Frameworks */,
 				F1742FB82E04249800DA907C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -119,12 +134,15 @@
 			buildRules = (
 			);
 			dependencies = (
+				F163B31B2E042FC500E1FF6A /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				F1742FB92E04249800DA907C /* VibeCooking */,
 			);
 			name = VibeCooking;
 			packageProductDependencies = (
+				F163B31E2E04300000E1FF6A /* OpenAPIRuntime */,
+				F163B3202E04300000E1FF6A /* OpenAPIURLSession */,
 			);
 			productName = VibeCooking;
 			productReference = F1742FB72E04249800DA907C /* VibeCooking.app */;
@@ -274,6 +292,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		F163B31B2E042FC500E1FF6A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = F163B31A2E042FC500E1FF6A /* OpenAPIGenerator */;
+		};
 		F1742FC72E04249900DA907C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = F1742FB62E04249800DA907C /* VibeCooking */;
@@ -652,6 +674,24 @@
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		F163B31A2E042FC500E1FF6A /* OpenAPIGenerator */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F163B3172E042F8100E1FF6A /* XCRemoteSwiftPackageReference "swift-openapi-generator" */;
+			productName = "plugin:OpenAPIGenerator";
+		};
+		F163B31E2E04300000E1FF6A /* OpenAPIRuntime */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F163B3182E042F9300E1FF6A /* XCRemoteSwiftPackageReference "swift-openapi-runtime" */;
+			productName = OpenAPIRuntime;
+		};
+		F163B3202E04300000E1FF6A /* OpenAPIURLSession */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F163B3192E042F9D00E1FF6A /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */;
+			productName = OpenAPIURLSession;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = F1742FAF2E04249800DA907C /* Project object */;
 }

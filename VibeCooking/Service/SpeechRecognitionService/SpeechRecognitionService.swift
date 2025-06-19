@@ -9,14 +9,14 @@ import AVFoundation
 import Foundation
 import Speech
 
-public actor SpeechRecognitionService {
-    public enum RecognizerError: Error {
+actor SpeechRecognitionService {
+    enum RecognizerError: Error {
         case nilRecognizer
         case notAuthorizedToRecognize
         case notPermittedToRecord
         case recognizerIsUnavailable
 
-        public var message: String {
+        var message: String {
             switch self {
             case .nilRecognizer: return "Can't initialize speech recognizer"
             case .notAuthorizedToRecognize: return "Not authorized to recognize speech"
@@ -26,65 +26,82 @@ public actor SpeechRecognitionService {
         }
     }
 
-    @MainActor public var transcript: String = ""
+    struct TranscriptionResult {
+        let text: String
+        let isFinal: Bool
+        let error: Error?
+
+        init(text: String, isFinal: Bool = false, error: Error? = nil) {
+            self.text = text
+            self.isFinal = isFinal
+            self.error = error
+        }
+    }
 
     private var audioEngine: AVAudioEngine?
     private var request: SFSpeechAudioBufferRecognitionRequest?
     private var task: SFSpeechRecognitionTask?
     private let recognizer: SFSpeechRecognizer?
+    private var transcriptionContinuation: AsyncStream<TranscriptionResult>.Continuation?
 
     /**
      Initializes a new speech recognizer. If this is the first time you've used the class, it
      requests access to the speech recognizer and the microphone.
      */
-    public init() {
+    init() {
         recognizer = SFSpeechRecognizer()
-        guard recognizer != nil else {
-            transcribe(RecognizerError.nilRecognizer)
-            return
-        }
+    }
 
-        Task {
-            do {
+    func startTranscribing() -> AsyncStream<TranscriptionResult> {
+        return AsyncStream { continuation in
+            self.transcriptionContinuation = continuation
+
+            Task {
+                guard let recognizer = recognizer else {
+                    continuation.yield(TranscriptionResult(text: "", error: RecognizerError.nilRecognizer))
+                    continuation.finish()
+                    return
+                }
+
                 guard await SFSpeechRecognizer.hasAuthorizationToRecognize() else {
-                    throw RecognizerError.notAuthorizedToRecognize
+                    continuation.yield(TranscriptionResult(text: "", error: RecognizerError.notAuthorizedToRecognize))
+                    continuation.finish()
+                    return
                 }
+
                 guard await AVAudioSession.sharedInstance().hasPermissionToRecord() else {
-                    throw RecognizerError.notPermittedToRecord
+                    continuation.yield(TranscriptionResult(text: "", error: RecognizerError.notPermittedToRecord))
+                    continuation.finish()
+                    return
                 }
-            } catch {
-                transcribe(error)
+
+                transcribe(recognizer: recognizer)
+            }
+
+            continuation.onTermination = { @Sendable _ in
+                Task {
+                    await self.reset()
+                }
             }
         }
     }
 
-    @MainActor public func startTranscribing() {
-        Task {
-            await transcribe()
-        }
-    }
-
-    @MainActor public func resetTranscript() {
-        Task {
-            await reset()
-        }
-    }
-
-    @MainActor public func stopTranscribing() {
-        Task {
-            await reset()
-        }
+    func stopTranscribing() {
+        transcriptionContinuation?.finish()
+        transcriptionContinuation = nil
+        reset()
     }
 
     /**
      Begin transcribing audio.
 
      Creates a `SFSpeechRecognitionTask` that transcribes speech to text until you call `stopTranscribing()`.
-     The resulting transcription is continuously written to the published `transcript` property.
+     The resulting transcription is continuously written to the AsyncStream.
      */
-    private func transcribe() {
-        guard let recognizer, recognizer.isAvailable else {
-            self.transcribe(RecognizerError.recognizerIsUnavailable)
+    private func transcribe(recognizer: SFSpeechRecognizer) {
+        guard recognizer.isAvailable else {
+            transcriptionContinuation?.yield(TranscriptionResult(text: "", error: RecognizerError.recognizerIsUnavailable))
+            transcriptionContinuation?.finish()
             return
         }
 
@@ -93,11 +110,14 @@ public actor SpeechRecognitionService {
             self.audioEngine = audioEngine
             self.request = request
             self.task = recognizer.recognitionTask(with: request, resultHandler: { [weak self] result, error in
-                self?.recognitionHandler(audioEngine: audioEngine, result: result, error: error)
+                Task {
+                    await self?.recognitionHandler(audioEngine: audioEngine, result: result, error: error)
+                }
             })
         } catch {
             self.reset()
-            self.transcribe(error)
+            transcriptionContinuation?.yield(TranscriptionResult(text: "", error: error))
+            transcriptionContinuation?.finish()
         }
     }
 
@@ -131,7 +151,7 @@ public actor SpeechRecognitionService {
         return (audioEngine, request)
     }
 
-    nonisolated private func recognitionHandler(audioEngine: AVAudioEngine, result: SFSpeechRecognitionResult?, error: Error?) {
+    private func recognitionHandler(audioEngine: AVAudioEngine, result: SFSpeechRecognitionResult?, error: Error?) {
         let receivedFinalResult = result?.isFinal ?? false
         let receivedError = error != nil
 
@@ -141,29 +161,28 @@ public actor SpeechRecognitionService {
         }
 
         if let result {
-            transcribe(result.bestTranscription.formattedString)
+            let transcriptionResult = TranscriptionResult(
+                text: result.bestTranscription.formattedString,
+                isFinal: result.isFinal,
+                error: nil
+            )
+            transcriptionContinuation?.yield(transcriptionResult)
         }
-    }
 
+        if let error = error {
+            let transcriptionResult = TranscriptionResult(
+                text: "",
+                isFinal: true,
+                error: error
+            )
+            transcriptionContinuation?.yield(transcriptionResult)
+        }
 
-    nonisolated private func transcribe(_ message: String) {
-        Task { @MainActor in
-            transcript = message
-        }
-    }
-    nonisolated private func transcribe(_ error: Error) {
-        var errorMessage = ""
-        if let error = error as? RecognizerError {
-            errorMessage += error.message
-        } else {
-            errorMessage += error.localizedDescription
-        }
-        Task { @MainActor [errorMessage] in
-            transcript = "<< \(errorMessage) >>"
+        if receivedFinalResult || receivedError {
+            transcriptionContinuation?.finish()
         }
     }
 }
-
 
 extension SFSpeechRecognizer {
     static func hasAuthorizationToRecognize() async -> Bool {
@@ -174,7 +193,6 @@ extension SFSpeechRecognizer {
         }
     }
 }
-
 
 extension AVAudioSession {
     func hasPermissionToRecord() async -> Bool {

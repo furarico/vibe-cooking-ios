@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct CookingScreen<Environment: EnvironmentProtocol>: View {
+    @SwiftUI.Environment(\.dismiss) private var dismiss
     @State private var presenter: CookingPresenter<Environment>
 
     init(recipe: Components.Schemas.Recipe) {
@@ -16,6 +17,9 @@ struct CookingScreen<Environment: EnvironmentProtocol>: View {
 
     var body: some View {
         Text(presenter.state.recipe.title ?? "")
+        Button("終了") {
+            dismiss()
+        }
     }
 }
 

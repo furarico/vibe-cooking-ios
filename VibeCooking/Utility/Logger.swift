@@ -8,7 +8,7 @@
 import Foundation
 import os
 
-public enum Logger {
+enum Logger {
     private static let standard = os.Logger(
         subsystem: Bundle.main.bundleIdentifier!,
         category: Category.standard.rawValue.capitalized
@@ -18,7 +18,7 @@ public enum Logger {
         case standard
     }
 
-    public enum Level: Int {
+    enum Level: Int {
         case debug
         case info
         case warning
@@ -38,23 +38,23 @@ public enum Logger {
         }
     }
 
-    public static func debug(_ items: Any..., file: String = #file, line: UInt = #line, function: String = #function) {
+    static func debug(_ items: Any..., file: String = #file, line: UInt = #line, function: String = #function) {
         printItems(items, file: file, line: line, function: function, level: .debug)
     }
 
-    public static func info(_ items: Any..., file: String = #file, line: UInt = #line, function: String = #function) {
+    static func info(_ items: Any..., file: String = #file, line: UInt = #line, function: String = #function) {
         printItems(items, file: file, line: line, function: function, level: .info)
     }
 
-    public static func warn(_ items: Any..., file: String = #file, line: UInt = #line, function: String = #function) {
+    static func warn(_ items: Any..., file: String = #file, line: UInt = #line, function: String = #function) {
         printItems(items, file: file, line: line, function: function, level: .warning)
     }
 
-    public static func error(_ error: any Error, file: String = #file, line: UInt = #line, function: String = #function) {
+    static func error(_ error: any Error, file: String = #file, line: UInt = #line, function: String = #function) {
         printItems(error, file: file, line: line, function: function, level: .error)
     }
 
-    public static func error(_ texts: String..., file: String = #file, line: UInt = #line, function: String = #function) {
+    static func error(_ texts: String..., file: String = #file, line: UInt = #line, function: String = #function) {
         printItems(texts, file: file, line: line, function: function, level: .error)
     }
 

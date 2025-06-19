@@ -1,5 +1,5 @@
 //
-//  RecipeListView.swift
+//  RecipeListScreen.swift
 //  VibeCooking
 //
 //  Created by Kanta Oikawa on 2025/06/19.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct RecipeListView<Environment: EnvironmentProtocol>: View {
+struct RecipeListScreen<Environment: EnvironmentProtocol>: View {
     @State private var presenter = RecipeListPresenter<Environment>()
 
     var body: some View {
@@ -42,5 +42,5 @@ struct RecipeListView<Environment: EnvironmentProtocol>: View {
 }
 
 #Preview {
-    RecipeListView<MockEnvironment>()
+    RecipeListScreen<MockEnvironment>()
 }

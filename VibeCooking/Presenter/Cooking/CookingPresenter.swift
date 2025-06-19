@@ -11,6 +11,33 @@ import Observation
 final class CookingPresenter<Environment: EnvironmentProtocol>: PresenterProtocol {
     struct State: Equatable {
         var recipe: Components.Schemas.Recipe
+        var currentInstructionStep: Int = 1
+        var currentInstructionID: Components.Schemas.Instruction.ID? {
+            get {
+                guard
+                    let instructions = recipe.instructions,
+                    let instruction = instructions.first(where: { instruction in
+                        instruction.step == currentInstructionStep
+                    })
+                else {
+                    return nil
+                }
+                return instruction.id
+            }
+            set {
+                guard
+                    let newValue,
+                    let instructions = recipe.instructions,
+                    let instruction = instructions.first(where: { instruction in
+                        instruction.id == newValue
+                    })
+                else {
+                    currentInstructionStep = 1
+                    return
+                }
+                currentInstructionStep = instruction.step
+            }
+        }
     }
 
     enum Action {

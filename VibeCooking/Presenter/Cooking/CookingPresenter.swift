@@ -38,13 +38,17 @@ final class CookingPresenter<Environment: EnvironmentProtocol>: PresenterProtoco
                 currentInstructionStep = instruction.step
             }
         }
+        var transcript: String = ""
     }
 
     enum Action {
         case onAppear
+        case onDisappear
     }
 
     var state: State
+
+    private let speechRecognitionService = SpeechRecognitionService()
 
     init(recipe: Components.Schemas.Recipe) {
         state = .init(recipe: recipe)
@@ -60,11 +64,23 @@ final class CookingPresenter<Environment: EnvironmentProtocol>: PresenterProtoco
         switch action {
         case .onAppear:
             await onAppear()
+
+        case .onDisappear:
+            await onDisappear()
         }
     }
 }
 
 private extension CookingPresenter {
     func onAppear() async {
+        Task {
+            for await result in await speechRecognitionService.startTranscribing() {
+                state.transcript = result.text
+            }
+        }
+    }
+
+    func onDisappear() async {
+        await speechRecognitionService.stopTranscribing()
     }
 }

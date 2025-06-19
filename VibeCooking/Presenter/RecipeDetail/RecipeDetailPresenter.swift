@@ -11,10 +11,12 @@ import Observation
 final class RecipeDetailPresenter<Environment: EnvironmentProtocol>: PresenterProtocol {
     struct State: Equatable {
         var recipe: DataState<Components.Schemas.Recipe, DomainError> = .idle
+        var isCookingScreenPresented: Bool = false
     }
 
     enum Action {
         case onAppear
+        case onVibeCookingButtonTapped
     }
 
     var state = State()
@@ -37,6 +39,9 @@ final class RecipeDetailPresenter<Environment: EnvironmentProtocol>: PresenterPr
         switch action {
         case .onAppear:
             await onAppear()
+
+        case .onVibeCookingButtonTapped:
+            await onVibeCookingButtonTapped()
         }
     }
 }
@@ -50,5 +55,9 @@ private extension RecipeDetailPresenter {
         } catch {
             state.recipe = .failure(.init(error))
         }
+    }
+
+    func onVibeCookingButtonTapped() async {
+        state.isCookingScreenPresented = true
     }
 }

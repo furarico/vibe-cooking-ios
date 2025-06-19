@@ -6,8 +6,6 @@
 //
 
 protocol RecipeRepositoryProtocol: Actor {
-    func fetchRecipes() async throws -> [Components.Schemas.Recipe]
-
     func fetchRecipes(
         query: String?,
         category: String?,
@@ -23,30 +21,6 @@ protocol RecipeRepositoryProtocol: Actor {
 }
 
 final actor RecipeRepositoryImpl: RecipeRepositoryProtocol {
-    func fetchRecipes() async throws -> [Components.Schemas.Recipe] {
-        do {
-            let client = try await Client.build()
-            let response = try await client.getRecipes()
-            switch response {
-            case .ok(let okResponse):
-                if case let .json(body) = okResponse.body,
-                   let value = body.recipes {
-                    return value
-                }
-                throw RepositoryError.invalidResponseBody(okResponse.body)
-
-            case .undocumented(let statusCode, let payload):
-                throw RepositoryError.server(.init(rawValue: statusCode), payload)
-            }
-        } catch let error as RepositoryError {
-            Logger.error("RepositoryError: \(error.localizedDescription)")
-            throw error
-        } catch {
-            Logger.error("RepositoryError: \(error)")
-            throw error
-        }
-    }
-
     func fetchRecipes(
         query: String?,
         category: String?,
@@ -96,7 +70,7 @@ final actor RecipeRepositoryImpl: RecipeRepositoryProtocol {
                 }
                 throw RepositoryError.invalidResponseBody(okResponse.body)
 
-            case .notFound(let errorResponse):
+            case .notFound:
                 throw RepositoryError.server(.notFound, nil)
 
             case .undocumented(let statusCode, let payload):
@@ -152,7 +126,7 @@ final actor RecipeRepositoryImpl: RecipeRepositoryProtocol {
                 }
                 throw RepositoryError.invalidResponseBody(okResponse.body)
 
-            case .badRequest(let errorResponse):
+            case .badRequest:
                 throw RepositoryError.server(.badRequest, nil)
 
             case .undocumented(let statusCode, let payload):

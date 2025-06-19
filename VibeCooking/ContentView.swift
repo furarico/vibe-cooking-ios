@@ -9,8 +9,9 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        SpeechView()
-            .padding()
+        NavigationStack {
+            RecipeListView<EnvironmentImpl>()
+        }
     }
 }
 

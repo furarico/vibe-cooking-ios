@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		F163B31F2E04300000E1FF6A /* OpenAPIRuntime in Frameworks */ = {isa = PBXBuildFile; productRef = F163B31E2E04300000E1FF6A /* OpenAPIRuntime */; };
 		F163B3212E04300000E1FF6A /* OpenAPIURLSession in Frameworks */ = {isa = PBXBuildFile; productRef = F163B3202E04300000E1FF6A /* OpenAPIURLSession */; };
+		F163B33F2E04339000E1FF6A /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = F163B33E2E04339000E1FF6A /* FirebaseAppCheck */; };
+		F163B3412E04339000E1FF6A /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = F163B3402E04339000E1FF6A /* FirebaseCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,6 +73,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				F163B3212E04300000E1FF6A /* OpenAPIURLSession in Frameworks */,
+				F163B33F2E04339000E1FF6A /* FirebaseAppCheck in Frameworks */,
+				F163B3412E04339000E1FF6A /* FirebaseCore in Frameworks */,
 				F163B31F2E04300000E1FF6A /* OpenAPIRuntime in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -143,6 +147,8 @@
 			packageProductDependencies = (
 				F163B31E2E04300000E1FF6A /* OpenAPIRuntime */,
 				F163B3202E04300000E1FF6A /* OpenAPIURLSession */,
+				F163B33E2E04339000E1FF6A /* FirebaseAppCheck */,
+				F163B3402E04339000E1FF6A /* FirebaseCore */,
 			);
 			productName = VibeCooking;
 			productReference = F1742FB72E04249800DA907C /* VibeCooking.app */;
@@ -230,6 +236,7 @@
 				F163B3172E042F8100E1FF6A /* XCRemoteSwiftPackageReference "swift-openapi-generator" */,
 				F163B3182E042F9300E1FF6A /* XCRemoteSwiftPackageReference "swift-openapi-runtime" */,
 				F163B3192E042F9D00E1FF6A /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */,
+				F163B33D2E04339000E1FF6A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F1742FB82E04249800DA907C /* Products */;
@@ -673,6 +680,14 @@
 				minimumVersion = 1.1.0;
 			};
 		};
+		F163B33D2E04339000E1FF6A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.14.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -690,6 +705,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F163B3192E042F9D00E1FF6A /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */;
 			productName = OpenAPIURLSession;
+		};
+		F163B33E2E04339000E1FF6A /* FirebaseAppCheck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F163B33D2E04339000E1FF6A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAppCheck;
+		};
+		F163B3402E04339000E1FF6A /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F163B33D2E04339000E1FF6A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

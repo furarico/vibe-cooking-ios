@@ -20,6 +20,11 @@ struct RecipeDetailScreen<Environment: EnvironmentProtocol>: View {
                 await presenter.dispatch(.onAppear)
             }
             .alert(presenter.state.recipe)
+            .fullScreenCover(isPresented: $presenter.state.isCookingScreenPresented) {
+                if case .success(let recipe) = presenter.state.recipe {
+                    CookingScreen<Environment>(recipe: recipe)
+                }
+            }
     }
 
     @ViewBuilder
@@ -27,6 +32,9 @@ struct RecipeDetailScreen<Environment: EnvironmentProtocol>: View {
         switch presenter.state.recipe {
         case .success(let recipe), .reloading(let recipe):
             Text(recipe.title ?? "")
+            Button("Vibe Cooking") {
+                presenter.dispatch(.onVibeCookingButtonTapped)
+            }
 
         case .loading, .retrying:
             ProgressView()

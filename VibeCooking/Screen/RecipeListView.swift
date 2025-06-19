@@ -22,7 +22,7 @@ struct RecipeListView<Environment: EnvironmentProtocol>: View {
     private var content: some View {
         switch presenter.state.recipes {
         case .success(let recipes), .reloading(let recipes):
-            List(recipes, id: \.id) { recipe in
+            List(recipes) { recipe in
                 Text(recipe.title ?? "")
             }
 

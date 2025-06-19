@@ -37,6 +37,7 @@ final class RecipeListPresenter<Environment: EnvironmentProtocol>: PresenterProt
 
 private extension RecipeListPresenter {
     func onAppear() async {
+        state.recipes = .loading
         do {
             let recipes = try await recipeService.getRecipes()
             state.recipes = .success(recipes)

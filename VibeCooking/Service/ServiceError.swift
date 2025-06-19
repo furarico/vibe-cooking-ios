@@ -8,12 +8,8 @@
 import Foundation
 
 enum ServiceError: LocalizedError {
-    case recipe(RecipeServiceError)
-
     var errorDescription: String? {
         switch self {
-        case .recipe(let error):
-            "Recipe Service Error: \(error.localizedDescription)"
         }
     }
 }

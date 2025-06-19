@@ -12,8 +12,8 @@ public protocol DomainErrorProtocol: Error, Equatable, Sendable {
     var message: String { get }
 }
 
-public enum DomainError: DomainErrorProtocol {
-    public static func == (lhs: DomainError, rhs: DomainError) -> Bool {
+enum DomainError: DomainErrorProtocol {
+    static func == (lhs: DomainError, rhs: DomainError) -> Bool {
         switch (lhs, rhs) {
         case (.unknown, .unknown):
             true
@@ -22,35 +22,48 @@ public enum DomainError: DomainErrorProtocol {
         }
     }
 
-    case network
+    case service(ServiceError)
+    case repository(RepositoryError)
     case unknown(Error)
 
-    public init(_ error: Error) {
+    init(_ error: Error) {
+        if let error = error as? ServiceError {
+            self = .service(error)
+        }
+        if let error = error as? RepositoryError {
+            self = .repository(error)
+        }
         self = .unknown(error)
     }
 
-    public var errorDescription: String? {
+    var errorDescription: String? {
         switch self {
-        case .network:
-            "Network Error"
+        case .service(let error):
+            error.localizedDescription
+        case .repository(let error):
+            error.localizedDescription
         case .unknown(let error):
             error.localizedDescription
         }
     }
 
-    public var title: String {
+    var title: String {
         switch self {
-        case .network:
-            "Network Error"
+        case .service:
+            "Service Error"
+        case .repository:
+            "Repository Error"
         case .unknown:
             "Something went wrong"
         }
     }
 
-    public var message: String {
+    var message: String {
         switch self {
-        case .network:
-            "Please check your network connection."
+        case .service(let error):
+            error.localizedDescription
+        case .repository(let error):
+            error.localizedDescription
         case .unknown:
             "Unexpected error occurred."
         }

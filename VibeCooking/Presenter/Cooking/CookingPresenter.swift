@@ -8,7 +8,7 @@
 import Observation
 
 @Observable
-final class CookingPresenter: PresenterProtocol {
+final class CookingPresenter<Environment: EnvironmentProtocol>: PresenterProtocol {
     struct State: Equatable {
         var recipe: Components.Schemas.Recipe
     }

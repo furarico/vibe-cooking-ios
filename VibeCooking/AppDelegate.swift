@@ -17,7 +17,8 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     ) -> Bool {
         // AppCheck
         let providerFactory: AppCheckProviderFactory
-#if targetEnvironment(simulator)
+//#if targetEnvironment(simulator)
+#if DEBUG
         providerFactory = AppCheckDebugProviderFactory()
 #else
         providerFactory = MyAppCheckProviderFactory()

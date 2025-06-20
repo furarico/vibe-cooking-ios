@@ -21,24 +21,28 @@ extension Components.Schemas.Recipe {
         servings: 4,
         ingredients: [
             .init(
+                id: "ingredient_001",
                 name: "鶏もも肉",
                 amount: 400,
                 unit: "g",
                 notes: "一口大に切る"
             ),
             .init(
+                id: "ingredient_002",
                 name: "玉ねぎ",
                 amount: 2,
                 unit: "個",
                 notes: "薄切りにする"
             ),
             .init(
+                id: "ingredient_003",
                 name: "カレールー",
                 amount: 1,
                 unit: "箱",
                 notes: nil
             ),
             .init(
+                id: "ingredient_004",
                 name: "水",
                 amount: 600,
                 unit: "ml",
@@ -96,24 +100,28 @@ extension Components.Schemas.Recipe {
         servings: 2,
         ingredients: [
             .init(
+                id: "ingredient_005",
                 name: "スパゲッティ",
                 amount: 200,
                 unit: "g",
                 notes: nil
             ),
             .init(
+                id: "ingredient_006",
                 name: "牛ひき肉",
                 amount: 300,
                 unit: "g",
                 notes: nil
             ),
             .init(
+                id: "ingredient_007",
                 name: "トマト缶",
                 amount: 1,
                 unit: "缶",
                 notes: "ホールトマト"
             ),
             .init(
+                id: "ingredient_008",
                 name: "赤ワイン",
                 amount: 100,
                 unit: "ml",
@@ -171,24 +179,28 @@ extension Components.Schemas.Recipe {
         servings: 2,
         ingredients: [
             .init(
+                id: "ingredient_009",
                 name: "鶏もも肉",
                 amount: 200,
                 unit: "g",
                 notes: "一口大に切る"
             ),
             .init(
+                id: "ingredient_010",
                 name: "卵",
                 amount: 4,
                 unit: "個",
                 notes: nil
             ),
             .init(
+                id: "ingredient_011",
                 name: "玉ねぎ",
                 amount: 1,
                 unit: "個",
                 notes: "薄切りにする"
             ),
             .init(
+                id: "ingredient_012",
                 name: "ご飯",
                 amount: 2,
                 unit: "杯",

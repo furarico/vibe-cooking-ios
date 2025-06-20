@@ -8,14 +8,24 @@
 import SwiftUI
 
 struct VibeCookingListScreen<Environment: EnvironmentProtocol>: View {
+    @SwiftUI.Environment(\.dismiss) private var dismiss
     @State private var presenter = VibeCookingListPresenter<Environment>()
 
     var body: some View {
-        content
-            .task {
-                await presenter.dispatch(.onAppear)
-            }
-            .alert(presenter.state.recipes)
+        NavigationStack {
+            content
+                .navigationTitle("Vibe Cooking リスト")
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    Button("完了") {
+                        dismiss()
+                    }
+                }
+        }
+        .task {
+            await presenter.dispatch(.onAppear)
+        }
+        .alert(presenter.state.recipes)
     }
 
     @ViewBuilder
@@ -31,9 +41,12 @@ struct VibeCookingListScreen<Environment: EnvironmentProtocol>: View {
                 ScrollView {
                     LazyVStack(spacing: 16) {
                         ForEach(recipes) { recipe in
-                            RecipeCard(variant: .row, recipe: recipe)
+                            RecipeCard(variant: .row, recipe: recipe) { id in
+                                presenter.dispatch(.onDelete(id: id))
+                            }
                         }
                     }
+                    .padding()
                 }
             }
 

@@ -68,8 +68,29 @@ struct RecipeDetailScreen<Environment: EnvironmentProtocol>: View {
                     .padding()
                 }
 
-                VibeCookingButton("このレシピのみで Vibe Cooking をはじめる") {
-                    presenter.dispatch(.onVibeCookingButtonTapped)
+                VStack {
+                    VibeCookingButton("このレシピのみで Vibe Cooking をはじめる") {
+                        presenter.dispatch(.onVibeCookingButtonTapped)
+                    }
+
+                    switch presenter.state.isOnVibeCookingList {
+                    case .success(let isOnVibeCookingList):
+                        if isOnVibeCookingList {
+                            VibeCookingButton("Vibe Cooking リストから削除") {
+                                presenter.dispatch(.onVibeCookingListButtonTapped)
+                            }
+                        } else {
+                            VibeCookingButton("Vibe Cooking リストに追加") {
+                                presenter.dispatch(.onVibeCookingListButtonTapped)
+                            }
+                        }
+
+                    case .loading, .reloading:
+                        ProgressView()
+
+                    default:
+                        EmptyView()
+                    }
                 }
                 .padding()
             }

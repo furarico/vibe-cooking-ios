@@ -29,9 +29,11 @@ struct RecipeListScreen<Environment: EnvironmentProtocol>: View {
                 noContent
             } else {
                 ScrollView {
-                    ForEach(recipes) { recipe in
-                        NavigationLink(value: recipe) {
-                            RecipeCard(variant: .row, recipe: recipe)
+                    LazyVStack(spacing: 16) {
+                        ForEach(recipes) { recipe in
+                            NavigationLink(value: recipe) {
+                                RecipeCard(variant: .row, recipe: recipe)
+                            }
                         }
                     }
                     .padding()

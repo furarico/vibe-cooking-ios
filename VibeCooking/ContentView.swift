@@ -7,24 +7,28 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct ContentView<Environment: EnvironmentProtocol>: View {
+    @State private var isVibeCookingListPresented: Bool = false
+
     var body: some View {
         NavigationStack {
-            RecipeListScreen<EnvironmentImpl>()
+            RecipeListScreen<Environment>()
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button {
+                            isVibeCookingListPresented = true
                         } label: {
                             Image(systemName: "list.bullet")
                         }
                     }
                 }
-                .sheet(isPresented: .constant(false)) {
+                .sheet(isPresented: $isVibeCookingListPresented) {
+                    VibeCookingListScreen<Environment>()
                 }
         }
     }
 }
 
 #Preview {
-    ContentView()
+    ContentView<MockEnvironment>()
 }

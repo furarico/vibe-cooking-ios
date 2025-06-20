@@ -5,201 +5,25 @@
 //  Created by Kanta Oikawa on 2025/06/19.
 //
 
-import AVFoundation
-import Foundation
-import Speech
-
-actor SpeechRecognitionService {
-    enum RecognizerError: Error {
-        case nilRecognizer
-        case notAuthorizedToRecognize
-        case notPermittedToRecord
-        case recognizerIsUnavailable
-
-        var message: String {
-            switch self {
-            case .nilRecognizer: return "Can't initialize speech recognizer"
-            case .notAuthorizedToRecognize: return "Not authorized to recognize speech"
-            case .notPermittedToRecord: return "Not permitted to record audio"
-            case .recognizerIsUnavailable: return "Recognizer is unavailable"
-            }
-        }
-    }
-
-    struct TranscriptionResult {
-        let text: String
-        let isFinal: Bool
-        let error: Error?
-
-        init(text: String, isFinal: Bool = false, error: Error? = nil) {
-            self.text = text
-            self.isFinal = isFinal
-            self.error = error
-        }
-    }
-
-    private var audioEngine: AVAudioEngine?
-    private var request: SFSpeechAudioBufferRecognitionRequest?
-    private var task: SFSpeechRecognitionTask?
-    private let recognizer: SFSpeechRecognizer?
-    private var transcriptionContinuation: AsyncStream<TranscriptionResult>.Continuation?
-
-    /**
-     Initializes a new speech recognizer. If this is the first time you've used the class, it
-     requests access to the speech recognizer and the microphone.
-     */
-    init() {
-        recognizer = SFSpeechRecognizer()
-    }
-
-    func startTranscribing() -> AsyncStream<TranscriptionResult> {
-        return AsyncStream { continuation in
-            self.transcriptionContinuation = continuation
-
+final actor SpeechRecognitionService<Environment: EnvironmentProtocol> {
+    func startListening() -> AsyncStream<VoiceCommand> {
+        AsyncStream { continuation in
             Task {
-                guard let recognizer = recognizer else {
-                    continuation.yield(TranscriptionResult(text: "", error: RecognizerError.nilRecognizer))
-                    continuation.finish()
-                    return
-                }
+                for await result in await Environment.shared.speechRecognitionRepository.startTranscribing() {
+                    switch result {
+                    case .success(let transcript):
+                        continuation.yield(VoiceCommand(transcript: transcript))
 
-                guard await SFSpeechRecognizer.hasAuthorizationToRecognize() else {
-                    continuation.yield(TranscriptionResult(text: "", error: RecognizerError.notAuthorizedToRecognize))
-                    continuation.finish()
-                    return
-                }
-
-                guard await AVAudioSession.sharedInstance().hasPermissionToRecord() else {
-                    continuation.yield(TranscriptionResult(text: "", error: RecognizerError.notPermittedToRecord))
-                    continuation.finish()
-                    return
-                }
-
-                transcribe(recognizer: recognizer)
-            }
-
-            continuation.onTermination = { @Sendable _ in
-                Task {
-                    await self.reset()
+                    case .failure(let error):
+                        continuation.yield(VoiceCommand.none)
+                        Logger.error(error)
+                    }
                 }
             }
         }
     }
 
-    func stopTranscribing() {
-        transcriptionContinuation?.finish()
-        transcriptionContinuation = nil
-        reset()
-    }
-
-    /**
-     Begin transcribing audio.
-
-     Creates a `SFSpeechRecognitionTask` that transcribes speech to text until you call `stopTranscribing()`.
-     The resulting transcription is continuously written to the AsyncStream.
-     */
-    private func transcribe(recognizer: SFSpeechRecognizer) {
-        guard recognizer.isAvailable else {
-            transcriptionContinuation?.yield(TranscriptionResult(text: "", error: RecognizerError.recognizerIsUnavailable))
-            transcriptionContinuation?.finish()
-            return
-        }
-
-        do {
-            let (audioEngine, request) = try Self.prepareEngine()
-            self.audioEngine = audioEngine
-            self.request = request
-            self.task = recognizer.recognitionTask(with: request, resultHandler: { [weak self] result, error in
-                Task {
-                    await self?.recognitionHandler(audioEngine: audioEngine, result: result, error: error)
-                }
-            })
-        } catch {
-            self.reset()
-            transcriptionContinuation?.yield(TranscriptionResult(text: "", error: error))
-            transcriptionContinuation?.finish()
-        }
-    }
-
-    /// Reset the speech recognizer.
-    private func reset() {
-        task?.cancel()
-        audioEngine?.stop()
-        audioEngine = nil
-        request = nil
-        task = nil
-    }
-
-    private static func prepareEngine() throws -> (AVAudioEngine, SFSpeechAudioBufferRecognitionRequest) {
-        let audioEngine = AVAudioEngine()
-
-        let request = SFSpeechAudioBufferRecognitionRequest()
-        request.shouldReportPartialResults = true
-
-        let audioSession = AVAudioSession.sharedInstance()
-        try audioSession.setCategory(.playAndRecord, mode: .measurement, options: .duckOthers)
-        try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
-        let inputNode = audioEngine.inputNode
-
-        let recordingFormat = inputNode.outputFormat(forBus: 0)
-        inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { (buffer: AVAudioPCMBuffer, when: AVAudioTime) in
-            request.append(buffer)
-        }
-        audioEngine.prepare()
-        try audioEngine.start()
-
-        return (audioEngine, request)
-    }
-
-    private func recognitionHandler(audioEngine: AVAudioEngine, result: SFSpeechRecognitionResult?, error: Error?) {
-        let receivedFinalResult = result?.isFinal ?? false
-        let receivedError = error != nil
-
-        if receivedFinalResult || receivedError {
-            audioEngine.stop()
-            audioEngine.inputNode.removeTap(onBus: 0)
-        }
-
-        if let result {
-            let transcriptionResult = TranscriptionResult(
-                text: result.bestTranscription.formattedString,
-                isFinal: result.isFinal,
-                error: nil
-            )
-            transcriptionContinuation?.yield(transcriptionResult)
-        }
-
-        if let error = error {
-            let transcriptionResult = TranscriptionResult(
-                text: "",
-                isFinal: true,
-                error: error
-            )
-            transcriptionContinuation?.yield(transcriptionResult)
-        }
-
-        if receivedFinalResult || receivedError {
-            transcriptionContinuation?.finish()
-        }
-    }
-}
-
-extension SFSpeechRecognizer {
-    static func hasAuthorizationToRecognize() async -> Bool {
-        await withCheckedContinuation { continuation in
-            requestAuthorization { status in
-                continuation.resume(returning: status == .authorized)
-            }
-        }
-    }
-}
-
-extension AVAudioSession {
-    func hasPermissionToRecord() async -> Bool {
-        await withCheckedContinuation { continuation in
-            AVAudioApplication.requestRecordPermission { authorized in
-                continuation.resume(returning: authorized)
-            }
-        }
+    func stopListening() async {
+        await Environment.shared.speechRecognitionRepository.stopTranscribing()
     }
 }

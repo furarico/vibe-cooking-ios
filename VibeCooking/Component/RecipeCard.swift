@@ -24,7 +24,7 @@ struct RecipeCard: View {
         self.recipe = recipe
         self.onDelete = onDelete
     }
-    
+
     var body: some View {
         Group {
             if variant == .card {
@@ -41,18 +41,10 @@ struct RecipeCard: View {
         )
         .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
     }
-    
+
     private var cardLayout: some View {
         VStack(alignment: .leading, spacing: 16) {
-            if let imageUrl = recipe.imageUrl, !imageUrl.isEmpty {
-                AsyncImage(url: URL(string: imageUrl)) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } placeholder: {
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.3))
-                }
+            image
                 .frame(height: 100)
                 .clipped()
                 .cornerRadius(8)
@@ -60,7 +52,6 @@ struct RecipeCard: View {
                     RoundedRectangle(cornerRadius: 8)
                         .stroke(Color(red: 0.9, green: 0.9, blue: 0.9), lineWidth: 1)
                 )
-            }
 
             contentView
         }
@@ -79,31 +70,22 @@ struct RecipeCard: View {
             }
         }
     }
-    
+
     private var rowLayout: some View {
         HStack(spacing: 16) {
-            if let imageUrl = recipe.imageUrl, !imageUrl.isEmpty {
-                AsyncImage(url: URL(string: imageUrl)) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                } placeholder: {
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.3))
-                }
+            image
                 .frame(width: 100, height: 100)
                 .clipped()
                 .cornerRadius(8)
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color(red: 0.9, green: 0.9, blue: 0.9), lineWidth: 1)
+                        .stroke(Color.secondary, lineWidth: 1)
                 )
-            }
 
             contentView
-            
+
             Spacer()
-            
+
             if let onDelete = onDelete {
                 Button {
                     onDelete(recipe.id)
@@ -116,7 +98,7 @@ struct RecipeCard: View {
         }
         .padding(16)
     }
-    
+
     private var contentView: some View {
         VStack(alignment: .leading, spacing: 8) {
             VStack(alignment: .leading, spacing: 4) {
@@ -124,13 +106,13 @@ struct RecipeCard: View {
                     .font(.system(size: 16, weight: .bold))
                     .foregroundColor(.primary)
                     .lineLimit(1)
-                
+
                 Text(recipe.description)
                     .font(.system(size: 12))
                     .foregroundColor(.primary)
                     .lineLimit(2)
             }
-            
+
             HStack {
                 ForEach(recipe.tags, id: \.self) { tag in
                     Text("#\(tag)")
@@ -138,17 +120,43 @@ struct RecipeCard: View {
                         .foregroundColor(.secondary)
                 }
             }
-            
+
             HStack(spacing: 4) {
                 Image(systemName: "clock")
                     .font(.system(size: 16, weight: .medium))
                     .foregroundColor(.primary)
-                
+
                 Text("\(recipe.prepTime + recipe.cookTime)min")
                     .font(.system(size: 12))
                     .foregroundColor(.primary)
             }
         }
+    }
+
+    private var image: some View {
+        AsyncImage(url: URL(string: recipe.imageUrl ?? "")) { result in
+            switch result {
+            case .success(let image):
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+
+            case .failure:
+                defaultImage
+
+            case .empty:
+                defaultImage
+
+            @unknown default:
+                defaultImage
+            }
+        }
+    }
+
+    private var defaultImage: some View {
+        Image(.default)
+            .resizable()
+            .aspectRatio(contentMode: .fill)
     }
 }
 

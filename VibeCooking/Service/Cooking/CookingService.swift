@@ -30,6 +30,7 @@ final actor CookingService<Environment: EnvironmentProtocol> {
     }
 
     func playAudio(url: URL) async throws {
+        await Environment.shared.audioRepository.stopAudio()
         try await Environment.shared.audioRepository.playAudio(from: url)
     }
 }

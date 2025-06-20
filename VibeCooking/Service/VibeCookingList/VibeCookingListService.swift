@@ -9,7 +9,7 @@ import Foundation
 
 final actor VibeCookingListService<Environment: EnvironmentProtocol> {
     func getRecipes() async throws -> [Components.Schemas.Recipe] {
-        let recipeIDs: [String] = try await Environment.shared.localRepository.get(for: UserDefaultsKey.vibeCookingList)
+        let recipeIDs: [String] = (try? await Environment.shared.localRepository.get(for: UserDefaultsKey.vibeCookingList)) ?? []
         return try await withThrowingTaskGroup(returning: [Components.Schemas.Recipe].self) { group in
             recipeIDs.forEach { id in
                 group.addTask {

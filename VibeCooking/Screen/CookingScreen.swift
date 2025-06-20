@@ -53,6 +53,9 @@ struct CookingScreen<Environment: EnvironmentProtocol>: View {
                 ForEach(presenter.state.recipe.instructions) { instruction in
                     InstructionsItem(variant: .card, instruction: instruction)
                         .containerRelativeFrame(.horizontal)
+                        .onAppear {
+                            presenter.dispatch(.onInstructionAppear(instruction))
+                        }
                 }
             }
             .scrollTargetLayout()

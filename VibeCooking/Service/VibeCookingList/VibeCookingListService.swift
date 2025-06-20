@@ -25,14 +25,14 @@ final actor VibeCookingListService<Environment: EnvironmentProtocol> {
     }
 
     func addRecipe(id: String) async throws {
-        var recipeIDs: [String] = try await Environment.shared.localRepository.get(for: UserDefaultsKey.vibeCookingList)
+        var recipeIDs: [String] = (try? await Environment.shared.localRepository.get(for: UserDefaultsKey.vibeCookingList)) ?? []
         guard !recipeIDs.contains(id) else { return }
         recipeIDs.append(id)
         try await Environment.shared.localRepository.set(recipeIDs, for: UserDefaultsKey.vibeCookingList)
     }
 
     func removeRecipe(id: String) async throws {
-        var recipeIDs: [String] = try await Environment.shared.localRepository.get(for: UserDefaultsKey.vibeCookingList)
+        var recipeIDs: [String] = (try? await Environment.shared.localRepository.get(for: UserDefaultsKey.vibeCookingList)) ?? []
         guard let index = recipeIDs.firstIndex(of: id) else { return }
         recipeIDs.remove(at: index)
         try await Environment.shared.localRepository.set(recipeIDs, for: UserDefaultsKey.vibeCookingList)

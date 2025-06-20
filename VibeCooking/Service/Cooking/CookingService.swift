@@ -1,11 +1,11 @@
 //
-//  SpeechRecognitionService.swift
+//  CookingService.swift
 //  VibeCooking
 //
 //  Created by Kanta Oikawa on 2025/06/19.
 //
 
-final actor SpeechRecognitionService<Environment: EnvironmentProtocol> {
+final actor CookingService<Environment: EnvironmentProtocol> {
     func startListening() -> AsyncStream<VoiceCommand> {
         AsyncStream { continuation in
             Task {

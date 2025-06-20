@@ -53,9 +53,6 @@ struct CookingScreen<Environment: EnvironmentProtocol>: View {
                 ForEach(presenter.state.recipe.instructions) { instruction in
                     InstructionsItem(variant: .card, instruction: instruction)
                         .containerRelativeFrame(.horizontal)
-                        .onAppear {
-                            presenter.dispatch(.onInstructionAppear(instruction))
-                        }
                 }
             }
             .scrollTargetLayout()
@@ -64,6 +61,12 @@ struct CookingScreen<Environment: EnvironmentProtocol>: View {
         .scrollPosition(id: $presenter.state.currentInstructionID)
         .scrollTargetBehavior(.viewAligned)
         .safeAreaPadding(.horizontal, 16)
+        .onChange(of: presenter.state.currentInstructionID) { _, newValue in
+            if let newValue,
+               let instruction = presenter.state.recipe.instructions.first(where: { $0.id == newValue }) {
+                presenter.dispatch(.onInstructionChanged(instruction))
+            }
+        }
     }
 }
 

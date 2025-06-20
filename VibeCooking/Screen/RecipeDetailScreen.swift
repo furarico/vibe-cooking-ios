@@ -68,9 +68,10 @@ struct RecipeDetailScreen<Environment: EnvironmentProtocol>: View {
                     .padding()
                 }
 
-                Button("Vibe Cooking") {
+                VibeCookingButton("このレシピのみで Vibe Cooking をはじめる") {
                     presenter.dispatch(.onVibeCookingButtonTapped)
                 }
+                .padding()
             }
 
         case .loading, .retrying:

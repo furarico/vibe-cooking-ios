@@ -43,7 +43,7 @@ struct CookingScreen<Environment: EnvironmentProtocol>: View {
                     }
                 }
 
-                Button("終了") {
+                VibeCookingButton("Vibe Cooking をおわる") {
                     dismiss()
                 }
                 .padding()

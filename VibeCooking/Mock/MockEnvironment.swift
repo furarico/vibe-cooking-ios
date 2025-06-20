@@ -12,12 +12,15 @@ final actor MockEnvironment: EnvironmentProtocol {
 
     let appCheckRepository: any AppCheckRepositoryProtocol
     let recipeRepository: any RecipeRepositoryProtocol
+    let speechRecognitionRepository: any SpeechRecognitionRepositoryProtocol
 
     init(
         appCheckRepository: any AppCheckRepositoryProtocol = AppCheckRepositoryMock(),
-        recipeRepository: any RecipeRepositoryProtocol = RecipeRepositoryMock()
+        recipeRepository: any RecipeRepositoryProtocol = RecipeRepositoryMock(),
+        speechRecognitionRepository: any SpeechRecognitionRepositoryProtocol = SpeechRecognitionRepositoryMock()
     ) {
         self.appCheckRepository = appCheckRepository
         self.recipeRepository = recipeRepository
+        self.speechRecognitionRepository = speechRecognitionRepository
     }
 }

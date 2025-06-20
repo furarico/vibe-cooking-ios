@@ -12,6 +12,7 @@ protocol EnvironmentProtocol: Actor {
 
     var appCheckRepository: AppCheckRepositoryProtocol { get }
     var recipeRepository: RecipeRepositoryProtocol { get }
+    var speechRecognitionRepository: SpeechRecognitionRepositoryProtocol { get }
 }
 
 final actor EnvironmentImpl: EnvironmentProtocol {
@@ -19,12 +20,15 @@ final actor EnvironmentImpl: EnvironmentProtocol {
 
     let appCheckRepository: any AppCheckRepositoryProtocol
     let recipeRepository: any RecipeRepositoryProtocol
+    let speechRecognitionRepository: any SpeechRecognitionRepositoryProtocol
 
     init(
         appCheckRepository: any AppCheckRepositoryProtocol = AppCheckRepositoryImpl(),
-        recipeRepository: any RecipeRepositoryProtocol = RecipeRepositoryImpl()
+        recipeRepository: any RecipeRepositoryProtocol = RecipeRepositoryImpl(),
+        speechRecognitionRepository: any SpeechRecognitionRepositoryProtocol = SpeechRecognitionRepositoryImpl()
     ) {
         self.appCheckRepository = appCheckRepository
         self.recipeRepository = recipeRepository
+        self.speechRecognitionRepository = speechRecognitionRepository
     }
 }

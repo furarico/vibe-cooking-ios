@@ -1,5 +1,5 @@
 //
-//  ComponentsSchemasVibeRecipe.swift
+//  ComponentsSchemasVibeRecipe+Stub.swift
 //  VibeCooking
 //
 //  Created by Kanta Oikawa on 2025/06/19.

@@ -31,9 +31,37 @@ struct RecipeDetailScreen<Environment: EnvironmentProtocol>: View {
     private var content: some View {
         switch presenter.state.recipe {
         case .success(let recipe), .reloading(let recipe):
-            Text(recipe.title)
-            Button("Vibe Cooking") {
-                presenter.dispatch(.onVibeCookingButtonTapped)
+            VStack {
+                ScrollView {
+                    VStack(spacing: 24) {
+                        AsyncImage(url: URL(string: recipe.imageUrl ?? "")) { result in
+                            switch result {
+                            case .success(let image):
+                                image
+                                    .resizable()
+                            case .failure, .empty:
+                                noImage
+
+                            @unknown default:
+                                noImage
+                            }
+                        }
+                        .scaledToFit()
+                        .frame(maxWidth: .infinity, maxHeight: 200)
+                        .border(Color.secondary, width: 1)
+
+                        RecipeDetailHeader(recipe: recipe)
+
+                        Ingredients(ingredients: recipe.ingredients)
+
+                        Instructions(instructions: recipe.instructions)
+                    }
+                    .padding()
+                }
+
+                Button("Vibe Cooking") {
+                    presenter.dispatch(.onVibeCookingButtonTapped)
+                }
             }
 
         case .loading, .retrying:
@@ -45,6 +73,11 @@ struct RecipeDetailScreen<Environment: EnvironmentProtocol>: View {
                 systemImage: "list.bullet.clipboard"
             )
         }
+    }
+
+    private var noImage: some View {
+        Image(.default)
+            .resizable()
     }
 }
 

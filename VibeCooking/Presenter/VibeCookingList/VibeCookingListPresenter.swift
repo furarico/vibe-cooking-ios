@@ -46,6 +46,7 @@ private extension VibeCookingListPresenter {
             let recipes = try await vibeCookingListService.getRecipes()
             state.recipes = .success(recipes)
         } catch {
+            Logger.error(error)
             state.recipes = .failure(.init(error))
         }
     }
@@ -57,7 +58,7 @@ private extension VibeCookingListPresenter {
             let updatedRecipes = recipes.filter { $0.id != id }
             state.recipes = .success(updatedRecipes)
         } catch {
-            Logger.error("Failed to delete recipe: \(error.localizedDescription)")
+            Logger.error(error)
         }
     }
 }

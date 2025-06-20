@@ -13,7 +13,7 @@ struct VibeCookingApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView<EnvironmentImpl>()
+            ContentScreen<EnvironmentImpl>()
                 .preferredColorScheme(.light)
         }
     }

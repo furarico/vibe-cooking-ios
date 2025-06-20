@@ -10,10 +10,15 @@ import SwiftUI
 struct VibeCookingListScreen<Environment: EnvironmentProtocol>: View {
     @SwiftUI.Environment(\.dismiss) private var dismiss
     @State private var presenter = VibeCookingListPresenter<Environment>()
+    private let onStartVibeCookingButtonTapped: ([String]) -> Void
+
+    init(onStartVibeCookingButtonTapped: @escaping ([String]) -> Void) {
+        self.onStartVibeCookingButtonTapped = onStartVibeCookingButtonTapped
+    }
 
     var body: some View {
         NavigationStack {
-            content
+                content
                 .navigationTitle("Vibe Cooking リスト")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
@@ -38,14 +43,22 @@ struct VibeCookingListScreen<Environment: EnvironmentProtocol>: View {
             if recipes.isEmpty {
                 noContent
             } else {
-                ScrollView {
-                    LazyVStack(spacing: 16) {
-                        ForEach(recipes) { recipe in
-                            RecipeCard(variant: .row, recipe: recipe) { id in
-                                presenter.dispatch(.onDelete(id: id))
+                VStack {
+                    ScrollView {
+                        LazyVStack(spacing: 16) {
+                            ForEach(recipes) { recipe in
+                                RecipeCard(variant: .row, recipe: recipe) { id in
+                                    presenter.dispatch(.onDelete(id: id))
+                                }
                             }
                         }
+                        .padding()
                     }
+
+                    VibeCookingButton("Vibe Cooking をはじめる") {
+                        onStartVibeCookingButtonTapped(recipes.map(\.id))
+                    }
+                    .disabled(recipes.count > 3 || recipes.isEmpty)
                     .padding()
                 }
             }
@@ -67,5 +80,6 @@ struct VibeCookingListScreen<Environment: EnvironmentProtocol>: View {
 }
 
 #Preview {
-    VibeCookingListScreen<MockEnvironment>()
+    VibeCookingListScreen<MockEnvironment>() { _ in
+    }
 }

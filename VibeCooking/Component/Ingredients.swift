@@ -7,17 +7,23 @@ import SwiftUI
 
 struct Ingredients: View {
     private let ingredients: [Components.Schemas.Ingredient]
+    private let label: String
 
-    init(ingredients: [Components.Schemas.Ingredient]) {
+    init(
+        ingredients: [Components.Schemas.Ingredient],
+        label: String = "材料"
+    ) {
         self.ingredients = ingredients
+        self.label = label
     }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            Text("材料")
+            Text(label)
                 .font(.system(size: 18, weight: .bold))
                 .foregroundColor(.primary)
-            
+                .lineLimit(1)
+
             VStack {
                 ForEach(ingredients) { ingredient in
                     IngredientsItem(ingredient: ingredient)

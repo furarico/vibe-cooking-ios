@@ -6,20 +6,21 @@
 import SwiftUI
 
 struct IngredientsItem: View {
-    let name: String
-    let amount: String
-    let unit: String
-    let note: String?
-    
+    private let ingredient: Components.Schemas.Ingredient
+
+    init(ingredient: Components.Schemas.Ingredient) {
+        self.ingredient = ingredient
+    }
+
     var body: some View {
         HStack {
             HStack(spacing: 8) {
-                Text(name)
+                Text(ingredient.name)
                     .font(.system(size: 16, weight: .medium))
                     .foregroundColor(.primary)
                 
-                if let note = note, !note.isEmpty {
-                    Text(note)
+                if let notes = ingredient.notes, !notes.isEmpty {
+                    Text(notes)
                         .font(.system(size: 14))
                         .foregroundColor(.secondary)
                 }
@@ -27,7 +28,7 @@ struct IngredientsItem: View {
                 Spacer()
             }
             
-            Text("\(amount) \(unit)")
+            Text("\(ingredient.amount) \(ingredient.unit)")
                 .font(.system(size: 16))
                 .foregroundColor(.primary)
         }
@@ -42,14 +43,18 @@ struct IngredientsItem: View {
     }
 }
 
-struct IngredientsItem_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack(spacing: 0) {
-            IngredientsItem(name: "トマト", amount: "2", unit: "個", note: nil)
-            IngredientsItem(name: "砂糖", amount: "100", unit: "g", note: "上白糖がおすすめ")
-            IngredientsItem(name: "卵", amount: "2", unit: "個", note: nil)
-            IngredientsItem(name: "牛乳", amount: "150", unit: "ml", note: nil)
-        }
-        .padding()
-    }
+#Preview {
+    IngredientsItem(ingredient: Components.Schemas.Ingredient.stub0)
+}
+
+#Preview {
+    IngredientsItem(ingredient: Components.Schemas.Ingredient.stub1)
+}
+
+#Preview {
+    IngredientsItem(ingredient: Components.Schemas.Ingredient.stub2)
+}
+
+#Preview {
+    IngredientsItem(ingredient: Components.Schemas.Ingredient.stub3)
 }

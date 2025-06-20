@@ -37,7 +37,7 @@ final actor SpeechRecognitionRepositoryImpl: SpeechRecognitionRepositoryProtocol
     }
 
     func startTranscribing() -> AsyncStream<TranscriptionResult> {
-        return AsyncStream { continuation in
+        AsyncStream { continuation in
             self.transcriptionContinuation = continuation
 
             Task {

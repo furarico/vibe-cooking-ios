@@ -25,19 +25,35 @@ struct RecipeListScreen<Environment: EnvironmentProtocol>: View {
     private var content: some View {
         switch presenter.state.recipes {
         case .success(let recipes), .reloading(let recipes):
-            List(recipes) { recipe in
-                NavigationLink(recipe.title, value: recipe)
+            if recipes.isEmpty {
+                noContent
+            } else {
+                ScrollView {
+                    ForEach(recipes) { recipe in
+                        NavigationLink(value: recipe) {
+                            RecipeCard(variant: .row, recipe: recipe)
+                        }
+                    }
+                    .padding()
+                }
             }
 
         case .loading, .retrying:
             ProgressView()
 
-        case .idle, .failure:
-            ContentUnavailableView(
-                "No recipes found",
-                systemImage: "list.bullet.clipboard"
-            )
+        case .idle:
+            Color.clear
+
+        case .failure:
+            noContent
         }
+    }
+
+    private var noContent: some View {
+        ContentUnavailableView(
+            "No recipes found",
+            systemImage: "list.bullet.clipboard"
+        )
     }
 }
 

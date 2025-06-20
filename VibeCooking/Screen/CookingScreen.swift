@@ -17,14 +17,14 @@ struct CookingScreen<Environment: EnvironmentProtocol>: View {
 
     var body: some View {
         VStack {
-            Text(presenter.state.recipe.title ?? "")
+            Text(presenter.state.recipe.title)
 
             instructions
 
             ProgressView(
-                "\(presenter.state.currentInstructionStep) / \(presenter.state.recipe.instructions?.count ?? 0)",
+                "\(presenter.state.currentInstructionStep) / \(presenter.state.recipe.instructions.count)",
                 value: Double(presenter.state.currentInstructionStep),
-                total: Double(presenter.state.recipe.instructions?.count ?? 1)
+                total: Double(presenter.state.recipe.instructions.count)
             )
             .padding()
 
@@ -45,7 +45,7 @@ struct CookingScreen<Environment: EnvironmentProtocol>: View {
     private var instructions: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             LazyHStack {
-                ForEach(presenter.state.recipe.instructions ?? []) { instruction in
+                ForEach(presenter.state.recipe.instructions) { instruction in
                     instructionCard(instruction: instruction)
                 }
             }

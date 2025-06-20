@@ -41,9 +41,8 @@ final actor RecipeRepositoryImpl: RecipeRepositoryProtocol {
             )
             switch response {
             case .ok(let okResponse):
-                if case let .json(body) = okResponse.body,
-                   let value = body.recipes {
-                    return value
+                if case let .json(body) = okResponse.body {
+                    return body.recipes
                 }
                 throw RepositoryError.invalidResponseBody(okResponse.body)
 
@@ -91,9 +90,8 @@ final actor RecipeRepositoryImpl: RecipeRepositoryProtocol {
             let response = try await client.getCategories()
             switch response {
             case .ok(let okResponse):
-                if case let .json(body) = okResponse.body,
-                   let value = body.categories {
-                    return value
+                if case let .json(body) = okResponse.body {
+                    return body.categories
                 }
                 throw RepositoryError.invalidResponseBody(okResponse.body)
 

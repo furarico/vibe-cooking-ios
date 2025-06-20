@@ -5,6 +5,7 @@
 //  Created by Kanta Oikawa on 2025/06/19.
 //
 
+import Foundation
 import Observation
 
 @Observable
@@ -53,6 +54,7 @@ final class CookingPresenter<Environment: EnvironmentProtocol>: PresenterProtoco
     enum Action {
         case onAppear
         case onDisappear
+        case onInstructionAppear(Components.Schemas.Instruction)
     }
 
     var state: State
@@ -76,6 +78,9 @@ final class CookingPresenter<Environment: EnvironmentProtocol>: PresenterProtoco
 
         case .onDisappear:
             await onDisappear()
+
+        case .onInstructionAppear(let instruction):
+            await onInstructionAppear(instruction: instruction)
         }
     }
 }
@@ -104,5 +109,16 @@ private extension CookingPresenter {
 
     func onDisappear() async {
         await cookingService.stopListening()
+    }
+
+    func onInstructionAppear(instruction: Components.Schemas.Instruction) async {
+        guard let url = URL(string: instruction.audioUrl ?? "") else {
+            return
+        }
+        do {
+            try await cookingService.playAudio(url: url)
+        } catch {
+            Logger.error(error)
+        }
     }
 }

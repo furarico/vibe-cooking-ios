@@ -39,16 +39,25 @@ struct RecipeDetailScreen<Environment: EnvironmentProtocol>: View {
                             case .success(let image):
                                 image
                                     .resizable()
-                            case .failure, .empty:
+                                    .aspectRatio(contentMode: .fill)
+
+                            case .failure:
+                                noImage
+
+                            case .empty:
                                 noImage
 
                             @unknown default:
                                 noImage
                             }
                         }
-                        .scaledToFit()
                         .frame(maxWidth: .infinity, maxHeight: 200)
-                        .border(Color.secondary, width: 1)
+                        .clipped()
+                        .cornerRadius(8)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 8)
+                                .stroke(Color.secondary, lineWidth: 1)
+                        )
 
                         RecipeDetailHeader(recipe: recipe)
 
@@ -78,6 +87,7 @@ struct RecipeDetailScreen<Environment: EnvironmentProtocol>: View {
     private var noImage: some View {
         Image(.default)
             .resizable()
+            .aspectRatio(contentMode: .fill)
     }
 }
 

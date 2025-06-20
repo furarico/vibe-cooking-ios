@@ -24,16 +24,15 @@ struct IngredientsItem: View {
                         .font(.system(size: 14))
                         .foregroundColor(.secondary)
                 }
-                
-                Spacer()
             }
-            
-            Text("\(ingredient.amount) \(ingredient.unit)")
+
+            Spacer()
+
+            Text("\(ingredient.amount.formatted(.number)) \(ingredient.unit)")
                 .font(.system(size: 16))
                 .foregroundColor(.primary)
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 8)
+        .padding(8)
         .overlay(
             Rectangle()
                 .frame(height: 1)

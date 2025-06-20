@@ -28,6 +28,7 @@ final class CookingPresenter<Environment: EnvironmentProtocol>: PresenterProtoco
             }
         }
         var currentInstructionID: Components.Schemas.Instruction.ID? = nil
+        var isRecognizingVoice: Bool = false
     }
 
     enum Action {
@@ -85,6 +86,7 @@ private extension CookingPresenter {
 
 private extension CookingPresenter {
     func startSpeechRecognition() async {
+        state.isRecognizingVoice = true
         for await voiceCommand in await cookingService.startListening() {
             switch voiceCommand {
             case .goBack:
@@ -104,6 +106,7 @@ private extension CookingPresenter {
     }
 
     func playAudio(of instruction: Components.Schemas.Instruction) async {
+        state.isRecognizingVoice = false
         guard let url = URL(string: instruction.audioUrl ?? "") else {
             return
         }

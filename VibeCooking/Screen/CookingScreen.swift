@@ -30,6 +30,16 @@ struct CookingScreen<Environment: EnvironmentProtocol>: View {
                             currentStep: presenter.state.currentInstructionStep
                         )
                         .padding()
+
+                        if presenter.state.isRecognizingVoice {
+                            Image(systemName: "microphone.fill")
+                                .font(.largeTitle)
+                                .foregroundStyle(.orange)
+                        } else {
+                            Image(systemName: "microphone.slash.fill")
+                                .font(.largeTitle)
+                                .foregroundStyle(.red)
+                        }
                     }
                 }
 

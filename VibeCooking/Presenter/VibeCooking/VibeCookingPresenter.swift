@@ -82,6 +82,7 @@ private extension VibeCookingPresenter {
         }
         state.vibeRecipe = .loading
         state.recipes = .loading
+        state.instructions = .loading
         do {
             let vibeRecipe = try await recipeService.getVibeRecipe(recipeIDs: recipeIDs)
             state.vibeRecipe = .success(vibeRecipe)
@@ -128,9 +129,14 @@ private extension VibeCookingPresenter {
                 $0.id == vibeInstruction.instructionId && $0.recipeId == vibeInstruction.recipeId
             }
         }.compactMap { $0 }
-        state.instructions = .success(instructions)
+        let resteppedInstructions = instructions.enumerated().map { index, instruction in
+            var instruction = instruction
+            instruction.step = index + 1
+            return instruction
+        }
+        state.instructions = .success(resteppedInstructions)
 
-        guard let instruction = instructions.first else {
+        guard let instruction = resteppedInstructions.first else {
             return
         }
         await playAudio(of: instruction)

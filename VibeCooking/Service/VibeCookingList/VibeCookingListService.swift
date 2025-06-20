@@ -37,4 +37,8 @@ final actor VibeCookingListService<Environment: EnvironmentProtocol> {
         recipeIDs.remove(at: index)
         try await Environment.shared.localRepository.set(recipeIDs, for: UserDefaultsKey.vibeCookingList)
     }
+
+    func clearRecipes() async throws {
+        try await Environment.shared.localRepository.remove(for: UserDefaultsKey.vibeCookingList)
+    }
 }

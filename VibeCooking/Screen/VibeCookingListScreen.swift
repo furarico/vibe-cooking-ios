@@ -53,6 +53,16 @@ struct VibeCookingListScreen<Environment: EnvironmentProtocol>: View {
                             }
                         }
                         .padding()
+
+                        LazyVStack(spacing: 24) {
+                            ForEach(recipes) { recipe in
+                                Ingredients(
+                                    ingredients: recipe.ingredients,
+                                    label: recipe.title
+                                )
+                            }
+                        }
+                        .padding()
                     }
 
                     VibeCookingButton("Vibe Cooking をはじめる") {

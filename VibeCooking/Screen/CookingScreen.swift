@@ -17,21 +17,26 @@ struct CookingScreen<Environment: EnvironmentProtocol>: View {
 
     var body: some View {
         VStack {
-            Text(presenter.state.recipe.title)
+            VStack {
+                ScrollView {
+                    VStack(spacing: 24) {
+                        RecipeCard(variant: .row, recipe: presenter.state.recipe)
+                            .padding()
 
-            instructions
+                        instructions
 
-            ProgressView(
-                "\(presenter.state.currentInstructionStep) / \(presenter.state.recipe.instructions.count)",
-                value: Double(presenter.state.currentInstructionStep),
-                total: Double(presenter.state.recipe.instructions.count)
-            )
-            .padding()
+                        InstructionProgress(
+                            totalSteps: presenter.state.recipe.instructions.count,
+                            currentStep: presenter.state.currentInstructionStep
+                        )
+                        .padding()
+                    }
+                }
 
-            Text(presenter.state.transcript)
-
-            Button("終了") {
-                dismiss()
+                Button("終了") {
+                    dismiss()
+                }
+                .padding()
             }
         }
         .task {
@@ -46,28 +51,16 @@ struct CookingScreen<Environment: EnvironmentProtocol>: View {
         ScrollView(.horizontal, showsIndicators: false) {
             LazyHStack {
                 ForEach(presenter.state.recipe.instructions) { instruction in
-                    instructionCard(instruction: instruction)
+                    InstructionsItem(variant: .card, instruction: instruction)
+                        .containerRelativeFrame(.horizontal)
                 }
             }
             .scrollTargetLayout()
+            .padding(.vertical, 16)
         }
         .scrollPosition(id: $presenter.state.currentInstructionID)
         .scrollTargetBehavior(.viewAligned)
         .safeAreaPadding(.horizontal, 16)
-    }
-
-    private func instructionCard(instruction: Components.Schemas.Instruction) -> some View {
-        VStack {
-            Text(instruction.description)
-            Spacer()
-        }
-        .padding()
-        .frame(maxHeight: .infinity)
-        .containerRelativeFrame(.horizontal)
-        .background(
-            Color.secondary,
-            in: .rect(cornerRadius: 8)
-        )
     }
 }
 

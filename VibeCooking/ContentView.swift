@@ -11,6 +11,16 @@ struct ContentView: View {
     var body: some View {
         NavigationStack {
             RecipeListScreen<EnvironmentImpl>()
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarTrailing) {
+                        Button {
+                        } label: {
+                            Image(systemName: "list.bullet")
+                        }
+                    }
+                }
+                .sheet(isPresented: .constant(false)) {
+                }
         }
     }
 }

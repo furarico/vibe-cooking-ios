@@ -83,7 +83,7 @@ struct VibeCookingListScreen<Environment: EnvironmentProtocol>: View {
 
     private var noContent: some View {
         ContentUnavailableView(
-            "No recipes found",
+            "リストに追加されたレシピはありません",
             systemImage: "list.bullet.clipboard"
         )
     }

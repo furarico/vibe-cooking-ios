@@ -100,7 +100,7 @@ struct RecipeDetailScreen<Environment: EnvironmentProtocol>: View {
 
         case .idle, .failure:
             ContentUnavailableView(
-                "Recipe not found",
+                "レシピが見つかりません",
                 systemImage: "list.bullet.clipboard"
             )
         }

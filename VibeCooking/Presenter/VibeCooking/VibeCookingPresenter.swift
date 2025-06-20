@@ -14,6 +14,14 @@ final class VibeCookingPresenter<Environment: EnvironmentProtocol>: PresenterPro
         var vibeRecipe: DataState<Components.Schemas.VibeRecipe, DomainError> = .idle
         var recipes: DataState<[Components.Schemas.Recipe], DomainError> = .idle
         var instructions: DataState<[Components.Schemas.Instruction], DomainError> = .idle
+        var currentRecipe: Components.Schemas.Recipe? {
+            get {
+                guard case let .success(recipes) = recipes else {
+                    return nil
+                }
+                return recipes.first(where: { $0.instructions.map(\.id).contains(currentInstructionID) })
+            }
+        }
         var currentInstructionStep: Int {
             get {
                 guard case let .success(instructions) = instructions else {

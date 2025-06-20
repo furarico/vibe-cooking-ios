@@ -53,7 +53,7 @@ struct RecipeListScreen<Environment: EnvironmentProtocol>: View {
 
     private var noContent: some View {
         ContentUnavailableView(
-            "No recipes found",
+            "レシピが見つかりません",
             systemImage: "list.bullet.clipboard"
         )
     }

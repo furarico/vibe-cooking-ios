@@ -16,12 +16,26 @@ struct VibeCookingScreen<Environment: EnvironmentProtocol>: View {
     }
 
     var body: some View {
-        VStack {
+        content
+        .task {
+            presenter.dispatch(.onAppear)
+        }
+        .onDisappear {
+            presenter.dispatch(.onDisappear)
+        }
+        .alert(presenter.state.vibeRecipe)
+        .alert(presenter.state.recipes)
+        .alert(presenter.state.instructions)
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        switch presenter.state.vibeRecipe {
+        case .success, .reloading:
             VStack {
                 ScrollView {
                     VStack(spacing: 24) {
-//                        RecipeCard(variant: .row, recipe: presenter.state.recipe)
-//                            .padding()
+                        recipes
 
                         instructions
 
@@ -42,12 +56,41 @@ struct VibeCookingScreen<Environment: EnvironmentProtocol>: View {
                 }
                 .padding()
             }
+
+        case .loading, .retrying:
+            VStack {
+                ProgressView()
+                Text("レシピを構築中...")
+                    .font(.headline)
+                    .foregroundStyle(.secondary)
+            }
+
+        case .idle:
+            Color.clear
+
+        case .failure:
+            ContentUnavailableView(
+                "レシピの構築に失敗しました",
+                systemImage: "list.bullet.clipboard"
+            )
         }
-        .task {
-            presenter.dispatch(.onAppear)
-        }
-        .onDisappear {
-            presenter.dispatch(.onDisappear)
+    }
+
+    @ViewBuilder
+    private var recipes: some View {
+        switch presenter.state.recipes {
+        case .success(let recipes), .reloading(let recipes):
+            VibeCookingHeader(
+                recipes: recipes,
+                selectedRecipeID: presenter.state.currentRecipe?.id
+            )
+            .padding()
+
+        case .loading, .retrying:
+            ProgressView()
+
+        case .idle, .failure:
+            EmptyView()
         }
     }
 

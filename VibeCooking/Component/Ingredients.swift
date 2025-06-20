@@ -5,16 +5,13 @@
 
 import SwiftUI
 
-struct IngredientsItemData {
-    let name: String
-    let amount: String
-    let unit: String
-    let note: String?
-}
-
 struct Ingredients: View {
-    let ingredients: [IngredientsItemData]
-    
+    private let ingredients: [Components.Schemas.Ingredient]
+
+    init(ingredients: [Components.Schemas.Ingredient]) {
+        self.ingredients = ingredients
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text("材料")
@@ -22,13 +19,8 @@ struct Ingredients: View {
                 .foregroundColor(.primary)
             
             VStack(spacing: 0) {
-                ForEach(ingredients.indices, id: \.self) { index in
-                    IngredientsItem(
-                        name: ingredients[index].name,
-                        amount: ingredients[index].amount,
-                        unit: ingredients[index].unit,
-                        note: ingredients[index].note
-                    )
+                ForEach(ingredients) { ingredient in
+                    IngredientsItem(ingredient: ingredient)
                 }
             }
             .background(Color.white)
@@ -39,14 +31,14 @@ struct Ingredients: View {
     }
 }
 
-struct Ingredients_Previews: PreviewProvider {
-    static var previews: some View {
-        Ingredients(ingredients: [
-            IngredientsItemData(name: "小麦粉", amount: "200", unit: "g", note: nil),
-            IngredientsItemData(name: "砂糖", amount: "100", unit: "g", note: "上白糖がおすすめ"),
-            IngredientsItemData(name: "卵", amount: "2", unit: "個", note: nil),
-            IngredientsItemData(name: "牛乳", amount: "150", unit: "ml", note: nil)
-        ])
-        .padding()
-    }
+#Preview {
+    Ingredients(ingredients: Components.Schemas.Ingredient.stubs0)
+}
+
+#Preview {
+    Ingredients(ingredients: Components.Schemas.Ingredient.stubs1)
+}
+
+#Preview {
+    Ingredients(ingredients: Components.Schemas.Ingredient.stubs2)
 }

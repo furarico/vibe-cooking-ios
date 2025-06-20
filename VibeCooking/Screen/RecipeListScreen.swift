@@ -13,7 +13,7 @@ struct RecipeListScreen<Environment: EnvironmentProtocol>: View {
     var body: some View {
         content
             .navigationDestination(for: Components.Schemas.Recipe.self) { recipe in
-                RecipeDetailScreen<Environment>(recipeID: recipe.id ?? "")
+                RecipeDetailScreen<Environment>(recipeID: recipe.id)
             }
             .task {
                 await presenter.dispatch(.onAppear)
@@ -26,7 +26,7 @@ struct RecipeListScreen<Environment: EnvironmentProtocol>: View {
         switch presenter.state.recipes {
         case .success(let recipes), .reloading(let recipes):
             List(recipes) { recipe in
-                NavigationLink(recipe.title ?? "", value: recipe)
+                NavigationLink(recipe.title, value: recipe)
             }
 
         case .loading, .retrying:

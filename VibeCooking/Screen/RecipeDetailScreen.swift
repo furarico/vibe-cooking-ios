@@ -31,7 +31,7 @@ struct RecipeDetailScreen<Environment: EnvironmentProtocol>: View {
     private var content: some View {
         switch presenter.state.recipe {
         case .success(let recipe), .reloading(let recipe):
-            Text(recipe.title ?? "")
+            Text(recipe.title)
             Button("Vibe Cooking") {
                 presenter.dispatch(.onVibeCookingButtonTapped)
             }

@@ -6,19 +6,18 @@
 import SwiftUI
 
 struct CookingInstructionCard: View {
-    let step: Int?
-    let title: String
-    let description: String
-    let imageUrl: String?
-    
+    private let instruction: Components.Schemas.Instruction
+
+    init(instruction: Components.Schemas.Instruction) {
+        self.instruction = instruction
+    }
+
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .center, spacing: 8) {
-                if let step = step {
-                    StepBadge(step: step)
-                }
+                StepBadge(step: instruction.step)
                 
-                Text(title)
+                Text(instruction.title)
                     .font(.system(size: 20, weight: .bold))
                     .foregroundColor(.primary)
                 
@@ -26,12 +25,12 @@ struct CookingInstructionCard: View {
             }
             
             VStack(alignment: .center, spacing: 16) {
-                Text(description)
+                Text(instruction.description)
                     .font(.system(size: 14))
                     .foregroundColor(.primary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
-                if let imageUrl = imageUrl, !imageUrl.isEmpty {
+                if let imageUrl = instruction.imageUrl, !imageUrl.isEmpty {
                     AsyncImage(url: URL(string: imageUrl)) { image in
                         image
                             .resizable()
@@ -58,23 +57,20 @@ struct CookingInstructionCard: View {
     }
 }
 
-struct CookingInstructionCard_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack(spacing: 16) {
-            CookingInstructionCard(
-                step: 1,
-                title: "野菜を切る",
-                description: "玉ねぎを薄切りに、人参を細切りにします。",
-                imageUrl: "https://example.com/vegetables.jpg"
-            )
-            
-            CookingInstructionCard(
-                step: nil,
-                title: "調味料を加える",
-                description: "塩、胡椒、醤油を加えて味を調えます。全体に味が馴染むまでよく混ぜ合わせてください。",
-                imageUrl: nil
-            )
-        }
-        .padding()
-    }
+#Preview {
+    CookingInstructionCard(
+        instruction: Components.Schemas.Instruction.stub0
+    )
+}
+
+#Preview {
+    CookingInstructionCard(
+        instruction: Components.Schemas.Instruction.stub1
+    )
+}
+
+#Preview {
+    CookingInstructionCard(
+        instruction: Components.Schemas.Instruction.stub2
+    )
 }

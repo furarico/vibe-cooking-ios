@@ -15,8 +15,7 @@ final class CookingPresenter<Environment: EnvironmentProtocol>: PresenterProtoco
         var currentInstructionID: Components.Schemas.Instruction.ID? {
             get {
                 guard
-                    let instructions = recipe.instructions,
-                    let instruction = instructions.first(where: { instruction in
+                    let instruction = recipe.instructions.first(where: { instruction in
                         instruction.step == currentInstructionStep
                     })
                 else {
@@ -27,8 +26,7 @@ final class CookingPresenter<Environment: EnvironmentProtocol>: PresenterProtoco
             set {
                 guard
                     let newValue,
-                    let instructions = recipe.instructions,
-                    let instruction = instructions.first(where: { instruction in
+                    let instruction = recipe.instructions.first(where: { instruction in
                         instruction.id == newValue
                     })
                 else {

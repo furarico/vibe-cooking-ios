@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+enum UserDefaultsKey {
+    static let vibeCookingList = "vibe_cooking_list"
+}

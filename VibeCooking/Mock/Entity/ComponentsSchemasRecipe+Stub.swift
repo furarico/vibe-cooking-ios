@@ -18,7 +18,7 @@ extension Components.Schemas.Recipe {
         servings: 4,
         ingredients: Components.Schemas.Ingredient.stubs0,
         instructions: Components.Schemas.Instruction.stubs0,
-        imageUrl: "https://example.com/images/chicken-curry.jpg",
+        imageUrl: "https://r2.vibe-cooking.app/images/default.png",
         tags: ["カレー", "チキン", "スパイシー"],
         createdAt: Date(timeIntervalSince1970: 1704067200), // 2024-01-01
         updatedAt: Date(timeIntervalSince1970: 1704067200) // 2024-01-01
@@ -34,7 +34,7 @@ extension Components.Schemas.Recipe {
         servings: 2,
         ingredients: Components.Schemas.Ingredient.stubs1,
         instructions: Components.Schemas.Instruction.stubs1,
-        imageUrl: "https://example.com/images/pasta-bolognese.jpg",
+        imageUrl: "https://r2.vibe-cooking.app/images/default.png",
         tags: ["パスタ", "ボロネーゼ", "イタリアン"],
         createdAt: Date(timeIntervalSince1970: 1704153600), // 2024-01-02
         updatedAt: Date(timeIntervalSince1970: 1704153600) // 2024-01-02
@@ -50,7 +50,7 @@ extension Components.Schemas.Recipe {
         servings: 2,
         ingredients: Components.Schemas.Ingredient.stubs2,
         instructions: Components.Schemas.Instruction.stubs2,
-        imageUrl: "https://example.com/images/oyakodon.jpg",
+        imageUrl: "https://r2.vibe-cooking.app/images/default.png",
         tags: ["丼もの", "和食", "簡単"],
         createdAt: Date(timeIntervalSince1970: 1704240000), // 2024-01-03
         updatedAt: Date(timeIntervalSince1970: 1704240000) // 2024-01-03

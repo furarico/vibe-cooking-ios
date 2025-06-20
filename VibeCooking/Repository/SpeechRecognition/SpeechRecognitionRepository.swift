@@ -33,7 +33,7 @@ final actor SpeechRecognitionRepositoryImpl: SpeechRecognitionRepositoryProtocol
      requests access to the speech recognizer and the microphone.
      */
     init() {
-        recognizer = SFSpeechRecognizer()
+        recognizer = SFSpeechRecognizer(locale: .current)
     }
 
     func startTranscribing() -> AsyncStream<TranscriptionResult> {

@@ -15,12 +15,12 @@ struct RecipeCardList: View {
                     ForEach(recipes, id: \.id) { recipe in
                         RecipeCard(
                             variant: .card,
-                            title: recipe.title ?? "",
-                            description: recipe.description ?? "",
-                            tags: recipe.tags ?? [],
-                            cookingTime: (recipe.prepTime ?? 0) + (recipe.cookTime ?? 0),
+                            title: recipe.title,
+                            description: recipe.description,
+                            tags: recipe.tags,
+                            cookingTime: recipe.prepTime + recipe.cookTime,
                             imageUrl: recipe.imageUrl ?? "",
-                            imageAlt: recipe.title ?? ""
+                            imageAlt: recipe.title
                         )
                     }
                 }
@@ -31,29 +31,6 @@ struct RecipeCardList: View {
     }
 }
 
-struct RecipeCardList_Previews: PreviewProvider {
-    static var previews: some View {
-        let sampleRecipes: [Components.Schemas.Recipe] = [
-            Components.Schemas.Recipe(
-                id: "1",
-                title: "チキンカレー",
-                description: "スパイシーで美味しいチキンカレーです。",
-                tags: ["カレー", "チキン"],
-                prepTime: 15,
-                cookTime: 30,
-                imageUrl: "https://example.com/curry.jpg"
-            ),
-            Components.Schemas.Recipe(
-                id: "2",
-                title: "パスタボロネーゼ",
-                description: "本格的なボロネーゼソースのパスタです。",
-                tags: ["パスタ", "イタリアン"],
-                prepTime: 10,
-                cookTime: 20,
-                imageUrl: "https://example.com/pasta.jpg"
-            )
-        ]
-        
-        return RecipeCardList(recipes: sampleRecipes)
-    }
+#Preview {
+    RecipeCardList(recipes: Components.Schemas.Recipe.stubs)
 }

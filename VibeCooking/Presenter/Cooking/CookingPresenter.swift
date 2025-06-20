@@ -12,43 +12,20 @@ import Observation
 final class CookingPresenter<Environment: EnvironmentProtocol>: PresenterProtocol {
     struct State: Equatable {
         var recipe: Components.Schemas.Recipe
-        var currentInstructionStep: Int = 1 {
-            didSet {
-                if currentInstructionStep < 1 {
-                    currentInstructionStep = 1
-                } else if currentInstructionStep > recipe.instructions.count {
-                    currentInstructionStep = recipe.instructions.count
-                } else {
-                    currentInstructionID = recipe.instructions.first(where: { instruction in
-                        instruction.step == currentInstructionStep
-                    })?.id
-                }
-            }
-        }
-        var currentInstructionID: Components.Schemas.Instruction.ID? {
+        var currentInstructionStep: Int {
             get {
-                guard
-                    let instruction = recipe.instructions.first(where: { instruction in
-                        instruction.step == currentInstructionStep
-                    })
-                else {
-                    return nil
-                }
-                return instruction.id
+                (recipe.instructions.firstIndex(where: {
+                    $0.id == currentInstructionID
+                }) ?? 0) + 1
             }
             set {
-                guard
-                    let newValue,
-                    let instruction = recipe.instructions.first(where: { instruction in
-                        instruction.id == newValue
-                    })
-                else {
-                    currentInstructionStep = 1
-                    return
-                }
-                currentInstructionStep = instruction.step
+                guard newValue >= 1, newValue <= recipe.instructions.count else { return }
+                currentInstructionID = recipe.instructions.first(where: {
+                    $0.step == newValue
+                })?.id
             }
         }
+        var currentInstructionID: Components.Schemas.Instruction.ID? = nil
     }
 
     enum Action {

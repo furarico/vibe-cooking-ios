@@ -12,7 +12,15 @@ final class RecipeDetailPresenter<Environment: EnvironmentProtocol>: PresenterPr
     struct State: Equatable {
         var recipe: DataState<Components.Schemas.Recipe, DomainError> = .idle
         var isCookingScreenPresented: Bool = false
-        var isOnVibeCookingList: DataState<Bool, DomainError> = .idle
+        var vibeCookingList: DataState<[Components.Schemas.Recipe.ID], DomainError> = .idle
+        var isOnVibeCookingList: Bool? {
+            get {
+                guard case let .success(recipe) = recipe else { return nil }
+                guard case let .success(vibeCookingList) = vibeCookingList else { return nil }
+                return vibeCookingList.contains(recipe.id)
+            }
+        }
+        var vibeRecipe: Components.Schemas.VibeRecipe? = nil
     }
 
     enum Action {
@@ -55,7 +63,7 @@ final class RecipeDetailPresenter<Environment: EnvironmentProtocol>: PresenterPr
 private extension RecipeDetailPresenter {
     func onAppear() async {
         state.recipe = .loading
-        state.isOnVibeCookingList = .loading
+        state.vibeCookingList = .loading
         await withTaskGroup { [weak self] group in
             group.addTask {
                 do {
@@ -78,13 +86,12 @@ private extension RecipeDetailPresenter {
                         let recipeID = self?.recipeID,
                         let recipesOnVibeCookingList = try await self?.vibeCookingListService.getRecipes()
                     else { return }
-                    let isOnVibeCookingList = recipesOnVibeCookingList.contains { $0.id == recipeID }
                     await MainActor.run {
-                        self?.state.isOnVibeCookingList = .success(isOnVibeCookingList)
+                        self?.state.vibeCookingList = .success(recipesOnVibeCookingList.map(\.id))
                     }
                 } catch {
                     await MainActor.run {
-                        self?.state.isOnVibeCookingList = .failure(.init(error))
+                        self?.state.vibeCookingList = .failure(.init(error))
                     }
                 }
             }
@@ -98,19 +105,16 @@ private extension RecipeDetailPresenter {
 
     func onVibeCookingListButtonTapped() async {
         do {
-            if case let .success(isOnVibeCookingList) = state.isOnVibeCookingList {
-                state.isOnVibeCookingList = .loading
-                if isOnVibeCookingList {
-                    try await vibeCookingListService.removeRecipe(id: recipeID)
-                    state.isOnVibeCookingList = .success(false)
-                } else {
-                    try await vibeCookingListService.addRecipe(id: recipeID)
-                    state.isOnVibeCookingList = .success(true)
-                }
+            if state.isOnVibeCookingList ?? false {
+                try await vibeCookingListService.removeRecipe(id: recipeID)
+                state.vibeCookingList = .success(try await vibeCookingListService.getRecipes().map(\.id))
+            } else if state.vibeCookingList.count < 3 {
+                try await vibeCookingListService.addRecipe(id: recipeID)
+                state.vibeCookingList = .success(try await vibeCookingListService.getRecipes().map(\.id))
             }
         } catch {
             Logger.error(error)
-            state.isOnVibeCookingList = .failure(.init(error))
+            state.vibeCookingList = .failure(.init(error))
         }
     }
 }

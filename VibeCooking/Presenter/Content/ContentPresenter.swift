@@ -12,7 +12,7 @@ final class ContentPresenter<Environment: EnvironmentProtocol>: PresenterProtoco
     struct State: Equatable {
         var isVibeCookingListPresented = false
         var isVibeCookingPresented = false
-        var vibeCookingListRecipeIDs: [String] = []
+        var vibeCookingListRecipeIDs: [Components.Schemas.Recipe.ID] = []
     }
 
     enum Action: Equatable {
@@ -46,7 +46,7 @@ private extension ContentPresenter {
         state.isVibeCookingListPresented = true
     }
 
-    func onStartVibeCookingButtonTapped(recipeIDs: [String]) async {
+    func onStartVibeCookingButtonTapped(recipeIDs: [Components.Schemas.Recipe.ID]) async {
         do {
             try await vibeCookingListService.clearRecipes()
             state.isVibeCookingListPresented = false

@@ -73,9 +73,9 @@ struct RecipeDetailScreen<Environment: EnvironmentProtocol>: View {
                         presenter.dispatch(.onVibeCookingButtonTapped)
                     }
 
-                    switch presenter.state.isOnVibeCookingList {
-                    case .success(let isOnVibeCookingList):
-                        if isOnVibeCookingList {
+                    switch presenter.state.vibeCookingList {
+                    case .success(let vibeCookingList):
+                        if presenter.state.isOnVibeCookingList ?? false {
                             VibeCookingButton("Vibe Cooking リストから削除") {
                                 presenter.dispatch(.onVibeCookingListButtonTapped)
                             }
@@ -83,6 +83,7 @@ struct RecipeDetailScreen<Environment: EnvironmentProtocol>: View {
                             VibeCookingButton("Vibe Cooking リストに追加") {
                                 presenter.dispatch(.onVibeCookingListButtonTapped)
                             }
+                            .disabled(vibeCookingList.count >= 3)
                         }
 
                     case .loading, .reloading:

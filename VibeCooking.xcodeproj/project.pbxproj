@@ -11,6 +11,7 @@
 		F163B3212E04300000E1FF6A /* OpenAPIURLSession in Frameworks */ = {isa = PBXBuildFile; productRef = F163B3202E04300000E1FF6A /* OpenAPIURLSession */; };
 		F163B33F2E04339000E1FF6A /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = F163B33E2E04339000E1FF6A /* FirebaseAppCheck */; };
 		F163B3412E04339000E1FF6A /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = F163B3402E04339000E1FF6A /* FirebaseCore */; };
+		F1C77A6C2E065DD900E23734 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = F1C77A6B2E065DD900E23734 /* FirebaseCrashlytics */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -74,6 +75,7 @@
 			files = (
 				F163B3212E04300000E1FF6A /* OpenAPIURLSession in Frameworks */,
 				F163B33F2E04339000E1FF6A /* FirebaseAppCheck in Frameworks */,
+				F1C77A6C2E065DD900E23734 /* FirebaseCrashlytics in Frameworks */,
 				F163B3412E04339000E1FF6A /* FirebaseCore in Frameworks */,
 				F163B31F2E04300000E1FF6A /* OpenAPIRuntime in Frameworks */,
 			);
@@ -134,6 +136,7 @@
 				F1742FB32E04249800DA907C /* Sources */,
 				F1742FB42E04249800DA907C /* Frameworks */,
 				F1742FB52E04249800DA907C /* Resources */,
+				F1C77A682E065AA500E23734 /* Crashlytics */,
 			);
 			buildRules = (
 			);
@@ -149,6 +152,7 @@
 				F163B3202E04300000E1FF6A /* OpenAPIURLSession */,
 				F163B33E2E04339000E1FF6A /* FirebaseAppCheck */,
 				F163B3402E04339000E1FF6A /* FirebaseCore */,
+				F1C77A6B2E065DD900E23734 /* FirebaseCrashlytics */,
 			);
 			productName = VibeCooking;
 			productReference = F1742FB72E04249800DA907C /* VibeCooking.app */;
@@ -275,6 +279,33 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		F1C77A682E065AA500E23734 /* Crashlytics */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}.debug.dylib",
+			);
+			name = Crashlytics;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		F1742FB32E04249800DA907C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -351,11 +382,11 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = 4YP7SQBLYV;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -417,7 +448,7 @@
 				DEVELOPMENT_TEAM = 4YP7SQBLYV;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -720,6 +751,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F163B33D2E04339000E1FF6A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseCore;
+		};
+		F1C77A6B2E065DD900E23734 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F163B33D2E04339000E1FF6A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

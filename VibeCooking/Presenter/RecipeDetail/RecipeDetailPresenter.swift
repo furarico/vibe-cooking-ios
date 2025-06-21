@@ -82,10 +82,7 @@ private extension RecipeDetailPresenter {
             }
             group.addTask {
                 do {
-                    guard
-                        let recipeID = self?.recipeID,
-                        let recipesOnVibeCookingList = try await self?.vibeCookingListService.getRecipes()
-                    else { return }
+                    guard let recipesOnVibeCookingList = try await self?.vibeCookingListService.getRecipes() else { return }
                     await MainActor.run {
                         self?.state.vibeCookingList = .success(recipesOnVibeCookingList.map(\.id))
                     }
@@ -108,7 +105,8 @@ private extension RecipeDetailPresenter {
             if state.isOnVibeCookingList ?? false {
                 try await vibeCookingListService.removeRecipe(id: recipeID)
                 state.vibeCookingList = .success(try await vibeCookingListService.getRecipes().map(\.id))
-            } else if state.vibeCookingList.count < 3 {
+            } else if case let .success(vibeCookingList) = state.vibeCookingList,
+                      vibeCookingList.count < 3 {
                 try await vibeCookingListService.addRecipe(id: recipeID)
                 state.vibeCookingList = .success(try await vibeCookingListService.getRecipes().map(\.id))
             }

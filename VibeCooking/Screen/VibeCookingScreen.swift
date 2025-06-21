@@ -17,15 +17,15 @@ struct VibeCookingScreen<Environment: EnvironmentProtocol>: View {
 
     var body: some View {
         content
-        .task {
-            presenter.dispatch(.onAppear)
-        }
-        .onDisappear {
-            presenter.dispatch(.onDisappear)
-        }
-        .alert(presenter.state.vibeRecipe)
-        .alert(presenter.state.recipes)
-        .alert(presenter.state.instructions)
+            .task {
+                presenter.dispatch(.onAppear)
+            }
+            .onDisappear {
+                presenter.dispatch(.onDisappear)
+            }
+            .alert(presenter.state.vibeRecipe)
+            .alert(presenter.state.recipes)
+            .alert(presenter.state.instructions)
     }
 
     @ViewBuilder
@@ -33,21 +33,19 @@ struct VibeCookingScreen<Environment: EnvironmentProtocol>: View {
         switch presenter.state.vibeRecipe {
         case .success, .reloading:
             VStack {
-                ScrollView {
-                    VStack(spacing: 24) {
-                        recipes
+                VStack(spacing: 24) {
+                    recipes
 
-                        instructions
+                    instructions
 
-                        if presenter.state.isRecognizingVoice {
-                            Image(systemName: "microphone.fill")
-                                .font(.largeTitle)
-                                .foregroundStyle(.orange)
-                        } else {
-                            Image(systemName: "microphone.slash.fill")
-                                .font(.largeTitle)
-                                .foregroundStyle(.red)
-                        }
+                    if presenter.state.isRecognizingVoice {
+                        Image(systemName: "microphone.fill")
+                            .font(.largeTitle)
+                            .foregroundStyle(.orange)
+                    } else {
+                        Image(systemName: "microphone.slash.fill")
+                            .font(.largeTitle)
+                            .foregroundStyle(.red)
                     }
                 }
 

@@ -10,44 +10,40 @@ import SwiftUI
 struct CookingScreen<Environment: EnvironmentProtocol>: View {
     @SwiftUI.Environment(\.dismiss) private var dismiss
     @State private var presenter: CookingPresenter<Environment>
-
+    
     init(recipe: Components.Schemas.Recipe) {
         presenter = .init(recipe: recipe)
     }
-
+    
     var body: some View {
         VStack {
-            VStack {
-                ScrollView {
-                    VStack(spacing: 24) {
-                        RecipeCard(variant: .row, recipe: presenter.state.recipe)
-                            .padding()
-
-                        instructions
-
-                        InstructionProgress(
-                            totalSteps: presenter.state.recipe.instructions.count,
-                            currentStep: presenter.state.currentInstructionStep
-                        )
-                        .padding()
-
-                        if presenter.state.isRecognizingVoice {
-                            Image(systemName: "microphone.fill")
-                                .font(.largeTitle)
-                                .foregroundStyle(.orange)
-                        } else {
-                            Image(systemName: "microphone.slash.fill")
-                                .font(.largeTitle)
-                                .foregroundStyle(.red)
-                        }
-                    }
-                }
-
-                VibeCookingButton("Vibe Cooking をおわる") {
-                    dismiss()
-                }
+            VStack(spacing: 24) {
+                RecipeCard(variant: .row, recipe: presenter.state.recipe)
+                    .padding()
+                
+                instructions
+                
+                InstructionProgress(
+                    totalSteps: presenter.state.recipe.instructions.count,
+                    currentStep: presenter.state.currentInstructionStep
+                )
                 .padding()
+                
+                if presenter.state.isRecognizingVoice {
+                    Image(systemName: "microphone.fill")
+                        .font(.largeTitle)
+                        .foregroundStyle(.orange)
+                } else {
+                    Image(systemName: "microphone.slash.fill")
+                        .font(.largeTitle)
+                        .foregroundStyle(.red)
+                }
             }
+            
+            VibeCookingButton("Vibe Cooking をおわる") {
+                dismiss()
+            }
+            .padding()
         }
         .task {
             presenter.dispatch(.onAppear)
@@ -56,7 +52,7 @@ struct CookingScreen<Environment: EnvironmentProtocol>: View {
             presenter.dispatch(.onDisappear)
         }
     }
-
+    
     private var instructions: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             LazyHStack {

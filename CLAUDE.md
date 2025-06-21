@@ -1,31 +1,31 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+このファイルは、このリポジトリのコードを扱う際のClaude Code (claude.ai/code)に対するガイダンスを提供します。
 
-## Build Commands
+## ビルドコマンド
 
-- Build the app: `xcodebuild -project VibeCooking.xcodeproj -scheme VibeCooking -configuration Debug build`
-- Run unit tests: `xcodebuild test -project VibeCooking.xcodeproj -scheme VibeCooking -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest'`
-- Run UI tests: `xcodebuild test -project VibeCooking.xcodeproj -scheme VibeCooking -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' -only-testing:VibeCookingUITests`
+- アプリをビルド: `xcodebuild -project VibeCooking.xcodeproj -scheme VibeCooking -configuration Debug build`
+- ユニットテストを実行: `xcodebuild test -project VibeCooking.xcodeproj -scheme VibeCooking -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest'`
+- UIテストを実行: `xcodebuild test -project VibeCooking.xcodeproj -scheme VibeCooking -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' -only-testing:VibeCookingUITests`
 
-## Architecture
+## アーキテクチャ
 
-VibeCooking is a multi-platform SwiftUI app supporting iOS, macOS, and visionOS. The project uses:
+VibeCookingは、iOS、macOS、visionOSをサポートするマルチプラットフォームのSwiftUIアプリです。プロジェクトは以下を使用しています：
 
-- **SwiftUI**: Main UI framework
-- **Swift Testing**: For unit tests (using the new Swift Testing framework, not XCTest)
-- **Multi-platform targets**: Supports iOS 18.5+, macOS 15.5+, visionOS 2.5+
+- **SwiftUI**: メインUIフレームワーク
+- **Swift Testing**: ユニットテスト用（新しいSwift Testingフレームワークを使用、XCTestではない）
+- **マルチプラットフォームターゲット**: iOS 18.5+、macOS 15.5+、visionOS 2.5+をサポート
 
-## Project Structure
+## プロジェクト構造
 
-- `VibeCooking/`: Main app target source code
-- `VibeCookingTests/`: Unit tests using Swift Testing framework
-- `VibeCookingUITests/`: UI tests
-- `VibeCooking.xcodeproj/`: Xcode project file
+- `VibeCooking/`: メインアプリターゲットのソースコード
+- `VibeCookingTests/`: Swift Testingフレームワークを使用したユニットテスト
+- `VibeCookingUITests/`: UIテスト
+- `VibeCooking.xcodeproj/`: Xcodeプロジェクトファイル
 
-## Development Notes
+## 開発ノート
 
-- The app uses automatic code signing with development team ID `4YP7SQBLYV`
-- Bundle identifier: `co.furari.VibeCooking`
-- App sandbox is enabled with read-only file access permissions
-- SwiftUI previews are enabled for development
+- アプリは開発チームID `4YP7SQBLYV`で自動コード署名を使用
+- バンドル識別子: `co.furari.VibeCooking`
+- アプリサンドボックスが有効で、読み取り専用ファイルアクセス権限を持つ
+- SwiftUIプレビューが開発用に有効

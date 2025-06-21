@@ -67,10 +67,18 @@ struct VibeCookingScreen<Environment: EnvironmentProtocol>: View {
             Color.clear
 
         case .failure:
-            ContentUnavailableView(
-                "レシピの構築に失敗しました",
-                systemImage: "list.bullet.clipboard"
-            )
+            VStack {
+                ContentUnavailableView(
+                    "レシピの構築に失敗しました",
+                    systemImage: "list.bullet.clipboard"
+                )
+                .frame(height: .infinity)
+
+                VibeCookingButton("もう一度試す") {
+                    dismiss()
+                }
+                .padding()
+            }
         }
     }
 
@@ -85,7 +93,7 @@ struct VibeCookingScreen<Environment: EnvironmentProtocol>: View {
             .padding()
 
         case .loading, .retrying:
-            ProgressView()
+            EmptyView()
 
         case .idle, .failure:
             EmptyView()
@@ -123,7 +131,7 @@ struct VibeCookingScreen<Environment: EnvironmentProtocol>: View {
             .padding()
 
         case .loading, .retrying:
-            ProgressView()
+            EmptyView()
 
         case .idle, .failure:
             EmptyView()

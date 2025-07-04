@@ -23,4 +23,11 @@ struct RecipeListPresenterTests {
         await presenter.dispatch(.onAppear)
         #expect(presenter.state.recipes == .success(Components.Schemas.Recipe.stubs))
     }
+
+    @Test("onAppearでレシピの取得に失敗すること")
+    func onAppearFailure() async {
+        let presenter = RecipeListPresenter<MockEnvironmentWithError>()
+        await presenter.dispatch(.onAppear)
+        #expect(presenter.state.recipes == .failure(DomainError(RepositoryError.server(.unauthorized, nil))))
+    }
 }

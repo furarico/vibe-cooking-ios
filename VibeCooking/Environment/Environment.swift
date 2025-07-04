@@ -10,11 +10,11 @@ import Foundation
 protocol EnvironmentProtocol: Actor {
     static var shared: Self { get }
 
-    var appCheckRepository: AppCheckRepositoryProtocol { get }
-    var audioRepository: AudioRepositoryProtocol { get }
+    var appCheckRepository: any AppCheckRepositoryProtocol { get }
+    var audioRepository: any AudioRepositoryProtocol { get }
     var localRepository: any LocalRepositoryProtocol { get }
-    var recipeRepository: RecipeRepositoryProtocol { get }
-    var speechRecognitionRepository: SpeechRecognitionRepositoryProtocol { get }
+    var recipeRepository: any RecipeRepositoryProtocol { get }
+    var speechRecognitionRepository: any SpeechRecognitionRepositoryProtocol { get }
 }
 
 final actor EnvironmentImpl: EnvironmentProtocol {
@@ -26,7 +26,7 @@ final actor EnvironmentImpl: EnvironmentProtocol {
     let recipeRepository: any RecipeRepositoryProtocol
     let speechRecognitionRepository: any SpeechRecognitionRepositoryProtocol
 
-    init(
+    private init(
         appCheckRepository: any AppCheckRepositoryProtocol = AppCheckRepositoryImpl(),
         audioRepository: any AudioRepositoryProtocol = AudioRepositoryImpl(),
         localRepository: any LocalRepositoryProtocol = LocalRepositoryImpl(),

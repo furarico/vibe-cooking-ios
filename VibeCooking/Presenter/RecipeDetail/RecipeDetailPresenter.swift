@@ -65,29 +65,29 @@ private extension RecipeDetailPresenter {
         state.recipe = .loading
         state.vibeCookingList = .loading
         await withTaskGroup { [weak self] group in
-            group.addTask {
+            group.addTask { [weak self] in
                 do {
                     guard
                         let recipeID = self?.recipeID,
                         let recipe = try await self?.recipeService.getRecipe(id: recipeID)
                     else { return }
-                    await MainActor.run {
+                    await MainActor.run { [weak self] in
                         self?.state.recipe = .success(recipe)
                     }
                 } catch {
-                    await MainActor.run {
+                    await MainActor.run { [weak self] in
                         self?.state.recipe = .failure(.init(error))
                     }
                 }
             }
-            group.addTask {
+            group.addTask { [weak self] in
                 do {
                     guard let recipesOnVibeCookingList = try await self?.vibeCookingListService.getRecipes() else { return }
-                    await MainActor.run {
+                    await MainActor.run { [weak self] in
                         self?.state.vibeCookingList = .success(recipesOnVibeCookingList.map(\.id))
                     }
                 } catch {
-                    await MainActor.run {
+                    await MainActor.run { [weak self] in
                         self?.state.vibeCookingList = .failure(.init(error))
                     }
                 }

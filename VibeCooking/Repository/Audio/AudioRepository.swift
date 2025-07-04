@@ -8,15 +8,15 @@
 import Foundation
 import AVFoundation
 
-protocol AudioRepositoryProtocol {
-    func playAudio(from url: URL, onFinished: @escaping () -> Void) async throws
+protocol AudioRepositoryProtocol: Actor {
+    func playAudio(from url: URL, onFinished: @escaping @Sendable () -> Void) async throws
     func stopAudio() async
 }
 
 final actor AudioRepositoryImpl: NSObject, AudioRepositoryProtocol {
     private var player: AVAudioPlayer?
 
-    private var onPlayingAudioFinished: (() -> Void)?
+    private var onPlayingAudioFinished: (@Sendable () -> Void)?
 
     override init() {
         super.init()
@@ -29,7 +29,7 @@ final actor AudioRepositoryImpl: NSObject, AudioRepositoryProtocol {
         }
     }
 
-    func playAudio(from url: URL, onFinished: @escaping () -> Void) async throws {
+    func playAudio(from url: URL, onFinished: @escaping @Sendable () -> Void) async throws {
         let audioSession = AVAudioSession.sharedInstance()
         try audioSession.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .duckOthers])
         try audioSession.setActive(true, options: .notifyOthersOnDeactivation)

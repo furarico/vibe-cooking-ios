@@ -27,7 +27,7 @@ final actor CookingService<Environment: EnvironmentProtocol> {
         }
     }
 
-    func playAudio(url: URL, onFinished: @escaping () -> Void) async throws {
+    func playAudio(url: URL, onFinished: @escaping @Sendable () -> Void) async throws {
         await Environment.shared.speechRecognitionRepository.stopTranscribing()
         Logger.debug("Playing audio from \(url)")
         await Environment.shared.audioRepository.stopAudio()

@@ -8,11 +8,11 @@
 import Foundation
 
 final actor LocalRepositoryMock: LocalRepositoryProtocol {
-    func get<T>(for key: String) async throws -> T where T : Decodable, T : Encodable {
+    func get<T: Codable & Sendable>(for key: String) async throws -> T {
         return try JSONDecoder().decode(T.self, from: Data())
     }
     
-    func set<T>(_ value: T, for key: String) async throws where T : Decodable, T : Encodable {
+    func set<T: Codable & Sendable>(_ value: T, for key: String) async throws {
     }
     
     func remove(for key: String) async throws {

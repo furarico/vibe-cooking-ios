@@ -105,7 +105,7 @@ private extension VibeCookingPresenter {
                     return []
                 }
                 vibeRecipe.recipeIds.forEach { recipeID in
-                    group.addTask {
+                    group.addTask { [weak self] in
                         try await self?.recipeService.getRecipe(id: recipeID)
                     }
                 }

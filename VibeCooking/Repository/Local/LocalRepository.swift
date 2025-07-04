@@ -7,15 +7,15 @@
 
 import Foundation
 
-protocol LocalRepositoryProtocol {
-    func get<T: Codable>(for key: String) async throws -> T
+protocol LocalRepositoryProtocol: Actor {
+    func get<T: Codable & Sendable>(for key: String) async throws -> T
 
-    func set<T: Codable>(_ value: T, for key: String) async throws
+    func set<T: Codable & Sendable>(_ value: T, for key: String) async throws
 
     func remove(for key: String) async throws
 }
 
-final class LocalRepositoryImpl: LocalRepositoryProtocol {
+final actor LocalRepositoryImpl: LocalRepositoryProtocol {
     private let userDefaults: UserDefaults
 
     init() {
@@ -26,14 +26,14 @@ final class LocalRepositoryImpl: LocalRepositoryProtocol {
         }
     }
 
-    func get<T: Codable>(for key: String) async throws -> T {
+    func get<T: Codable & Sendable>(for key: String) async throws -> T {
         guard let data = userDefaults.data(forKey: key) else {
             throw LocalRepositoryError.notFound
         }
         return try JSONDecoder().decode(T.self, from: data)
     }
 
-    func set<T: Codable>(_ value: T, for key: String) async throws {
+    func set<T: Codable & Sendable>(_ value: T, for key: String) async throws {
         let data = try JSONEncoder().encode(value)
         userDefaults.set(data, forKey: key)
     }

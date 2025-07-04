@@ -93,11 +93,7 @@ final actor SpeechRecognitionRepositoryImpl: SpeechRecognitionRepositoryProtocol
             let (audioEngine, request) = try Self.prepareEngine()
             self.audioEngine = audioEngine
             self.request = request
-            self.task = recognizer.recognitionTask(with: request, resultHandler: { [weak self] result, error in
-                Task {
-                    await self?.recognitionHandler(audioEngine: audioEngine, result: result, error: error)
-                }
-            })
+            self.task = recognizer.recognitionTask(with: request, resultHandler: recognitionHandler)
         } catch {
             self.reset()
             transcriptionContinuation?.yield(TranscriptionResult.failure(error))
@@ -135,13 +131,13 @@ final actor SpeechRecognitionRepositoryImpl: SpeechRecognitionRepositoryProtocol
         return (audioEngine, request)
     }
 
-    private func recognitionHandler(audioEngine: AVAudioEngine, result: SFSpeechRecognitionResult?, error: Error?) {
+    private func recognitionHandler(result: SFSpeechRecognitionResult?, error: Error?) {
         let receivedFinalResult = result?.isFinal ?? false
         let receivedError = error != nil
 
         if receivedFinalResult || receivedError {
-            audioEngine.stop()
-            audioEngine.inputNode.removeTap(onBus: 0)
+            audioEngine?.stop()
+            audioEngine?.inputNode.removeTap(onBus: 0)
         }
 
         if let result {

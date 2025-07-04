@@ -5,7 +5,7 @@
 //  Created by Kanta Oikawa on 2025/06/19.
 //
 
-import FirebaseAppCheck
+@preconcurrency import FirebaseAppCheck
 
 protocol AppCheckRepositoryProtocol: Actor {
     func getAppCheckToken() async throws -> String

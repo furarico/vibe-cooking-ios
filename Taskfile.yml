@@ -1,0 +1,13 @@
+version: "3"
+
+vars:
+  FASTLANE: "bundle exec fastlane"
+
+tasks:
+  default:
+    cmds:
+      - task --list-all
+    silent: true
+  install:
+    cmds:
+      - bundle install

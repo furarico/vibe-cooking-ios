@@ -33,11 +33,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Xcode
-        run: xcodes select
-      - name: Post-clone Script
-        run: sh ./ci_scripts/ci_post_clone.sh
-        env:
-          GOOGLE_SERVICES_INFO_PLIST: ${{ secrets.GOOGLE_SERVICES_INFO_PLIST }}
+        run: |
+          xcodes select
+          defaults write com.apple.dt.Xcode IDESkipPackagePluginFingerprintValidation -bool YES
+          defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
+      - name: Setup Firebase
+        run: echo "${{ secrets.GOOGLE_SERVICES_INFO_PLIST }}" > ./VibeCooking/GoogleService-Info.plist
       - name: Setup Project
         run: task install
       - name: Test

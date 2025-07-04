@@ -1,0 +1,3 @@
+scheme("VibeCooking")
+devices(["iPhone 16 Pro"])
+clean(true)

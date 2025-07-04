@@ -11,3 +11,8 @@ tasks:
   install:
     cmds:
       - bundle install
+  test:
+    cmds:
+      - "{{.FASTLANE}} test"
+    deps:
+      - install

@@ -1,5 +1,7 @@
 # VibeCooking
 
+[![CI](https://github.com/furarico/vibe-cooking-ios/actions/workflows/ci.yaml/badge.svg)](https://github.com/furarico/vibe-cooking-ios/actions/workflows/ci.yaml)
+
 音声ガイドによるハンズフリー料理体験を提供するiOS/macOS/visionOSアプリ
 
 ## 概要

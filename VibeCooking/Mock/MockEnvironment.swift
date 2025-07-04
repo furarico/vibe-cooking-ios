@@ -17,7 +17,7 @@ final actor MockEnvironment: EnvironmentProtocol {
     let recipeRepository: any RecipeRepositoryProtocol
     let speechRecognitionRepository: any SpeechRecognitionRepositoryProtocol
 
-    init(
+    private init(
         appCheckRepository: any AppCheckRepositoryProtocol = AppCheckRepositoryMock(),
         audioRepository: any AudioRepositoryProtocol = AudioRepositoryMock(),
         localRepository: any LocalRepositoryProtocol = LocalRepositoryMock(),

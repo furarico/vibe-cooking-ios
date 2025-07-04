@@ -1,12 +1,12 @@
 //
-//  MockEnvironment.swift
+//  MockEnvironmentWithError.swift
 //  VibeCooking
 //
-//  Created by Kanta Oikawa on 2025/06/19.
+//  Created by Kanta Oikawa on 2025/07/04.
 //
 
-final actor MockEnvironment: EnvironmentProtocol {
-    static let shared = MockEnvironment()
+final actor MockEnvironmentWithError: EnvironmentProtocol {
+    static let shared = MockEnvironmentWithError()
 
     let appCheckRepository: any AppCheckRepositoryProtocol
     let audioRepository: any AudioRepositoryProtocol
@@ -18,7 +18,7 @@ final actor MockEnvironment: EnvironmentProtocol {
         appCheckRepository: any AppCheckRepositoryProtocol = AppCheckRepositoryMock(),
         audioRepository: any AudioRepositoryProtocol = AudioRepositoryMock(),
         localRepository: any LocalRepositoryProtocol = LocalRepositoryMock(),
-        recipeRepository: any RecipeRepositoryProtocol = RecipeRepositoryMock(),
+        recipeRepository: any RecipeRepositoryProtocol = RecipeRepositoryMockWithError(),
         speechRecognitionRepository: any SpeechRecognitionRepositoryProtocol = SpeechRecognitionRepositoryMock()
     ) {
         self.appCheckRepository = appCheckRepository

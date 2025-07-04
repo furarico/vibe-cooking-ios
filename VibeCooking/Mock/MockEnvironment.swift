@@ -8,8 +8,7 @@
 import Foundation
 
 final actor MockEnvironment: EnvironmentProtocol {
-    
-    static let shared: MockEnvironment = .init()
+    static let shared = MockEnvironment()
 
     let appCheckRepository: any AppCheckRepositoryProtocol
     let audioRepository: any AudioRepositoryProtocol

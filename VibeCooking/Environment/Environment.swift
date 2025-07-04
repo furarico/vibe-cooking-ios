@@ -18,7 +18,7 @@ protocol EnvironmentProtocol: Actor {
 }
 
 final actor EnvironmentImpl: EnvironmentProtocol {
-    static let shared: EnvironmentImpl = .init()
+    static let shared = EnvironmentImpl()
 
     let appCheckRepository: any AppCheckRepositoryProtocol
     let audioRepository: any AudioRepositoryProtocol

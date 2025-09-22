@@ -71,11 +71,9 @@ struct CookingScreen<Environment: EnvironmentProtocol>: View {
     @ViewBuilder
     private var animation: some View {
         if presenter.state.isRecognizingVoice {
-            LottieView(name: "recognizing_audio")
+            LottieView(name: "listening")
         } else {
-            Image(systemName: "microphone.slash.fill")
-                .font(.largeTitle)
-                .foregroundStyle(.red)
+            LottieView(name: "speaking")
         }
     }
 }

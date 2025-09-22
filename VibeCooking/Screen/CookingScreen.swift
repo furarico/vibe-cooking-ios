@@ -29,15 +29,8 @@ struct CookingScreen<Environment: EnvironmentProtocol>: View {
                 )
                 .padding()
                 
-                if presenter.state.isRecognizingVoice {
-                    Image(systemName: "microphone.fill")
-                        .font(.largeTitle)
-                        .foregroundStyle(.orange)
-                } else {
-                    Image(systemName: "microphone.slash.fill")
-                        .font(.largeTitle)
-                        .foregroundStyle(.red)
-                }
+                animation
+                    .frame(height: 100)
             }
             
             VibeCookingButton("Vibe Cooking をおわる") {
@@ -72,6 +65,17 @@ struct CookingScreen<Environment: EnvironmentProtocol>: View {
                let instruction = presenter.state.recipe.instructions.first(where: { $0.id == newValue }) {
                 presenter.dispatch(.onInstructionChanged(instruction))
             }
+        }
+    }
+
+    @ViewBuilder
+    private var animation: some View {
+        if presenter.state.isRecognizingVoice {
+            LottieView(name: "recognizing_audio")
+        } else {
+            Image(systemName: "microphone.slash.fill")
+                .font(.largeTitle)
+                .foregroundStyle(.red)
         }
     }
 }

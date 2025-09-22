@@ -21,6 +21,7 @@ struct RecipeDetailScreen<Environment: EnvironmentProtocol>: View {
                 await presenter.dispatch(.onAppear)
             }
             .alert(presenter.state.recipe)
+            .alert(presenter.state.vibeCookingList)
             .fullScreenCover(isPresented: $presenter.state.isCookingScreenPresented) {
                 if case .success(let recipe) = presenter.state.recipe {
                     CookingScreen<Environment>(recipe: recipe)

@@ -11,6 +11,7 @@
 		F163B3212E04300000E1FF6A /* OpenAPIURLSession in Frameworks */ = {isa = PBXBuildFile; productRef = F163B3202E04300000E1FF6A /* OpenAPIURLSession */; };
 		F163B33F2E04339000E1FF6A /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = F163B33E2E04339000E1FF6A /* FirebaseAppCheck */; };
 		F163B3412E04339000E1FF6A /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = F163B3402E04339000E1FF6A /* FirebaseCore */; };
+		F1B822122E80FE4D0018EB63 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = F1B822112E80FE4D0018EB63 /* NukeUI */; };
 		F1C77A6C2E065DD900E23734 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = F1C77A6B2E065DD900E23734 /* FirebaseCrashlytics */; };
 /* End PBXBuildFile section */
 
@@ -76,6 +77,7 @@
 				F163B3212E04300000E1FF6A /* OpenAPIURLSession in Frameworks */,
 				F163B33F2E04339000E1FF6A /* FirebaseAppCheck in Frameworks */,
 				F1C77A6C2E065DD900E23734 /* FirebaseCrashlytics in Frameworks */,
+				F1B822122E80FE4D0018EB63 /* NukeUI in Frameworks */,
 				F163B3412E04339000E1FF6A /* FirebaseCore in Frameworks */,
 				F163B31F2E04300000E1FF6A /* OpenAPIRuntime in Frameworks */,
 			);
@@ -153,6 +155,7 @@
 				F163B33E2E04339000E1FF6A /* FirebaseAppCheck */,
 				F163B3402E04339000E1FF6A /* FirebaseCore */,
 				F1C77A6B2E065DD900E23734 /* FirebaseCrashlytics */,
+				F1B822112E80FE4D0018EB63 /* NukeUI */,
 			);
 			productName = VibeCooking;
 			productReference = F1742FB72E04249800DA907C /* VibeCooking.app */;
@@ -242,6 +245,7 @@
 				F163B3182E042F9300E1FF6A /* XCRemoteSwiftPackageReference "swift-openapi-runtime" */,
 				F163B3192E042F9D00E1FF6A /* XCRemoteSwiftPackageReference "swift-openapi-urlsession" */,
 				F163B33D2E04339000E1FF6A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				F1B822102E80FE4D0018EB63 /* XCRemoteSwiftPackageReference "Nuke" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F1742FB82E04249800DA907C /* Products */;
@@ -722,6 +726,14 @@
 				minimumVersion = 11.14.0;
 			};
 		};
+		F1B822102E80FE4D0018EB63 /* XCRemoteSwiftPackageReference "Nuke" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/kean/Nuke";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.8.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -749,6 +761,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F163B33D2E04339000E1FF6A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseCore;
+		};
+		F1B822112E80FE4D0018EB63 /* NukeUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F1B822102E80FE4D0018EB63 /* XCRemoteSwiftPackageReference "Nuke" */;
+			productName = NukeUI;
 		};
 		F1C77A6B2E065DD900E23734 /* FirebaseCrashlytics */ = {
 			isa = XCSwiftPackageProductDependency;

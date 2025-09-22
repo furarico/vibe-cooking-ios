@@ -3,6 +3,7 @@
 //
 //
 
+import NukeUI
 import SwiftUI
 
 struct RecipeCard: View {
@@ -134,21 +135,15 @@ struct RecipeCard: View {
     }
 
     private var image: some View {
-        AsyncImage(url: URL(string: recipe.imageUrl ?? "")) { result in
-            switch result {
-            case .success(let image):
+        LazyImage(url: URL(string: recipe.imageUrl ?? "")) { state in
+            if let image = state.image {
                 image
                     .resizable()
                     .aspectRatio(contentMode: .fill)
-
-            case .failure:
+            } else if state.error != nil {
                 defaultImage
-
-            case .empty:
-                defaultImage
-
-            @unknown default:
-                defaultImage
+            } else {
+                ProgressView()
             }
         }
     }

@@ -5,6 +5,7 @@
 //  Created by Kanta Oikawa on 2025/06/19.
 //
 
+import NukeUI
 import SwiftUI
 
 struct RecipeDetailScreen<Environment: EnvironmentProtocol>: View {
@@ -53,21 +54,15 @@ struct RecipeDetailScreen<Environment: EnvironmentProtocol>: View {
             VStack {
                 ScrollView {
                     VStack(spacing: 24) {
-                        AsyncImage(url: URL(string: recipe.imageUrl ?? "")) { result in
-                            switch result {
-                            case .success(let image):
+                        LazyImage(url: URL(string: recipe.imageUrl ?? "")) { state in
+                            if let image = state.image {
                                 image
                                     .resizable()
                                     .aspectRatio(contentMode: .fill)
-
-                            case .failure:
+                            } else if state.error != nil {
                                 noImage
-
-                            case .empty:
-                                noImage
-
-                            @unknown default:
-                                noImage
+                            } else {
+                                ProgressView()
                             }
                         }
                         .frame(maxWidth: .infinity, maxHeight: 200)

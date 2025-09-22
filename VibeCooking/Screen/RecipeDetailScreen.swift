@@ -25,6 +25,25 @@ struct RecipeDetailScreen<Environment: EnvironmentProtocol>: View {
                     CookingScreen<Environment>(recipe: recipe)
                 }
             }
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    switch presenter.state.vibeCookingList {
+                    case .success:
+                        if let isInList = presenter.state.isInVibeCookingList {
+                            Button {
+                                presenter.dispatch(.onAddToOrRemoveFromVibeCookingListButtonTapped)
+                            } label: {
+                                Image(systemName: isInList ? "checkmark" : "plus")
+                            }
+                        } else {
+                            EmptyView()
+                        }
+
+                    default:
+                        EmptyView()
+                    }
+                }
+            }
     }
 
     @ViewBuilder
@@ -68,30 +87,8 @@ struct RecipeDetailScreen<Environment: EnvironmentProtocol>: View {
                     .padding()
                 }
 
-                VStack {
-                    VibeCookingButton("このレシピのみで Vibe Cooking をはじめる") {
-                        presenter.dispatch(.onVibeCookingButtonTapped)
-                    }
-
-                    switch presenter.state.vibeCookingList {
-                    case .success(let vibeCookingList):
-                        if presenter.state.isOnVibeCookingList ?? false {
-                            VibeCookingButton("Vibe Cooking リストから削除") {
-                                presenter.dispatch(.onVibeCookingListButtonTapped)
-                            }
-                        } else {
-                            VibeCookingButton("Vibe Cooking リストに追加") {
-                                presenter.dispatch(.onVibeCookingListButtonTapped)
-                            }
-                            .disabled(vibeCookingList.count >= 3)
-                        }
-
-                    case .loading, .reloading:
-                        ProgressView()
-
-                    default:
-                        EmptyView()
-                    }
+                VibeCookingButton("このレシピのみで Vibe Cooking をはじめる") {
+                    presenter.dispatch(.onVibeCookingButtonTapped)
                 }
                 .padding()
             }

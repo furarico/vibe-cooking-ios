@@ -13,7 +13,7 @@ final class RecipeDetailPresenter<Environment: EnvironmentProtocol>: PresenterPr
         var recipe: DataState<Components.Schemas.Recipe, DomainError> = .idle
         var isCookingScreenPresented: Bool = false
         var vibeCookingList: DataState<[Components.Schemas.Recipe.ID], DomainError> = .idle
-        var isOnVibeCookingList: Bool? {
+        var isInVibeCookingList: Bool? {
             get {
                 guard case let .success(recipe) = recipe else { return nil }
                 guard case let .success(vibeCookingList) = vibeCookingList else { return nil }
@@ -26,7 +26,7 @@ final class RecipeDetailPresenter<Environment: EnvironmentProtocol>: PresenterPr
     enum Action {
         case onAppear
         case onVibeCookingButtonTapped
-        case onVibeCookingListButtonTapped
+        case onAddToOrRemoveFromVibeCookingListButtonTapped
     }
 
     var state = State()
@@ -54,8 +54,8 @@ final class RecipeDetailPresenter<Environment: EnvironmentProtocol>: PresenterPr
         case .onVibeCookingButtonTapped:
             await onVibeCookingButtonTapped()
 
-        case .onVibeCookingListButtonTapped:
-            await onVibeCookingListButtonTapped()
+        case .onAddToOrRemoveFromVibeCookingListButtonTapped:
+            await onAddToOrRemoveFromVibeCookingListButtonTapped()
         }
     }
 }
@@ -100,15 +100,17 @@ private extension RecipeDetailPresenter {
         state.isCookingScreenPresented = true
     }
 
-    func onVibeCookingListButtonTapped() async {
+    func onAddToOrRemoveFromVibeCookingListButtonTapped() async {
         do {
-            if state.isOnVibeCookingList ?? false {
+            if state.isInVibeCookingList ?? false {
                 try await vibeCookingListService.removeRecipe(id: recipeID)
                 state.vibeCookingList = .success(try await vibeCookingListService.getRecipes().map(\.id))
             } else if case let .success(vibeCookingList) = state.vibeCookingList,
                       vibeCookingList.count < 3 {
                 try await vibeCookingListService.addRecipe(id: recipeID)
                 state.vibeCookingList = .success(try await vibeCookingListService.getRecipes().map(\.id))
+            } else {
+                throw DomainError.custom(title: "Vibe Cooking リストへの追加に失敗しました。", message: "Vibe Cookingリストには3つまでしか追加できません。")
             }
         } catch {
             Logger.error(error)

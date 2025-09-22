@@ -22,6 +22,7 @@ enum DomainError: DomainErrorProtocol {
         }
     }
 
+    case custom(title: String, message: String)
     case service(ServiceError)
     case repository(RepositoryError)
     case unknown(Error)
@@ -38,6 +39,8 @@ enum DomainError: DomainErrorProtocol {
 
     var errorDescription: String? {
         switch self {
+        case .custom(let title, let message):
+            "\(title): \(message)"
         case .service(let error):
             error.localizedDescription
         case .repository(let error):
@@ -49,6 +52,8 @@ enum DomainError: DomainErrorProtocol {
 
     var title: String {
         switch self {
+        case .custom(let title, _):
+            title
         case .service:
             "Service Error"
         case .repository:
@@ -60,6 +65,8 @@ enum DomainError: DomainErrorProtocol {
 
     var message: String {
         switch self {
+        case .custom(_, let message):
+            message
         case .service(let error):
             error.localizedDescription
         case .repository(let error):

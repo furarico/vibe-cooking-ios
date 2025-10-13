@@ -35,18 +35,9 @@ struct VibeCookingScreen<Environment: EnvironmentProtocol>: View {
             VStack {
                 VStack(spacing: 24) {
                     recipes
-
                     instructions
-
-                    if presenter.state.isRecognizingVoice {
-                        Image(systemName: "microphone.fill")
-                            .font(.largeTitle)
-                            .foregroundStyle(.orange)
-                    } else {
-                        Image(systemName: "microphone.slash.fill")
-                            .font(.largeTitle)
-                            .foregroundStyle(.red)
-                    }
+                    animation
+                        .frame(height: 100)
                 }
 
                 VibeCookingButton("Vibe Cooking をおわる") {
@@ -135,6 +126,15 @@ struct VibeCookingScreen<Environment: EnvironmentProtocol>: View {
 
         case .idle, .failure:
             EmptyView()
+        }
+    }
+
+    @ViewBuilder
+    private var animation: some View {
+        if presenter.state.isRecognizingVoice {
+            LottieView(name: "listening")
+        } else {
+            LottieView(name: "speaking")
         }
     }
 }

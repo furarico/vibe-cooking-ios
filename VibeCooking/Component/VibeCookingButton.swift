@@ -20,19 +20,28 @@ struct VibeCookingButton: View {
     }
 
     var body: some View {
-        Button(action: action) {
-            Text(label)
-                .font(.caption)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 4)
+        if #available(iOS 26.0, *) {
+            VibeCookingGlassButton(label, action: action)
+        } else {
+            VibeCookingFlatButton(label, action: action)
         }
-        .buttonStyle(.borderedProminent)
-        .tint(.black)
     }
 }
 
 #Preview {
     VibeCookingButton("ボタン") {
+    }
+    .padding()
+}
+
+@available(iOS 26.0, *)
+#Preview {
+    VStack {
+        VibeCookingGlassButton("ボタン") {
+        }
+
+        VibeCookingFlatButton("ボタン") {
+        }
     }
     .padding()
 }

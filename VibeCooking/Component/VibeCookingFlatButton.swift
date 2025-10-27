@@ -22,10 +22,10 @@ struct VibeCookingFlatButton: View {
     var body: some View {
         Button(action: action) {
             Text(label)
-                .font(.caption)
                 .frame(maxWidth: .infinity)
         }
         .buttonStyle(.borderedProminent)
+        .controlSize(.large)
         .tint(.black)
     }
 }

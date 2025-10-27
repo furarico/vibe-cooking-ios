@@ -52,7 +52,7 @@ struct RecipeDetailScreen<Environment: EnvironmentProtocol>: View {
     private var content: some View {
         switch presenter.state.recipe {
         case .success(let recipe), .reloading(let recipe):
-            VStack {
+            ZStack {
                 ScrollView {
                     VStack(spacing: 24) {
                         LazyImage(url: URL(string: recipe.imageUrl ?? "")) { state in
@@ -79,14 +79,34 @@ struct RecipeDetailScreen<Environment: EnvironmentProtocol>: View {
                         Ingredients(ingredients: recipe.ingredients)
 
                         Instructions(instructions: recipe.instructions)
+
+                        Color.clear
+                            .frame(height: 48)
                     }
                     .padding()
                 }
 
-                VibeCookingButton("このレシピのみで Vibe Cooking をはじめる") {
-                    presenter.dispatch(.onVibeCookingButtonTapped)
+                VStack {
+                    Spacer()
+                    VibeCookingButton("このレシピのみで Vibe Cooking をはじめる") {
+                        presenter.dispatch(.onVibeCookingButtonTapped)
+                    }
+                    .font(.footnote)
+                    .lineLimit(1)
+                    .padding()
+                    .background(
+                        LinearGradient(
+                            gradient: Gradient(
+                                colors: [
+                                    .clear,
+                                    .white.opacity(0.4),
+                                ]
+                            ),
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
                 }
-                .padding()
             }
 
         case .loading, .retrying:

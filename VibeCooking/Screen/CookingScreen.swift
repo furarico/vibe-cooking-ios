@@ -36,6 +36,8 @@ struct CookingScreen<Environment: EnvironmentProtocol>: View {
             VibeCookingButton("Vibe Cooking をおわる") {
                 dismiss()
             }
+            .font(.footnote)
+            .lineLimit(1)
             .padding()
         }
         .task {

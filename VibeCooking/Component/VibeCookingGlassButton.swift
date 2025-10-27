@@ -22,9 +22,9 @@ struct VibeCookingGlassButton: View {
 
     var body: some View {
         Button(label, action: action)
-            .font(.caption)
             .buttonSizing(.flexible)
             .buttonStyle(.glassProminent)
+            .controlSize(.large)
             .tint(.black)
     }
 }

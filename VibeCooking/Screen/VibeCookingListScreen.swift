@@ -43,7 +43,7 @@ struct VibeCookingListScreen<Environment: EnvironmentProtocol>: View {
             if recipes.isEmpty {
                 noContent
             } else {
-                VStack {
+                ZStack {
                     ScrollView {
                         LazyVStack(spacing: 16) {
                             ForEach(recipes) { recipe in
@@ -63,13 +63,32 @@ struct VibeCookingListScreen<Environment: EnvironmentProtocol>: View {
                             }
                         }
                         .padding()
+
+                        Color.clear
+                            .frame(height: 48)
                     }
 
-                    VibeCookingButton("Vibe Cooking をはじめる") {
-                        onStartVibeCookingButtonTapped(recipes.map(\.id))
+                    VStack {
+                        Spacer()
+                        VibeCookingButton("Vibe Cooking をはじめる") {
+                            onStartVibeCookingButtonTapped(recipes.map(\.id))
+                        }
+                        .font(.footnote)
+                        .lineLimit(1)
+                        .padding()
+                        .background(
+                            LinearGradient(
+                                gradient: Gradient(
+                                    colors: [
+                                        .clear,
+                                        .white.opacity(0.4),
+                                    ]
+                                ),
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
                     }
-                    .disabled(recipes.count > 3 || recipes.isEmpty)
-                    .padding()
                 }
             }
 

@@ -104,31 +104,36 @@ struct RecipeCard: View {
         VStack(alignment: .leading, spacing: 8) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(recipe.title)
-                    .font(.system(size: 16, weight: .bold))
+                    .font(.body)
+                    .bold()
                     .foregroundColor(.primary)
                     .lineLimit(1)
+                    .multilineTextAlignment(.leading)
 
                 Text(recipe.description)
-                    .font(.system(size: 12))
+                    .font(.caption)
                     .foregroundColor(.primary)
                     .lineLimit(2)
+                    .multilineTextAlignment(.leading)
             }
 
             HStack {
-                ForEach(recipe.tags, id: \.self) { tag in
-                    Text("#\(tag)")
-                        .font(.system(size: 12))
-                        .foregroundColor(.secondary)
-                }
+                let tagString = recipe.tags.map { "#\($0)" }.joined(separator: " ")
+                Text(tagString)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
             }
 
             HStack(spacing: 4) {
                 Image(systemName: "clock")
-                    .font(.system(size: 16, weight: .medium))
+                    .font(.body)
+                    .fontWeight(.medium)
                     .foregroundColor(.primary)
 
-                Text("\(recipe.prepTime + recipe.cookTime)min")
-                    .font(.system(size: 12))
+                Text("\(recipe.prepTime + recipe.cookTime) min")
+                    .font(.caption)
                     .foregroundColor(.primary)
             }
         }

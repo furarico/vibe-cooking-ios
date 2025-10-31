@@ -598,7 +598,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = VibeCookingWatchApp;
+				INFOPLIST_KEY_CFBundleDisplayName = "Vibe Cooking";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = co.furari.VibeCooking;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
@@ -633,7 +633,7 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = VibeCookingWatchApp;
+				INFOPLIST_KEY_CFBundleDisplayName = "Vibe Cooking";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = co.furari.VibeCooking;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;

@@ -1,6 +1,8 @@
 //
+//  Ingredients.swift
 //  VibeCooking
 //
+//  Created by Kanta Oikawa on 2025/06/19.
 //
 
 import SwiftUI
@@ -20,19 +22,16 @@ struct Ingredients: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text(label)
-                .font(.system(size: 18, weight: .bold))
-                .foregroundColor(.primary)
+                .font(.title3)
+                .bold()
                 .lineLimit(1)
+                .padding(.horizontal, 8)
 
             VStack {
                 ForEach(ingredients) { ingredient in
                     IngredientsItem(ingredient: ingredient)
                 }
             }
-            .padding(16)
-            .background(Color.white)
-            .cornerRadius(8)
-            .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
         }
     }
 }

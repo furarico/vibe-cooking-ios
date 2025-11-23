@@ -1,20 +1,19 @@
 //
+//  StepBadge.swift
 //  VibeCooking
 //
+//  Created by Kanta Oikawa on 2025/06/19.
 //
 
 import SwiftUI
 
 struct StepBadge: View {
-    private let step: Int
-
-    init(step: Int) {
-        self.step = step
-    }
+    let step: Int
 
     var body: some View {
         Text(step.description)
-            .font(.system(size: 14, weight: .bold))
+            .font(.footnote)
+            .bold()
             .foregroundColor(.white)
             .frame(width: 32, height: 32)
             .background(Color.secondary)

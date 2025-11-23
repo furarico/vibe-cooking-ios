@@ -1,6 +1,8 @@
 //
+//  RecipeDetailHeader.swift
 //  VibeCooking
 //
+//  Created by Kanta Oikawa on 2025/06/19.
 //
 
 import SwiftUI
@@ -17,28 +19,24 @@ struct RecipeDetailHeader: View {
             VStack(alignment: .leading, spacing: 8) {
                 if !recipe.title.isEmpty {
                     Text(recipe.title)
-                        .font(.system(size: 20, weight: .semibold))
-                        .foregroundColor(.primary)
+                        .font(.title3)
+                        .bold()
                 }
                 
                 if !recipe.description.isEmpty {
                     Text(recipe.description)
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.primary)
+                        .font(.footnote)
+                        .fontWeight(.medium)
                 }
             }
             
             if !recipe.tags.isEmpty {
-                HStack {
-                    ForEach(recipe.tags, id: \.self) { tag in
-                        Button(action: {
-                        }) {
-                            Text("#\(tag)")
-                                .font(.system(size: 14))
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                }
+                let tagString = recipe.tags.map { "#\($0)" }.joined(separator: " ")
+                Text(tagString)
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

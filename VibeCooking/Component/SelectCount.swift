@@ -1,21 +1,20 @@
 //
+//  SelectCount.swift
 //  VibeCooking
 //
+//  Created by Kanta Oikawa on 2025/06/19.
 //
 
 import SwiftUI
 
 struct SelectCount: View {
-    private let count: Int
-
-    init(count: Int) {
-        self.count = count
-    }
+    let count: Int
 
     var body: some View {
         if count > 0 {
             Text(count.description)
-                .font(.system(size: 10, weight: .semibold))
+                .font(.caption)
+                .fontWeight(.semibold)
                 .foregroundColor(.white)
                 .frame(width: 24, height: 24)
                 .background(Color.secondary)

@@ -1,6 +1,8 @@
 //
+//  InstructionProgress.swift
 //  VibeCooking
 //
+//  Created by Kanta Oikawa on 2025/06/19.
 //
 
 import SwiftUI
@@ -20,14 +22,14 @@ struct InstructionProgress: View {
     }
     
     var body: some View {
-        HStack(spacing: 8) {
+        HStack {
             ProgressView(value: progressValue)
                 .frame(height: 8)
                 .cornerRadius(4)
                 .tint(Color.secondary)
 
             Text("\(currentStep) / \(totalSteps)")
-                .font(.system(size: 14))
+                .font(.footnote)
                 .foregroundStyle(.secondary)
                 .fixedSize()
         }

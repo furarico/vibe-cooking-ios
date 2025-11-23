@@ -44,28 +44,30 @@ struct VibeCookingListScreen<Environment: EnvironmentProtocol>: View {
                 noContent
             } else {
                 ZStack {
-                    ScrollView {
-                        LazyVStack(spacing: 16) {
+                    VStack {
+                        List {
                             ForEach(recipes) { recipe in
-                                RecipeCard(variant: .row, recipe: recipe) { id in
-                                    presenter.dispatch(.onDelete(id: id))
+                                RecipeCard(recipe: recipe)
+                            }
+                            .onDelete { offsets in
+                                presenter.dispatch(.onDelete(offsets: offsets))
+                            }
+                        }
+
+                        ScrollView {
+                            LazyVStack(spacing: 24) {
+                                ForEach(recipes) { recipe in
+                                    Ingredients(
+                                        ingredients: recipe.ingredients,
+                                        label: recipe.title
+                                    )
                                 }
                             }
-                        }
-                        .padding()
+                            .padding()
 
-                        LazyVStack(spacing: 24) {
-                            ForEach(recipes) { recipe in
-                                Ingredients(
-                                    ingredients: recipe.ingredients,
-                                    label: recipe.title
-                                )
-                            }
+                            Color.clear
+                                .frame(height: 48)
                         }
-                        .padding()
-
-                        Color.clear
-                            .frame(height: 48)
                     }
 
                     VStack {

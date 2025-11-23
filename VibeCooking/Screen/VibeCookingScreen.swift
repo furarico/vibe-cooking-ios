@@ -100,8 +100,11 @@ struct VibeCookingScreen<Environment: EnvironmentProtocol>: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 LazyHStack {
                     ForEach(instructions) { instruction in
-                        InstructionsItem(variant: .card, instruction: instruction)
-                            .containerRelativeFrame(.horizontal)
+                        VStack {
+                            InstructionsItem(instruction: instruction)
+                            Spacer()
+                        }
+                        .containerRelativeFrame(.horizontal)
                     }
                 }
                 .scrollTargetLayout()

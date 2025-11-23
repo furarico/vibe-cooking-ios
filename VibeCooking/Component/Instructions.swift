@@ -1,6 +1,8 @@
 //
+//  Instructions.swift
 //  VibeCooking
 //
+//  Created by Kanta Oikawa on 2025/06/19.
 //
 
 import SwiftUI
@@ -23,10 +25,6 @@ struct Instructions: View {
                     InstructionsItem(instruction: instruction)
                 }
             }
-            .padding(16)
-            .background(Color.white)
-            .cornerRadius(8)
-            .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
         }
     }
 }

@@ -2,7 +2,7 @@
 //  VibeCookingButton.swift
 //  VibeCooking
 //
-//  Created by Kanta Oikawa on 2025/06/21.
+//  Created by Kanta Oikawa on 2025/10/27.
 //
 
 import SwiftUI
@@ -20,28 +20,17 @@ struct VibeCookingButton: View {
     }
 
     var body: some View {
-        if #available(iOS 26.0, *) {
-            VibeCookingGlassButton(label, action: action)
-        } else {
-            VibeCookingFlatButton(label, action: action)
-        }
+        Button(label, action: action)
+            .buttonSizing(.flexible)
+            .buttonStyle(.glassProminent)
+            .controlSize(.large)
+            .tint(.black)
     }
-}
-
-#Preview {
-    VibeCookingButton("ボタン") {
-    }
-    .padding()
 }
 
 @available(iOS 26.0, *)
 #Preview {
-    VStack {
-        VibeCookingGlassButton("ボタン") {
-        }
-
-        VibeCookingFlatButton("ボタン") {
-        }
+    VibeCookingButton("ボタン") {
     }
     .padding()
 }

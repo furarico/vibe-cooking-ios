@@ -1,15 +1,25 @@
 //
+//  TimeCard.swift
 //  VibeCooking
 //
+//  Created by Kanta Oikawa on 2025/06/19.
 //
 
 import SwiftUI
 
 struct TimeCard: View {
     enum Variant {
-        case prep
-        case cook
-        case servings
+        case prep(_ number: Int)
+        case cook(_ number: Int)
+        case servings(_ number: Int)
+
+        var number: Int {
+            switch self {
+            case .prep(let number): return number
+            case .cook(let number): return number
+            case .servings(let number): return number
+            }
+        }
 
         var title: String {
             switch self {
@@ -34,13 +44,7 @@ struct TimeCard: View {
         }
     }
 
-    private let variant: Variant
-    private let number: Int
-
-    init(variant: Variant, number: Int) {
-        self.variant = variant
-        self.number = number
-    }
+    let variant: Variant
 
     var body: some View {
         VStack(spacing: 8) {
@@ -54,7 +58,7 @@ struct TimeCard: View {
                     .foregroundColor(.secondary)
             }
             
-            Text("\(number) \(variant.unit)")
+            Text("\(variant.number) \(variant.unit)")
                 .font(.system(size: 18, weight: .semibold))
                 .foregroundColor(.primary)
         }
@@ -73,8 +77,8 @@ struct TimeCard: View {
 
 #Preview {
     HStack {
-        TimeCard(variant: .prep, number: 15)
-        TimeCard(variant: .cook, number: 30)
-        TimeCard(variant: .servings, number: 4)
+        TimeCard(variant: .prep(15))
+        TimeCard(variant: .cook(30))
+        TimeCard(variant: .servings(4))
     }
 }

@@ -1,6 +1,8 @@
 //
+//  CookingInstructionCard.swift
 //  VibeCooking
 //
+//  Created by Kanta Oikawa on 2025/06/19.
 //
 
 import SwiftUI
@@ -18,16 +20,15 @@ struct CookingInstructionCard: View {
                 StepBadge(step: instruction.step)
                 
                 Text(instruction.title)
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundColor(.primary)
-                
+                    .font(.title2)
+                    .bold()
+                    .lineLimit(1)
+
                 Spacer()
             }
             
             VStack(alignment: .center, spacing: 16) {
                 Text(instruction.description)
-                    .font(.system(size: 14))
-                    .foregroundColor(.primary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
                 if let imageUrl = instruction.imageUrl, !imageUrl.isEmpty {
@@ -50,10 +51,6 @@ struct CookingInstructionCard: View {
                 }
             }
         }
-        .padding(16)
-        .background(Color.white)
-        .cornerRadius(8)
-        .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
     }
 }
 
@@ -61,16 +58,19 @@ struct CookingInstructionCard: View {
     CookingInstructionCard(
         instruction: Components.Schemas.Instruction.stub0
     )
+    .padding()
 }
 
 #Preview {
     CookingInstructionCard(
         instruction: Components.Schemas.Instruction.stub1
     )
+    .padding()
 }
 
 #Preview {
     CookingInstructionCard(
         instruction: Components.Schemas.Instruction.stub2
     )
+    .padding()
 }

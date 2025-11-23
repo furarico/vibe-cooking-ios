@@ -5,6 +5,7 @@
 //  Created by Kanta Oikawa on 2025/06/21.
 //
 
+import Foundation
 import Observation
 
 @Observable
@@ -15,7 +16,7 @@ final class VibeCookingListPresenter<Environment: EnvironmentProtocol>: Presente
 
     enum Action: Equatable {
         case onAppear
-        case onDelete(id: String)
+        case onDelete(offsets: IndexSet)
     }
 
     var state = State()
@@ -33,8 +34,8 @@ final class VibeCookingListPresenter<Environment: EnvironmentProtocol>: Presente
         case .onAppear:
             await onAppear()
 
-        case .onDelete(let id):
-            await onDelete(id: id)
+        case .onDelete(let offsets):
+            await onDelete(offsets: offsets)
         }
     }
 }
@@ -51,12 +52,18 @@ private extension VibeCookingListPresenter {
         }
     }
 
-    func onDelete(id: String) async {
+    func onDelete(offsets: IndexSet) async {
         do {
-            try await vibeCookingListService.removeRecipe(id: id)
-            guard case .success(let recipes) = state.recipes else { return }
-            let updatedRecipes = recipes.filter { $0.id != id }
-            state.recipes = .success(updatedRecipes)
+            guard var recipes = state.recipes.value else {
+                return
+            }
+            state.recipes = .reloading(recipes)
+            for index in offsets {
+                let id = recipes[index].id
+                try await vibeCookingListService.removeRecipe(id: id)
+            }
+            recipes.remove(atOffsets: offsets)
+            state.recipes = .success(recipes)
         } catch {
             Logger.error(error)
         }

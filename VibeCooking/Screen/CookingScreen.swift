@@ -18,7 +18,7 @@ struct CookingScreen<Environment: EnvironmentProtocol>: View {
     var body: some View {
         VStack {
             VStack(spacing: 24) {
-                RecipeCard(variant: .row, recipe: presenter.state.recipe)
+                RecipeCard(recipe: presenter.state.recipe)
                     .padding()
                 
                 instructions
@@ -50,10 +50,13 @@ struct CookingScreen<Environment: EnvironmentProtocol>: View {
     
     private var instructions: some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            LazyHStack {
+            LazyHStack(spacing: 16) {
                 ForEach(presenter.state.recipe.instructions) { instruction in
-                    InstructionsItem(variant: .card, instruction: instruction)
-                        .containerRelativeFrame(.horizontal)
+                    VStack {
+                        InstructionsItem(instruction: instruction)
+                        Spacer()
+                    }
+                    .containerRelativeFrame(.horizontal)
                 }
             }
             .scrollTargetLayout()

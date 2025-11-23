@@ -1,6 +1,8 @@
 //
+//  IngredientsItem.swift
 //  VibeCooking
 //
+//  Created by Kanta Oikawa on 2025/06/19.
 //
 
 import SwiftUI
@@ -14,23 +16,15 @@ struct IngredientsItem: View {
 
     var body: some View {
         HStack {
-            HStack(spacing: 8) {
-                Text(ingredient.name)
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundColor(.primary)
-                
-                if let notes = ingredient.notes, !notes.isEmpty {
-                    Text(notes)
-                        .font(.system(size: 14))
-                        .foregroundColor(.secondary)
-                }
+            Text(ingredient.name)
+                .fontWeight(.medium)
+            if let notes = ingredient.notes, !notes.isEmpty {
+                Text(notes)
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
             }
-
             Spacer()
-
             Text("\(ingredient.amount.formatted(.number)) \(ingredient.unit)")
-                .font(.system(size: 16))
-                .foregroundColor(.primary)
         }
         .padding(8)
         .overlay(

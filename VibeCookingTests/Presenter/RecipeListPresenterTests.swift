@@ -5,6 +5,7 @@
 //  Created by Kanta Oikawa on 2025/07/04.
 //
 
+import Dependencies
 import Testing
 
 @testable import VibeCooking
@@ -12,21 +13,33 @@ import Testing
 @MainActor
 struct RecipeListPresenterTests {
     @Test("初期状態が正しいこと")
-    func initialState() {
+    func testInitialize() {
         let presenter = RecipeListPresenter()
         #expect(presenter.state.recipes == .idle)
     }
 
     @Test("onAppearでレシピが取得できること")
-    func onAppearSuccess() async {
-        let presenter = RecipeListPresenter()
+    func testOnAppearSuccess() async {
+        let presenter = withDependencies {
+            $0.recipeRepository.fetchRecipes = { _, _, _, _ in
+                Components.Schemas.Recipe.stubs
+            }
+        } operation: {
+            RecipeListPresenter()
+        }
         await presenter.dispatch(.onAppear)
         #expect(presenter.state.recipes == .success(Components.Schemas.Recipe.stubs))
     }
 
     @Test("onAppearでレシピの取得に失敗すること")
     func onAppearFailure() async {
-        let presenter = RecipeListPresenter<MockEnvironmentWithError>()
+        let presenter = withDependencies {
+            $0.recipeRepository.fetchRecipes = { _, _, _, _ in
+                throw DomainError(RepositoryError.server(.unauthorized, nil))
+            }
+        } operation: {
+            RecipeListPresenter()
+        }
         await presenter.dispatch(.onAppear)
         #expect(presenter.state.recipes == .failure(DomainError(RepositoryError.server(.unauthorized, nil))))
     }

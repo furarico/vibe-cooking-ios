@@ -15,6 +15,8 @@
 		F1B822122E80FE4D0018EB63 /* NukeUI in Frameworks */ = {isa = PBXBuildFile; productRef = F1B822112E80FE4D0018EB63 /* NukeUI */; };
 		F1B8221D2E8100460018EB63 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = F1B8221C2E8100460018EB63 /* Lottie */; };
 		F1C77A6C2E065DD900E23734 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = F1C77A6B2E065DD900E23734 /* FirebaseCrashlytics */; };
+		F1EFF8232ED6C003008FEFE1 /* Dependencies in Frameworks */ = {isa = PBXBuildFile; productRef = F1EFF8222ED6C003008FEFE1 /* Dependencies */; };
+		F1EFF8252ED6C003008FEFE1 /* DependenciesMacros in Frameworks */ = {isa = PBXBuildFile; productRef = F1EFF8242ED6C003008FEFE1 /* DependenciesMacros */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -161,7 +163,9 @@
 				F163B3212E04300000E1FF6A /* OpenAPIURLSession in Frameworks */,
 				F1B8221D2E8100460018EB63 /* Lottie in Frameworks */,
 				F163B33F2E04339000E1FF6A /* FirebaseAppCheck in Frameworks */,
+				F1EFF8232ED6C003008FEFE1 /* Dependencies in Frameworks */,
 				F1C77A6C2E065DD900E23734 /* FirebaseCrashlytics in Frameworks */,
+				F1EFF8252ED6C003008FEFE1 /* DependenciesMacros in Frameworks */,
 				F1B822122E80FE4D0018EB63 /* NukeUI in Frameworks */,
 				F163B3412E04339000E1FF6A /* FirebaseCore in Frameworks */,
 				F163B31F2E04300000E1FF6A /* OpenAPIRuntime in Frameworks */,
@@ -318,6 +322,8 @@
 				F1C77A6B2E065DD900E23734 /* FirebaseCrashlytics */,
 				F1B822112E80FE4D0018EB63 /* NukeUI */,
 				F1B8221C2E8100460018EB63 /* Lottie */,
+				F1EFF8222ED6C003008FEFE1 /* Dependencies */,
+				F1EFF8242ED6C003008FEFE1 /* DependenciesMacros */,
 			);
 			productName = VibeCooking;
 			productReference = F1742FB72E04249800DA907C /* VibeCooking.app */;
@@ -420,6 +426,7 @@
 				F163B33D2E04339000E1FF6A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				F1B822102E80FE4D0018EB63 /* XCRemoteSwiftPackageReference "Nuke" */,
 				F1B8221B2E8100460018EB63 /* XCRemoteSwiftPackageReference "lottie-ios" */,
+				F1EFF8212ED6C003008FEFE1 /* XCRemoteSwiftPackageReference "swift-dependencies" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = F1742FB82E04249800DA907C /* Products */;
@@ -1185,6 +1192,14 @@
 				minimumVersion = 4.5.2;
 			};
 		};
+		F1EFF8212ED6C003008FEFE1 /* XCRemoteSwiftPackageReference "swift-dependencies" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-dependencies";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.10.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1227,6 +1242,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F163B33D2E04339000E1FF6A /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseCrashlytics;
+		};
+		F1EFF8222ED6C003008FEFE1 /* Dependencies */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F1EFF8212ED6C003008FEFE1 /* XCRemoteSwiftPackageReference "swift-dependencies" */;
+			productName = Dependencies;
+		};
+		F1EFF8242ED6C003008FEFE1 /* DependenciesMacros */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F1EFF8212ED6C003008FEFE1 /* XCRemoteSwiftPackageReference "swift-dependencies" */;
+			productName = DependenciesMacros;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -5,15 +5,19 @@
 //  Created by Kanta Oikawa on 2025/06/21.
 //
 
+import Dependencies
 import Foundation
 
-final actor VibeCookingListService<Environment: EnvironmentProtocol> {
+final actor VibeCookingListService {
+    @Dependency(\.localRepository) private var localRepository
+    @Dependency(\.recipeRepository) private var recipeRepository
+
     func getRecipes() async throws -> [Components.Schemas.Recipe] {
-        let recipeIDs: [String] = (try? await Environment.shared.localRepository.get(for: UserDefaultsKey.vibeCookingList)) ?? []
-        return try await withThrowingTaskGroup(returning: [Components.Schemas.Recipe].self) { group in
+        let recipeIDs: [String] = (try? await localRepository.getVibeCookingList()) ?? []
+        return try await withThrowingTaskGroup(returning: [Components.Schemas.Recipe].self) { [recipeRepository] group in
             recipeIDs.forEach { id in
                 group.addTask {
-                    try await Environment.shared.recipeRepository.fetchRecipe(id: id)
+                    try await recipeRepository.fetchRecipe(id: id)
                 }
             }
             var recipes: [Components.Schemas.Recipe] = []
@@ -25,20 +29,20 @@ final actor VibeCookingListService<Environment: EnvironmentProtocol> {
     }
 
     func addRecipe(id: String) async throws {
-        var recipeIDs: [String] = (try? await Environment.shared.localRepository.get(for: UserDefaultsKey.vibeCookingList)) ?? []
+        var recipeIDs: [String] = (try? await localRepository.getVibeCookingList()) ?? []
         guard !recipeIDs.contains(id) else { return }
         recipeIDs.append(id)
-        try await Environment.shared.localRepository.set(recipeIDs, for: UserDefaultsKey.vibeCookingList)
+        try await localRepository.setVibeCookingList(recipeIDs)
     }
 
     func removeRecipe(id: String) async throws {
-        var recipeIDs: [String] = (try? await Environment.shared.localRepository.get(for: UserDefaultsKey.vibeCookingList)) ?? []
+        var recipeIDs: [String] = (try? await localRepository.getVibeCookingList()) ?? []
         guard let index = recipeIDs.firstIndex(of: id) else { return }
         recipeIDs.remove(at: index)
-        try await Environment.shared.localRepository.set(recipeIDs, for: UserDefaultsKey.vibeCookingList)
+        try await localRepository.setVibeCookingList(recipeIDs)
     }
 
     func clearRecipes() async throws {
-        try await Environment.shared.localRepository.remove(for: UserDefaultsKey.vibeCookingList)
+        try await localRepository.removeVibeCookingList()
     }
 }

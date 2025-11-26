@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct CookingScreen<Environment: EnvironmentProtocol>: View {
+struct CookingScreen: View {
     @SwiftUI.Environment(\.dismiss) private var dismiss
-    @State private var presenter: CookingPresenter<Environment>
+    @State private var presenter: CookingPresenter
     
     init(recipe: Components.Schemas.Recipe) {
         presenter = .init(recipe: recipe)
@@ -84,5 +84,5 @@ struct CookingScreen<Environment: EnvironmentProtocol>: View {
 }
 
 #Preview {
-    CookingScreen<MockEnvironment>(recipe: .stub0)
+    CookingScreen(recipe: .stub0)
 }

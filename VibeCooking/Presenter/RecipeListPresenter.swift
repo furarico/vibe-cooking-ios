@@ -8,7 +8,7 @@
 import Observation
 
 @Observable
-final class RecipeListPresenter<Environment: EnvironmentProtocol>: PresenterProtocol {
+final class RecipeListPresenter: PresenterProtocol {
     struct State: Equatable {
         var recipes: DataState<[Components.Schemas.Recipe], DomainError> = .idle
     }
@@ -19,7 +19,7 @@ final class RecipeListPresenter<Environment: EnvironmentProtocol>: PresenterProt
 
     var state = State()
 
-    private let recipeService = RecipeService<Environment>()
+    private let recipeService = RecipeService()
 
     func dispatch(_ action: Action) {
         Task {

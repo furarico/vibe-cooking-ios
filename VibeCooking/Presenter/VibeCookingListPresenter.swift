@@ -9,7 +9,7 @@ import Foundation
 import Observation
 
 @Observable
-final class VibeCookingListPresenter<Environment: EnvironmentProtocol>: PresenterProtocol {
+final class VibeCookingListPresenter: PresenterProtocol {
     struct State: Equatable {
         var recipes: DataState<[Components.Schemas.Recipe], DomainError> = .idle
     }
@@ -21,7 +21,7 @@ final class VibeCookingListPresenter<Environment: EnvironmentProtocol>: Presente
 
     var state = State()
 
-    private let vibeCookingListService = VibeCookingListService<Environment>()
+    private let vibeCookingListService = VibeCookingListService()
 
     func dispatch(_ action: Action) {
         Task {

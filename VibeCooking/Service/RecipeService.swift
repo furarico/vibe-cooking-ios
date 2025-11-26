@@ -5,11 +5,14 @@
 //  Created by Kanta Oikawa on 2025/06/19.
 //
 
+import Dependencies
 import Foundation
 
-final actor RecipeService<Environment: EnvironmentProtocol> {
+final actor RecipeService {
+    @Dependency(\.recipeRepository) private var recipeRepository
+
     func getRecipes() async throws -> [Components.Schemas.Recipe] {
-        try await Environment.shared.recipeRepository.fetchRecipes(
+        try await recipeRepository.fetchRecipes(
             query: nil,
             category: nil,
             categoryID: nil,
@@ -18,7 +21,7 @@ final actor RecipeService<Environment: EnvironmentProtocol> {
     }
 
     func getRecipes(query: String) async throws -> [Components.Schemas.Recipe] {
-        try await Environment.shared.recipeRepository.fetchRecipes(
+        try await recipeRepository.fetchRecipes(
             query: query,
             category: nil,
             categoryID: nil,
@@ -27,7 +30,7 @@ final actor RecipeService<Environment: EnvironmentProtocol> {
     }
 
     func getRecipesByCategory(id: String) async throws -> [Components.Schemas.Recipe] {
-        try await Environment.shared.recipeRepository.fetchRecipes(
+        try await recipeRepository.fetchRecipes(
             query: nil,
             category: nil,
             categoryID: id,
@@ -36,7 +39,7 @@ final actor RecipeService<Environment: EnvironmentProtocol> {
     }
 
     func getRecipesByCategory(name: String) async throws -> [Components.Schemas.Recipe] {
-        try await Environment.shared.recipeRepository.fetchRecipes(
+        try await recipeRepository.fetchRecipes(
             query: nil,
             category: name,
             categoryID: nil,
@@ -45,7 +48,7 @@ final actor RecipeService<Environment: EnvironmentProtocol> {
     }
 
     func getRecipesByTags(_ tags: [String]) async throws -> [Components.Schemas.Recipe] {
-        try await Environment.shared.recipeRepository.fetchRecipes(
+        try await recipeRepository.fetchRecipes(
             query: nil,
             category: nil,
             categoryID: nil,
@@ -54,14 +57,14 @@ final actor RecipeService<Environment: EnvironmentProtocol> {
     }
 
     func getRecipe(id: String) async throws -> Components.Schemas.Recipe {
-        try await Environment.shared.recipeRepository.fetchRecipe(id: id)
+        try await recipeRepository.fetchRecipe(id: id)
     }
 
     func getCategories() async throws -> [Components.Schemas.Category] {
-        try await Environment.shared.recipeRepository.fetchCategories()
+        try await recipeRepository.fetchCategories()
     }
 
     func getVibeRecipe(recipeIDs: [String]) async throws -> Components.Schemas.VibeRecipe {
-        try await Environment.shared.recipeRepository.fetchVibeRecipe(recipeIDs: recipeIDs)
+        try await recipeRepository.fetchVibeRecipe(recipeIDs: recipeIDs)
     }
 }

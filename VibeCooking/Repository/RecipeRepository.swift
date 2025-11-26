@@ -5,23 +5,44 @@
 //  Created by Kanta Oikawa on 2025/06/19.
 //
 
-protocol RecipeRepositoryProtocol: Actor {
-    func fetchRecipes(
-        query: String?,
-        category: String?,
-        categoryID: String?,
-        tags: [String]?
+import Dependencies
+import DependenciesMacros
+
+@DependencyClient
+struct RecipeRepository {
+    var fetchRecipes: @Sendable (
+        _ query: String?,
+        _ category: String?,
+        _ categoryID: String?,
+        _ tags: [String]?
     ) async throws -> [Components.Schemas.Recipe]
-
-    func fetchRecipe(id: String) async throws -> Components.Schemas.Recipe
-
-    func fetchCategories() async throws -> [Components.Schemas.Category]
-
-    func fetchVibeRecipe(recipeIDs: [String]) async throws -> Components.Schemas.VibeRecipe
+    var fetchRecipe: @Sendable (_ id: String) async throws -> Components.Schemas.Recipe
+    var fetchCategories: @Sendable () async throws -> [Components.Schemas.Category]
+    var fetchVibeRecipe: @Sendable (_ recipeIDs: [String]) async throws -> Components.Schemas.VibeRecipe
 }
 
-final actor RecipeRepositoryImpl: RecipeRepositoryProtocol {
-    func fetchRecipes(
+extension RecipeRepository: DependencyKey {
+    static let liveValue: RecipeRepository = RecipeRepository(
+        fetchRecipes: { query, category, categoryID, tags in
+            try await RecipeRepository.fetchRecipes(
+                query: query,
+                category: category,
+                categoryID: categoryID,
+                tags: tags
+            )
+        },
+        fetchRecipe: { id in
+            try await RecipeRepository.fetchRecipe(id: id)
+        },
+        fetchCategories: {
+            try await RecipeRepository.fetchCategories()
+        },
+        fetchVibeRecipe: { recipeIDs in
+            try await RecipeRepository.fetchVibeRecipe(recipeIDs: recipeIDs)
+        }
+    )
+
+    private static func fetchRecipes(
         query: String?,
         category: String?,
         categoryID: String?,
@@ -58,7 +79,7 @@ final actor RecipeRepositoryImpl: RecipeRepositoryProtocol {
         }
     }
 
-    func fetchRecipe(id: String) async throws -> Components.Schemas.Recipe {
+    private static func fetchRecipe(id: String) async throws -> Components.Schemas.Recipe {
         do {
             let client = try await Client.build()
             let response = try await client.getRecipesId(path: .init(id: id))
@@ -84,7 +105,7 @@ final actor RecipeRepositoryImpl: RecipeRepositoryProtocol {
         }
     }
 
-    func fetchCategories() async throws -> [Components.Schemas.Category] {
+    private static func fetchCategories() async throws -> [Components.Schemas.Category] {
         do {
             let client = try await Client.build()
             let response = try await client.getCategories()
@@ -107,7 +128,7 @@ final actor RecipeRepositoryImpl: RecipeRepositoryProtocol {
         }
     }
 
-    func fetchVibeRecipe(recipeIDs: [String]) async throws -> Components.Schemas.VibeRecipe {
+    private static func fetchVibeRecipe(recipeIDs: [String]) async throws -> Components.Schemas.VibeRecipe {
         do {
             let client = try await Client.build()
             let response = try await client.postVibeRecipe(body: .json(.init(recipeIds: recipeIDs)))
@@ -137,5 +158,12 @@ final actor RecipeRepositoryImpl: RecipeRepositoryProtocol {
             Logger.error("RepositoryError: \(error)")
             throw error
         }
+    }
+}
+
+extension DependencyValues {
+    var recipeRepository: RecipeRepository {
+        get { self[RecipeRepository.self] }
+        set { self[RecipeRepository.self] = newValue }
     }
 }

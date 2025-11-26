@@ -5,55 +5,30 @@
 //  Created by Kanta Oikawa on 2025/06/20.
 //
 
+import Dependencies
+import DependenciesMacros
 import Foundation
-import AVFoundation
 
-protocol AudioRepositoryProtocol: Actor {
-    func playAudio(from url: URL, onFinished: @escaping @Sendable () -> Void) async throws
-    func stopAudio() async
+@DependencyClient
+struct AudioRepository {
+    var playAudio: @Sendable (_ url: URL, _ onFinished: @escaping @Sendable () -> Void) async throws -> Void
+    var stopAudio: @Sendable () async -> Void
 }
 
-final actor AudioRepositoryImpl: NSObject, AudioRepositoryProtocol {
-    private var player: AVAudioPlayer?
-
-    private var onPlayingAudioFinished: (@Sendable () -> Void)?
-
-    override init() {
-        super.init()
-
-        do {
-            try AVAudioSession.sharedInstance().setCategory(.playAndRecord, options: [.defaultToSpeaker, .duckOthers])
-            try AVAudioSession.sharedInstance().setActive(true)
-        } catch {
-            Logger.error("Failed to set audio session category: \(error)")
+extension AudioRepository: DependencyKey {
+    static let liveValue: AudioRepository = AudioRepository(
+        playAudio: { url, onFinished in
+            try await AudioPlayer.shared.playAudio(from: url, onFinished: onFinished)
+        },
+        stopAudio: {
+            await AudioPlayer.shared.stopAudio()
         }
-    }
-
-    func playAudio(from url: URL, onFinished: @escaping @Sendable () -> Void) async throws {
-        let audioSession = AVAudioSession.sharedInstance()
-        try audioSession.setCategory(.playAndRecord, mode: .default, options: [.defaultToSpeaker, .duckOthers])
-        try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
-        onPlayingAudioFinished = onFinished
-        let data = try await URLSession.shared.data(from: url).0
-        player = try AVAudioPlayer(data: data)
-        player?.prepareToPlay()
-        player?.delegate = self
-        player?.play()
-    }
-
-    func stopAudio() {
-        player?.stop()
-        player = nil
-    }
+    )
 }
 
-extension AudioRepositoryImpl: AVAudioPlayerDelegate {
-    nonisolated func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-        Logger.debug("Audio finished playing: \(flag)")
-        Task { [weak self] in
-            if let onPlayingAudioFinished = await self?.onPlayingAudioFinished {
-                onPlayingAudioFinished()
-            }
-        }
+extension DependencyValues {
+    var audioRepository: AudioRepository {
+        get { self[AudioRepository.self] }
+        set { self[AudioRepository.self] = newValue }
     }
 }

@@ -8,7 +8,7 @@
 import Observation
 
 @Observable
-final class RecipeDetailPresenter<Environment: EnvironmentProtocol>: PresenterProtocol {
+final class RecipeDetailPresenter: PresenterProtocol {
     struct State: Equatable {
         var recipe: DataState<Components.Schemas.Recipe, DomainError> = .idle
         var isCookingScreenPresented: Bool = false
@@ -31,8 +31,8 @@ final class RecipeDetailPresenter<Environment: EnvironmentProtocol>: PresenterPr
 
     var state = State()
 
-    private let recipeService = RecipeService<Environment>()
-    private let vibeCookingListService = VibeCookingListService<Environment>()
+    private let recipeService = RecipeService()
+    private let vibeCookingListService = VibeCookingListService()
 
     private let recipeID: String
 

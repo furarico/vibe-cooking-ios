@@ -9,7 +9,7 @@ import Observation
 import SwiftUI
 
 @Observable
-final class VibeCookingPresenter<Environment: EnvironmentProtocol>: PresenterProtocol {
+final class VibeCookingPresenter: PresenterProtocol {
     struct State: Equatable {
         var vibeRecipe: DataState<Components.Schemas.VibeRecipe, DomainError> = .idle
         var recipes: DataState<[Components.Schemas.Recipe], DomainError> = .idle
@@ -59,8 +59,8 @@ final class VibeCookingPresenter<Environment: EnvironmentProtocol>: PresenterPro
         self.recipeIDs = recipeIDs
     }
 
-    private let cookingService = CookingService<Environment>()
-    private let recipeService = RecipeService<Environment>()
+    private let cookingService = CookingService()
+    private let recipeService = RecipeService()
 
     func dispatch(_ action: Action) {
         Task {

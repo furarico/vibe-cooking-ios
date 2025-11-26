@@ -8,8 +8,8 @@
 import NukeUI
 import SwiftUI
 
-struct RecipeDetailScreen<Environment: EnvironmentProtocol>: View {
-    @State private var presenter: RecipeDetailPresenter<Environment>
+struct RecipeDetailScreen: View {
+    @State private var presenter: RecipeDetailPresenter
 
     init(recipeID: String) {
         presenter = .init(recipeID: recipeID)
@@ -24,7 +24,7 @@ struct RecipeDetailScreen<Environment: EnvironmentProtocol>: View {
             .alert(presenter.state.vibeCookingList)
             .fullScreenCover(isPresented: $presenter.state.isCookingScreenPresented) {
                 if case .success(let recipe) = presenter.state.recipe {
-                    CookingScreen<Environment>(recipe: recipe)
+                    CookingScreen(recipe: recipe)
                 }
             }
             .toolbar {
@@ -124,5 +124,5 @@ struct RecipeDetailScreen<Environment: EnvironmentProtocol>: View {
 }
 
 #Preview {
-    RecipeDetailScreen<MockEnvironment>(recipeID: "")
+    RecipeDetailScreen(recipeID: "")
 }

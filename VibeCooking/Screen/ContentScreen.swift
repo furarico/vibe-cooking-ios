@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-struct ContentScreen<Environment: EnvironmentProtocol>: View {
-    @State private var presenter = ContentPresenter<Environment>()
+struct ContentScreen: View {
+    @State private var presenter = ContentPresenter()
 
     var body: some View {
         NavigationStack {
-            RecipeListScreen<Environment>()
+            RecipeListScreen()
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button {
@@ -24,12 +24,12 @@ struct ContentScreen<Environment: EnvironmentProtocol>: View {
                 }
         }
         .sheet(isPresented: $presenter.state.isVibeCookingListPresented) {
-            VibeCookingListScreen<Environment>() { recipeIDs in
+            VibeCookingListScreen() { recipeIDs in
                 presenter.dispatch(.onStartVibeCookingButtonTapped(recipeIDs: recipeIDs))
             }
         }
         .fullScreenCover(isPresented: $presenter.state.isVibeCookingPresented) {
-            VibeCookingScreen<Environment>(
+            VibeCookingScreen(
                 recipeIDs: presenter.state.vibeCookingListRecipeIDs
             )
         }
@@ -37,5 +37,5 @@ struct ContentScreen<Environment: EnvironmentProtocol>: View {
 }
 
 #Preview {
-    ContentScreen<MockEnvironment>()
+    ContentScreen()
 }

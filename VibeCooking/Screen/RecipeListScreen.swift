@@ -7,13 +7,13 @@
 
 import SwiftUI
 
-struct RecipeListScreen<Environment: EnvironmentProtocol>: View {
-    @State private var presenter = RecipeListPresenter<Environment>()
+struct RecipeListScreen: View {
+    @State private var presenter = RecipeListPresenter()
 
     var body: some View {
         content
             .navigationDestination(for: Components.Schemas.Recipe.self) { recipe in
-                RecipeDetailScreen<Environment>(recipeID: recipe.id)
+                RecipeDetailScreen(recipeID: recipe.id)
             }
             .task {
                 await presenter.dispatch(.onAppear)
@@ -55,5 +55,5 @@ struct RecipeListScreen<Environment: EnvironmentProtocol>: View {
 }
 
 #Preview {
-    RecipeListScreen<MockEnvironment>()
+    RecipeListScreen()
 }

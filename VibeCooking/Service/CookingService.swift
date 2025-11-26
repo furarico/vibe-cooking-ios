@@ -5,14 +5,18 @@
 //  Created by Kanta Oikawa on 2025/06/19.
 //
 
+import Dependencies
 import Foundation
 
-final actor CookingService<Environment: EnvironmentProtocol> {
+final actor CookingService {
+    @Dependency(\.audioRepository) private var audioRepository
+    @Dependency(\.speechRecognitionRepository) private var speechRecognitionRepository
+
     func startListening() async -> AsyncStream<VoiceCommand> {
-        await Environment.shared.audioRepository.stopAudio()
+        await audioRepository.stopAudio()
         return AsyncStream { continuation in
             Task {
-                for await result in await Environment.shared.speechRecognitionRepository.startTranscribing() {
+                for await result in try await speechRecognitionRepository.startTranscribing() {
                     switch result {
                     case .success(let transcript):
                         Logger.debug(transcript)
@@ -28,14 +32,14 @@ final actor CookingService<Environment: EnvironmentProtocol> {
     }
 
     func playAudio(url: URL, onFinished: @escaping @Sendable () -> Void) async throws {
-        await Environment.shared.speechRecognitionRepository.stopTranscribing()
+        await speechRecognitionRepository.stopTranscribing()
         Logger.debug("Playing audio from \(url)")
-        await Environment.shared.audioRepository.stopAudio()
-        try await Environment.shared.audioRepository.playAudio(from: url, onFinished: onFinished)
+        await audioRepository.stopAudio()
+        try await audioRepository.playAudio(url: url, onFinished: onFinished)
     }
 
     func stopAll() async {
-        await Environment.shared.speechRecognitionRepository.stopTranscribing()
-        await Environment.shared.audioRepository.stopAudio()
+        await speechRecognitionRepository.stopTranscribing()
+        await audioRepository.stopAudio()
     }
 }

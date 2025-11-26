@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct VibeCookingScreen<Environment: EnvironmentProtocol>: View {
+struct VibeCookingScreen: View {
     @SwiftUI.Environment(\.dismiss) private var dismiss
-    @State private var presenter: VibeCookingPresenter<Environment>
+    @State private var presenter: VibeCookingPresenter
 
     init(recipeIDs: [String]) {
         self.presenter = .init(recipeIDs: recipeIDs)
@@ -145,5 +145,5 @@ struct VibeCookingScreen<Environment: EnvironmentProtocol>: View {
 }
 
 #Preview {
-    VibeCookingScreen<MockEnvironment>(recipeIDs: [])
+    VibeCookingScreen(recipeIDs: [])
 }

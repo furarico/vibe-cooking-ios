@@ -11,7 +11,7 @@ import Observation
 import SwiftUI
 
 @Observable
-final class CookingPresenter<Environment: EnvironmentProtocol>: PresenterProtocol {
+final class CookingPresenter: PresenterProtocol {
     struct State: Equatable {
         var recipe: Components.Schemas.Recipe
         var currentInstructionStep: Int {
@@ -39,7 +39,7 @@ final class CookingPresenter<Environment: EnvironmentProtocol>: PresenterProtoco
 
     var state: State
 
-    private let cookingService = CookingService<Environment>()
+    private let cookingService = CookingService()
 
     init(recipe: Components.Schemas.Recipe) {
         state = .init(recipe: recipe)

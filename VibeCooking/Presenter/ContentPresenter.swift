@@ -8,7 +8,7 @@
 import Observation
 
 @Observable
-final class ContentPresenter<Environment: EnvironmentProtocol>: PresenterProtocol {
+final class ContentPresenter: PresenterProtocol {
     struct State: Equatable {
         var isVibeCookingListPresented = false
         var isVibeCookingPresented = false
@@ -22,7 +22,7 @@ final class ContentPresenter<Environment: EnvironmentProtocol>: PresenterProtoco
 
     var state = State()
 
-    private let vibeCookingListService = VibeCookingListService<Environment>()
+    private let vibeCookingListService = VibeCookingListService()
 
     func dispatch(_ action: Action) {
         Task {

@@ -82,7 +82,7 @@ extension RecipeRepository: DependencyKey {
     private static func fetchRecipe(id: String) async throws -> Components.Schemas.Recipe {
         do {
             let client = try await Client.build()
-            let response = try await client.getRecipesId(path: .init(id: id))
+            let response = try await client.getRecipeById(path: .init(id: id))
             switch response {
             case .ok(let okResponse):
                 if case let .json(value) = okResponse.body {
@@ -131,7 +131,7 @@ extension RecipeRepository: DependencyKey {
     private static func fetchVibeRecipe(recipeIDs: [String]) async throws -> Components.Schemas.VibeRecipe {
         do {
             let client = try await Client.build()
-            let response = try await client.postVibeRecipe(body: .json(.init(recipeIds: recipeIDs)))
+            let response = try await client.createVibeRecipe(body: .json(.init(recipeIds: recipeIDs)))
             switch response {
             case .ok(let okResponse):
                 if case let .json(value) = okResponse.body {

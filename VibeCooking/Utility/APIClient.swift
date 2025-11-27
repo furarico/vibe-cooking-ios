@@ -10,7 +10,7 @@ import OpenAPIURLSession
 extension Client {
     static func build() async throws -> Client {
         return Client(
-            serverURL: try Servers.Server1.url(),
+            serverURL: try Servers.Server4.url(),
             configuration: .init(dateTranscoder: .iso8601WithFractionalSeconds),
             transport: URLSessionTransport(),
             middlewares: [AuthMiddleware()]

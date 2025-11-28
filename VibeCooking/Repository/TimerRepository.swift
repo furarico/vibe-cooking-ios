@@ -12,18 +12,14 @@ import DependenciesMacros
 @DependencyClient
 struct TimerRepository {
     var requestAuthorization: @Sendable () async throws -> AlarmManager.AuthorizationState
-    var getAlarms: @Sendable () throws -> [Alarm]
-    var scheduleAlarm: @Sendable (_ interval: TimeInterval) async throws -> UUID
-    var cancelAllAlarms: @Sendable () async throws -> Void
+    var scheduleAlarm: @Sendable (_ interval: TimeInterval) async throws -> Alarm.ID
+    var cancelAlarm: @Sendable (_ id: Alarm.ID) async throws -> Void
 }
 
 extension TimerRepository: DependencyKey {
     static let liveValue = TimerRepository(
         requestAuthorization: {
             try await AlarmManager.shared.requestAuthorization()
-        },
-        getAlarms: {
-            try AlarmManager.shared.alarms
         },
         scheduleAlarm: { interval in
             let stopButton = AlarmButton(
@@ -54,24 +50,16 @@ extension TimerRepository: DependencyKey {
                 countdownDuration: countdownDuration,
                 attributes: attributes
             )
-            try await cancelAllAlarms()
-            let id = UUID()
-            _ = try await AlarmManager.shared.schedule(
-                id: id,
+            let alarm = try await AlarmManager.shared.schedule(
+                id: UUID(),
                 configuration: configuration
             )
-            return id
+            return alarm.id
         },
-        cancelAllAlarms: {
-            try await cancelAllAlarms()
+        cancelAlarm: { id in
+            try AlarmManager.shared.cancel(id: id)
         }
     )
-
-    private static func cancelAllAlarms() async throws {
-        for alarm in try AlarmManager.shared.alarms {
-            try AlarmManager.shared.cancel(id: alarm.id)
-        }
-    }
 }
 
 extension DependencyValues {

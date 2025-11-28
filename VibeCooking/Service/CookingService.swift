@@ -47,7 +47,10 @@ final actor CookingService {
 
     func startTimer(interval: TimeInterval) async throws -> Alarm.ID {
         _ = try await timerRepository.requestAuthorization()
-        try await timerRepository.cancelAllAlarms()
         return try await timerRepository.scheduleAlarm(interval: interval)
+    }
+
+    func stopTimer(of id: Alarm.ID) async throws {
+        try await timerRepository.cancelAlarm(id: id)
     }
 }

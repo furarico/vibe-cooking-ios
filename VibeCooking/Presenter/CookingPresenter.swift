@@ -27,6 +27,7 @@ final class CookingPresenter: PresenterProtocol {
         case onDisappear
         case onInstructionChanged
         case onStartTimerButtonTapped
+        case onStopTimerButtonTapped
     }
 
     var state: State
@@ -56,6 +57,9 @@ final class CookingPresenter: PresenterProtocol {
 
         case .onStartTimerButtonTapped:
             await onStartTimerButtonTapped()
+
+        case .onStopTimerButtonTapped:
+            await onStopTimerButtonTapped()
         }
     }
 }
@@ -78,6 +82,10 @@ private extension CookingPresenter {
     func onStartTimerButtonTapped() async {
         await startTimer()
     }
+
+    func onStopTimerButtonTapped() async {
+        await stopTimer()
+    }
 }
 
 private extension CookingPresenter {
@@ -98,6 +106,8 @@ private extension CookingPresenter {
                 await playAudio()
             case .startTimer:
                 await startTimer()
+            case .stopTimer:
+                await stopTimer()
             case .none:
                 break
             }
@@ -127,6 +137,7 @@ private extension CookingPresenter {
         else {
             return
         }
+        Logger.debug("Starting timer for instruction: \(instruction.id)")
         do {
             let alarmID = try await cookingService.startTimer(interval: interval)
             let now = Date()
@@ -140,5 +151,23 @@ private extension CookingPresenter {
         } catch {
             Logger.error(error)
         }
+        Logger.debug("Started timer for instruction: \(instruction.id)")
+    }
+
+    func stopTimer() async {
+        guard
+            let instruction = state.currentInstruction,
+            let timer = state.cookingTimers.first(where: { $0.instructionID == instruction.id })
+        else {
+            return
+        }
+        Logger.debug("Stopping timer for instruction: \(instruction.id)")
+        do {
+            try await cookingService.stopTimer(of: timer.alarmID)
+            state.cookingTimers.removeAll(where: { $0.instructionID == instruction.id })
+        } catch {
+            Logger.error(error)
+        }
+        Logger.debug("Stopped timer for instruction: \(instruction.id)")
     }
 }

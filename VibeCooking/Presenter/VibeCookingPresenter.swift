@@ -115,6 +115,8 @@ private extension VibeCookingPresenter {
                 await playAudio()
             case .startTimer:
                 break
+            case .stopTimer:
+                break
             case .none:
                 break
             }

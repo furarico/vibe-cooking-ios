@@ -75,6 +75,7 @@ struct CookingScreen: View {
     private var timerControl: some View {
         if let timerInterval = presenter.state.currentInstruction?.timerDuration {
             TimerPopup(interval: timerInterval) {
+                presenter.dispatch(.onStartTimerButtonTapped)
             }
         }
     }

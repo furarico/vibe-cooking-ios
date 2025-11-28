@@ -176,7 +176,7 @@ private extension VibeCookingPresenter {
                 if state.currentInstructionStep < instructions.count {
                     state.currentInstructionStep += 1
                 }
-            case ._repeat:
+            case .again:
                 break
             case .none:
                 break

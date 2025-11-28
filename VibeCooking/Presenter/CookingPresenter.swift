@@ -107,7 +107,7 @@ private extension CookingPresenter {
                 if state.currentInstructionStep < state.recipe.instructions.count {
                     state.currentInstructionStep += 1
                 }
-            case ._repeat:
+            case .again:
                 break
             case .none:
                 break

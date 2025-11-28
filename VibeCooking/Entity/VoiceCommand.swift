@@ -10,7 +10,7 @@ import Foundation
 enum VoiceCommand: String, Codable, CaseIterable {
     case goBack
     case goForward
-    case _repeat
+    case again
     case none
 
     var triggerPhrase: [String] {
@@ -42,7 +42,7 @@ enum VoiceCommand: String, Codable, CaseIterable {
                 "うぃシェフ",
                 "ウィシェフ",
             ]
-        case ._repeat:
+        case .again:
             return [
                 "もう一度",
                 "もういちど",

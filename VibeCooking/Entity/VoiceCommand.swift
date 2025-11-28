@@ -11,6 +11,7 @@ enum VoiceCommand: String, Codable, CaseIterable {
     case goBack
     case goForward
     case again
+    case startTimer
     case none
 
     var triggerPhrase: [String] {
@@ -29,6 +30,7 @@ enum VoiceCommand: String, Codable, CaseIterable {
                 "もどって",
                 "戻って",
             ]
+
         case .goForward:
             return [
                 "次",
@@ -42,6 +44,7 @@ enum VoiceCommand: String, Codable, CaseIterable {
                 "うぃシェフ",
                 "ウィシェフ",
             ]
+
         case .again:
             return [
                 "もう一度",
@@ -59,6 +62,14 @@ enum VoiceCommand: String, Codable, CaseIterable {
                 "もういっかい",
                 "もういっちょう",
                 "もう一回",
+            ]
+
+        case .startTimer:
+            return [
+                "タイマー",
+                "スタート",
+                "タイマースタート",
+                "タイマー開始",
             ]
 
         case .none:

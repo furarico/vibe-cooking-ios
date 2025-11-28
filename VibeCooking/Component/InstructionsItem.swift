@@ -25,6 +25,7 @@ struct InstructionsItem: View {
             }
             .padding(.vertical, 2)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

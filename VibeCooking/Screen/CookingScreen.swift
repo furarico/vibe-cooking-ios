@@ -76,7 +76,9 @@ struct CookingScreen: View {
 
     @ViewBuilder
     private var timerControl: some View {
-        TimerPopup(interval: 60) {
+        if let timerInterval = presenter.state.timerInterval {
+            TimerPopup(interval: timerInterval) {
+            }
         }
     }
 }

@@ -29,6 +29,16 @@ final class CookingPresenter: PresenterProtocol {
         }
         var currentInstructionID: Components.Schemas.Instruction.ID? = nil
         var isRecognizingVoice: Bool = false
+        var timerInterval: TimeInterval? {
+            guard
+                let currentInstruction = recipe.instructions.first(where: { $0.id == currentInstructionID }),
+                let durationString = currentInstruction.timerDuration
+            else {
+                return nil
+            }
+            print(durationString)
+            return TimeInterval(durationString)
+        }
     }
 
     enum Action {

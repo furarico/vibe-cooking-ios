@@ -11,6 +11,7 @@ import Foundation
 final actor CookingService {
     @Dependency(\.audioRepository) private var audioRepository
     @Dependency(\.speechRecognitionRepository) private var speechRecognitionRepository
+    @Dependency(\.timerRepository) private var timerRepository
 
     func startListening() async -> AsyncStream<VoiceCommand> {
         await audioRepository.stopAudio()
@@ -41,5 +42,15 @@ final actor CookingService {
     func stopAll() async {
         await speechRecognitionRepository.stopTranscribing()
         await audioRepository.stopAudio()
+    }
+
+    func startTimer(interval: TimeInterval) async throws {
+        _ = try await timerRepository.requestAuthorization()
+        try await timerRepository.cancelAllAlarms()
+        _ = try await timerRepository.scheduleAlarm(interval: interval)
+    }
+
+    func stopTimer() async throws {
+        try await timerRepository.cancelAllAlarms()
     }
 }

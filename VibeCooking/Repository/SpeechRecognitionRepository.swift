@@ -18,6 +18,7 @@ enum TranscriptionResult {
 struct SpeechRecognitionRepository {
     var startTranscribing: @Sendable () async throws -> AsyncStream<TranscriptionResult>
     var stopTranscribing: @Sendable () async -> Void
+    var clearTranscriptions: @Sendable () async throws -> Void
 }
 
 extension SpeechRecognitionRepository: DependencyKey {
@@ -25,10 +26,13 @@ extension SpeechRecognitionRepository: DependencyKey {
         let helper = SpeechRecognitionHelper()
         return SpeechRecognitionRepository(
             startTranscribing: {
-                await helper.startTranscribing()
+                try await helper.startTranscribing()
             },
             stopTranscribing: {
                 await helper.stopTranscribing()
+            },
+            clearTranscriptions: {
+                try await helper.clearTranscriptions()
             }
         )
     }()

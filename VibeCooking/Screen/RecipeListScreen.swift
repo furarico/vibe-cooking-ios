@@ -12,7 +12,7 @@ struct RecipeListScreen: View {
 
     var body: some View {
         content
-            .navigationDestination(for: Components.Schemas.Recipe.self) { recipe in
+            .navigationDestination(for: Recipe.self) { recipe in
                 RecipeDetailScreen(recipeID: recipe.id)
             }
             .task {

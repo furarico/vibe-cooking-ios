@@ -8,52 +8,28 @@
 import SwiftUI
 
 struct InstructionsItem: View {
-    private let instruction: Components.Schemas.Instruction
-
-    init(instruction: Components.Schemas.Instruction) {
-        self.instruction = instruction
-    }
+    let instruction: Instruction
 
     var body: some View {
-        if !instruction.title.isEmpty {
+        HStack(alignment: .top) {
+            StepBadge(step: instruction.step)
+
             VStack(alignment: .leading, spacing: 8) {
-                HStack(alignment: .center, spacing: 8) {
-                    StepBadge(step: instruction.step)
-
-                    Text(instruction.title)
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(.primary)
-
-                    Spacer()
-                }
-
-                HStack {
-                    Spacer()
-                        .frame(width: 40)
-
-                    Text(instruction.description)
-                        .font(.system(size: 14))
-                        .foregroundColor(.primary)
-                        .multilineTextAlignment(.leading)
-
-                    Spacer()
-                }
-            }
-        } else {
-            HStack(alignment: .top, spacing: 8) {
-                StepBadge(step: instruction.step)
-
-                Text(instruction.description)
-                    .font(.system(size: 14))
-                    .foregroundColor(.primary)
+                Text(instruction.title)
+                    .font(.title2)
+                    .bold()
                     .multilineTextAlignment(.leading)
 
-                Spacer()
+                Text(instruction.description)
+                    .multilineTextAlignment(.leading)
             }
+            .padding(.vertical, 2)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
 #Preview {
-    InstructionsItem(instruction: Components.Schemas.Instruction.stub0)
+    InstructionsItem(instruction: .stub0)
+        .padding()
 }

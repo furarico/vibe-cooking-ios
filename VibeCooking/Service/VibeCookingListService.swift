@@ -12,15 +12,15 @@ final actor VibeCookingListService {
     @Dependency(\.localRepository) private var localRepository
     @Dependency(\.recipeRepository) private var recipeRepository
 
-    func getRecipes() async throws -> [Components.Schemas.Recipe] {
+    func getRecipes() async throws -> [Recipe] {
         let recipeIDs: [String] = (try? await localRepository.getVibeCookingList()) ?? []
-        return try await withThrowingTaskGroup(returning: [Components.Schemas.Recipe].self) { [recipeRepository] group in
+        return try await withThrowingTaskGroup(of: Recipe.self, returning: [Recipe].self) { [recipeRepository] group in
             recipeIDs.forEach { id in
                 group.addTask {
                     try await recipeRepository.fetchRecipe(id: id)
                 }
             }
-            var recipes: [Components.Schemas.Recipe] = []
+            var recipes: [Recipe] = []
             for try await recipe in group {
                 recipes.append(recipe)
             }

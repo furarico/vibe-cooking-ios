@@ -7,35 +7,22 @@
 
 import Dependencies
 import DependenciesMacros
+import Foundation
 
 @DependencyClient
 struct RecipeRepository {
-    var fetchRecipes: @Sendable (
-        _ query: String?,
-        _ category: String?,
-        _ categoryID: String?,
-        _ tags: [String]?
-    ) async throws -> [Components.Schemas.Recipe]
-    var fetchRecipe: @Sendable (_ id: String) async throws -> Components.Schemas.Recipe
-    var fetchCategories: @Sendable () async throws -> [Components.Schemas.Category]
-    var fetchVibeRecipe: @Sendable (_ recipeIDs: [String]) async throws -> Components.Schemas.VibeRecipe
+    var fetchRecipes: @Sendable () async throws -> [Recipe]
+    var fetchRecipe: @Sendable (_ id: String) async throws -> Recipe
+    var fetchVibeRecipe: @Sendable (_ recipeIDs: [String]) async throws -> VibeRecipe
 }
 
 extension RecipeRepository: DependencyKey {
     static let liveValue: RecipeRepository = RecipeRepository(
-        fetchRecipes: { query, category, categoryID, tags in
-            try await RecipeRepository.fetchRecipes(
-                query: query,
-                category: category,
-                categoryID: categoryID,
-                tags: tags
-            )
+        fetchRecipes: {
+            try await RecipeRepository.fetchRecipes()
         },
         fetchRecipe: { id in
             try await RecipeRepository.fetchRecipe(id: id)
-        },
-        fetchCategories: {
-            try await RecipeRepository.fetchCategories()
         },
         fetchVibeRecipe: { recipeIDs in
             try await RecipeRepository.fetchVibeRecipe(recipeIDs: recipeIDs)
@@ -43,11 +30,11 @@ extension RecipeRepository: DependencyKey {
     )
 
     private static func fetchRecipes(
-        query: String?,
-        category: String?,
-        categoryID: String?,
-        tags: [String]?
-    ) async throws -> [Components.Schemas.Recipe] {
+        query: String? = nil,
+        category: String? = nil,
+        categoryID: String? = nil,
+        tags: [String]? = nil
+    ) async throws -> [Recipe] {
         do {
             let client = try await Client.build()
             let response = try await client.getRecipes(
@@ -63,7 +50,35 @@ extension RecipeRepository: DependencyKey {
             switch response {
             case .ok(let okResponse):
                 if case let .json(body) = okResponse.body {
-                    return body.recipes
+                    let apiRecipes = body.recipes
+                    return apiRecipes.map {
+                        Recipe(
+                            id: $0.id,
+                            title: $0.title,
+                            description: $0.description,
+                            ingredients: $0.ingredients.map {
+                                Ingredient(
+                                    id: $0.id,
+                                    name: $0.name,
+                                    amount: $0.amount,
+                                    unit: $0.unit,
+                                    notes: $0.notes
+                                )
+                            },
+                            instructions: $0.instructions.map {
+                                Instruction(
+                                    id: $0.id,
+                                    recipeID: $0.recipeId,
+                                    step: $0.step,
+                                    title: $0.title,
+                                    description: $0.description,
+                                    audioURL: $0.audioUrl.flatMap { URL(string: $0) },
+                                    timerDuration: $0.timerDuration
+                                )
+                            },
+                            imageURL: $0.imageUrl.flatMap { URL(string: $0) }
+                        )
+                    }
                 }
                 throw RepositoryError.invalidResponseBody(okResponse.body)
 
@@ -79,14 +94,39 @@ extension RecipeRepository: DependencyKey {
         }
     }
 
-    private static func fetchRecipe(id: String) async throws -> Components.Schemas.Recipe {
+    private static func fetchRecipe(id: String) async throws -> Recipe {
         do {
             let client = try await Client.build()
             let response = try await client.getRecipeById(path: .init(id: id))
             switch response {
             case .ok(let okResponse):
                 if case let .json(value) = okResponse.body {
-                    return value
+                    return Recipe(
+                        id: value.id,
+                        title: value.title,
+                        description: value.description,
+                        ingredients: value.ingredients.map {
+                            Ingredient(
+                                id: $0.id,
+                                name: $0.name,
+                                amount: $0.amount,
+                                unit: $0.unit,
+                                notes: $0.notes
+                            )
+                        },
+                        instructions: value.instructions.map {
+                            Instruction(
+                                id: $0.id,
+                                recipeID: $0.recipeId,
+                                step: $0.step,
+                                title: $0.title,
+                                description: $0.description,
+                                audioURL: $0.audioUrl.flatMap { URL(string: $0) },
+                                timerDuration: $0.timerDuration
+                            )
+                        },
+                        imageURL: value.imageUrl.flatMap { URL(string: $0) }
+                    )
                 }
                 throw RepositoryError.invalidResponseBody(okResponse.body)
 
@@ -105,43 +145,20 @@ extension RecipeRepository: DependencyKey {
         }
     }
 
-    private static func fetchCategories() async throws -> [Components.Schemas.Category] {
-        do {
-            let client = try await Client.build()
-            let response = try await client.getCategories()
-            switch response {
-            case .ok(let okResponse):
-                if case let .json(body) = okResponse.body {
-                    return body.categories
-                }
-                throw RepositoryError.invalidResponseBody(okResponse.body)
-
-            case .undocumented(let statusCode, let payload):
-                throw RepositoryError.server(.init(rawValue: statusCode), payload)
-            }
-        } catch let error as RepositoryError {
-            Logger.error("RepositoryError: \(error.localizedDescription)")
-            throw error
-        } catch {
-            Logger.error("RepositoryError: \(error)")
-            throw error
-        }
-    }
-
-    private static func fetchVibeRecipe(recipeIDs: [String]) async throws -> Components.Schemas.VibeRecipe {
+    private static func fetchVibeRecipe(recipeIDs: [String]) async throws -> VibeRecipe {
         do {
             let client = try await Client.build()
             let response = try await client.createVibeRecipe(body: .json(.init(recipeIds: recipeIDs)))
             switch response {
             case .ok(let okResponse):
                 if case let .json(value) = okResponse.body {
-                    return value
+                    return try await translateToVibeRecipe(from: value)
                 }
                 throw RepositoryError.invalidResponseBody(okResponse.body)
 
             case .created(let okResponse):
                 if case let .json(value) = okResponse.body {
-                    return value
+                    return try await translateToVibeRecipe(from: value)
                 }
                 throw RepositoryError.invalidResponseBody(okResponse.body)
 
@@ -158,6 +175,43 @@ extension RecipeRepository: DependencyKey {
             Logger.error("RepositoryError: \(error)")
             throw error
         }
+    }
+
+    private static func translateToVibeRecipe(from response: Components.Schemas.VibeRecipe) async throws -> VibeRecipe {
+        let recipes = try await withThrowingTaskGroup(of: Recipe.self, returning: [Recipe].self) { group in
+            response.recipeIds.forEach { recipeID in
+                group.addTask {
+                    try await fetchRecipe(id: recipeID)
+                }
+            }
+            var recipes: [Recipe] = []
+            for try await recipe in group {
+                recipes.append(recipe)
+            }
+            return recipes
+        }
+        return VibeRecipe(
+            id: response.id,
+            recipes: recipes,
+            instructions: response.vibeInstructions.compactMap { vibeInstruction in
+                guard
+                    let recipe = recipes.first(where: { $0.id == vibeInstruction.recipeId }),
+                    let recipeInstruction = recipe.instructions.first(where: { $0.id == vibeInstruction.instructionId })
+                else {
+                    return nil
+                }
+
+                return Instruction(
+                    id: vibeInstruction.id,
+                    recipeID: vibeInstruction.recipeId,
+                    step: vibeInstruction.step,
+                    title: recipeInstruction.title,
+                    description: recipeInstruction.description,
+                    audioURL: recipeInstruction.audioURL,
+                    timerDuration: recipeInstruction.timerDuration
+                )
+            }
+        )
     }
 }
 

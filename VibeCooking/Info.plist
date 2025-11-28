@@ -7,5 +7,7 @@
 		<string>en</string>
 		<string>ja</string>
 	</array>
+	<key>NSAlarmKitUsageDescription</key>
+	<string>Set a timer when instructions need to set a timer.</string>
 </dict>
 </plist>

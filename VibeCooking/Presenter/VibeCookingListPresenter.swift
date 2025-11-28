@@ -11,7 +11,7 @@ import Observation
 @Observable
 final class VibeCookingListPresenter: PresenterProtocol {
     struct State: Equatable {
-        var recipes: DataState<[Components.Schemas.Recipe], DomainError> = .idle
+        var recipes: DataState<[Recipe], DomainError> = .idle
     }
 
     enum Action: Equatable {

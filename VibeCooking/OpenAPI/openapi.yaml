@@ -199,6 +199,15 @@ components:
         estimatedTime:
           type: integer
           description: この手順の推定時間（分）
+        timerDuration:
+          type: number
+          format: double
+          description: |-
+            タイマーの所要時間 (秒)
+
+            タイマーセットが必要な手順のみ値を返却
+
+            タイマーセットが必要ない場合はnull
     Recipe:
       type: object
       required:

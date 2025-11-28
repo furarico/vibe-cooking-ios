@@ -55,7 +55,7 @@ struct RecipeDetailScreen: View {
             ZStack {
                 ScrollView {
                     VStack(spacing: 24) {
-                        LazyImage(url: URL(string: recipe.imageUrl ?? "")) { state in
+                        LazyImage(url: recipe.imageURL) { state in
                             if let image = state.image {
                                 image
                                     .resizable()

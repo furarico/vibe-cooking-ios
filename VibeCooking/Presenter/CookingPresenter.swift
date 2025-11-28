@@ -5,43 +5,36 @@
 //  Created by Kanta Oikawa on 2025/06/19.
 //
 
-import AVFoundation
-import Foundation
 import Observation
 import SwiftUI
 
 @Observable
 final class CookingPresenter: PresenterProtocol {
     struct State: Equatable {
-        var recipe: Components.Schemas.Recipe
-        var currentInstructionStep: Int {
+        var recipe: Recipe
+        var currentStep: Int? = 1
+        var currentInstruction: Instruction? {
             get {
-                (recipe.instructions.firstIndex(where: {
-                    $0.id == currentInstructionID
-                }) ?? 0) + 1
-            }
-            set {
-                guard newValue >= 1, newValue <= recipe.instructions.count else { return }
-                currentInstructionID = recipe.instructions.first(where: {
-                    $0.step == newValue
-                })?.id
+                recipe.instructions.first { $0.step == currentStep }
             }
         }
-        var currentInstructionID: Components.Schemas.Instruction.ID? = nil
         var isRecognizingVoice: Bool = false
+        var cookingTimers: [CookingTimer] = []
     }
 
     enum Action {
         case onAppear
         case onDisappear
-        case onInstructionChanged(Components.Schemas.Instruction)
+        case onInstructionChanged
+        case onStartTimerButtonTapped
+        case onStopTimerButtonTapped
     }
 
     var state: State
 
     private let cookingService = CookingService()
 
-    init(recipe: Components.Schemas.Recipe) {
+    init(recipe: Recipe) {
         state = .init(recipe: recipe)
     }
 
@@ -59,8 +52,14 @@ final class CookingPresenter: PresenterProtocol {
         case .onDisappear:
             await onDisappear()
 
-        case .onInstructionChanged(let instruction):
-            await onInstructionChanged(instruction: instruction)
+        case .onInstructionChanged:
+            await onInstructionChanged()
+
+        case .onStartTimerButtonTapped:
+            await onStartTimerButtonTapped()
+
+        case .onStopTimerButtonTapped:
+            await onStopTimerButtonTapped()
         }
     }
 }
@@ -68,10 +67,7 @@ final class CookingPresenter: PresenterProtocol {
 private extension CookingPresenter {
     func onAppear() async {
         UIApplication.shared.isIdleTimerDisabled = true
-        guard let instruction = state.recipe.instructions.sorted(by: { $0.step < $1.step }).first else {
-            return
-        }
-        await playAudio(of: instruction)
+        await playAudio()
     }
 
     func onDisappear() async {
@@ -79,35 +75,65 @@ private extension CookingPresenter {
         await cookingService.stopAll()
     }
 
-    func onInstructionChanged(instruction: Components.Schemas.Instruction) async {
-        await playAudio(of: instruction)
+    func onInstructionChanged() async {
+        await playAudio()
+    }
+
+    func onStartTimerButtonTapped() async {
+        await startTimer()
+    }
+
+    func onStopTimerButtonTapped() async {
+        await stopTimer()
     }
 }
 
 private extension CookingPresenter {
     func startSpeechRecognition() async {
         state.isRecognizingVoice = true
+        let currentStep = state.currentStep ?? 1
         for await voiceCommand in await cookingService.startListening() {
             switch voiceCommand {
             case .goBack:
-                if state.currentInstructionStep > 1 {
-                    state.currentInstructionStep -= 1
+                if currentStep > 1 {
+                    state.currentStep = currentStep - 1
                 }
+
             case .goForward:
-                if state.currentInstructionStep < state.recipe.instructions.count {
-                    state.currentInstructionStep += 1
+                if currentStep < state.recipe.instructions.count {
+                    state.currentStep = currentStep + 1
                 }
-            case ._repeat:
-                break
+
+            case .again:
+                await playAudio()
+
+            case .startTimer:
+                await startTimer()
+
+            case .stopTimer:
+                await stopTimer()
+
             case .none:
+                break
+            }
+
+            switch voiceCommand {
+            case .goBack, .goForward, .again, .startTimer, .stopTimer:
+                do {
+                    try await cookingService.clearTranscriptions()
+                } catch {
+                    Logger.error(error)
+                }
+
+            default:
                 break
             }
         }
     }
 
-    func playAudio(of instruction: Components.Schemas.Instruction) async {
+    func playAudio() async {
         state.isRecognizingVoice = false
-        guard let url = URL(string: instruction.audioUrl ?? "") else {
+        guard let url = state.currentInstruction?.audioURL else {
             return
         }
         do {
@@ -119,5 +145,50 @@ private extension CookingPresenter {
         } catch {
             Logger.error(error)
         }
+    }
+
+    func startTimer() async {
+        guard
+            let instruction = state.currentInstruction,
+            let interval = instruction.timerDuration
+        else {
+            return
+        }
+        Logger.debug("Starting timer for instruction: \(instruction.id)")
+        do {
+            guard
+                let alarmID = try await cookingService.startTimer(for: instruction)
+            else {
+                return
+            }
+            let now = Date()
+            let duration = now..<now.addingTimeInterval(interval)
+            let cookingTimer = CookingTimer(
+                alarmID: alarmID,
+                instructionID: instruction.id,
+                duration: duration
+            )
+            state.cookingTimers.append(cookingTimer)
+        } catch {
+            Logger.error(error)
+        }
+        Logger.debug("Started timer for instruction: \(instruction.id)")
+    }
+
+    func stopTimer() async {
+        guard
+            let instruction = state.currentInstruction,
+            let timer = state.cookingTimers.first(where: { $0.instructionID == instruction.id })
+        else {
+            return
+        }
+        Logger.debug("Stopping timer for instruction: \(instruction.id)")
+        do {
+            try await cookingService.stopTimer(of: timer.alarmID)
+            state.cookingTimers.removeAll(where: { $0.instructionID == instruction.id })
+        } catch {
+            Logger.error(error)
+        }
+        Logger.debug("Stopped timer for instruction: \(instruction.id)")
     }
 }

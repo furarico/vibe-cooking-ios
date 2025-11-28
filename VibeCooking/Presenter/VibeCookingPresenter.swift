@@ -11,56 +11,35 @@ import SwiftUI
 @Observable
 final class VibeCookingPresenter: PresenterProtocol {
     struct State: Equatable {
-        var vibeRecipe: DataState<Components.Schemas.VibeRecipe, DomainError> = .idle
-        var recipes: DataState<[Components.Schemas.Recipe], DomainError> = .idle
-        var instructions: DataState<[Components.Schemas.Instruction], DomainError> = .idle
-        var currentRecipe: Components.Schemas.Recipe? {
+        var vibeRecipe: DataState<VibeRecipe, DomainError> = .idle
+        var currentStep: Int? = 1
+        var currentInstruction: Instruction? {
             get {
-                guard case let .success(recipes) = recipes else {
-                    return nil
-                }
-                return recipes.first(where: { $0.instructions.map(\.id).contains(currentInstructionID) })
+                vibeRecipe.value?.instructions.first { $0.step == currentStep }
             }
         }
-        var currentInstructionStep: Int {
-            get {
-                guard case let .success(instructions) = instructions else {
-                    return 1
-                }
-                return (instructions.firstIndex(where: {
-                    $0.id == currentInstructionID
-                }) ?? 0) + 1
-            }
-            set {
-                guard case let .success(instructions) = instructions else {
-                    return
-                }
-                guard newValue >= 1, newValue <= instructions.count else { return }
-                currentInstructionID = instructions.first(where: {
-                    $0.step == newValue
-                })?.id
-            }
-        }
-        var currentInstructionID: Components.Schemas.Instruction.ID? = nil
         var isRecognizingVoice: Bool = false
+        var cookingTimers: [CookingTimer] = []
     }
 
     enum Action: Equatable {
         case onAppear
         case onDisappear
-        case onInstructionChanged(instruction: Components.Schemas.Instruction)
+        case onInstructionChanged
+        case onStartTimerButtonTapped
+        case onStopTimerButtonTapped
     }
 
     var state = State()
 
     private let recipeIDs: [String]
 
+    private let cookingService = CookingService()
+    private let recipeService = RecipeService()
+
     init(recipeIDs: [String]) {
         self.recipeIDs = recipeIDs
     }
-
-    private let cookingService = CookingService()
-    private let recipeService = RecipeService()
 
     func dispatch(_ action: Action) {
         Task {
@@ -76,21 +55,24 @@ final class VibeCookingPresenter: PresenterProtocol {
         case .onDisappear:
             await onDisappear()
 
-        case .onInstructionChanged(let instruction):
-            await onInstructionChanged(instruction: instruction)
+        case .onInstructionChanged:
+            await onInstructionChanged()
+
+        case .onStartTimerButtonTapped:
+            await onStartTimerButtonTapped()
+
+        case .onStopTimerButtonTapped:
+            await onStopTimerButtonTapped()
         }
     }
 }
 
 private extension VibeCookingPresenter {
     func onAppear() async {
-        UIApplication.shared.isIdleTimerDisabled = true
-        if recipeIDs.count > 3 {
+        if recipeIDs.count < 2 || recipeIDs.count > 3 {
             return
         }
         state.vibeRecipe = .loading
-        state.recipes = .loading
-        state.instructions = .loading
         do {
             let vibeRecipe = try await recipeService.getVibeRecipe(recipeIDs: recipeIDs)
             state.vibeRecipe = .success(vibeRecipe)
@@ -99,55 +81,8 @@ private extension VibeCookingPresenter {
             state.vibeRecipe = .failure(.init(error))
             return
         }
-        do {
-            let recipes = try await withThrowingTaskGroup(returning: [Components.Schemas.Recipe].self) { [weak self] group in
-                guard case let .success(vibeRecipe) = self?.state.vibeRecipe else {
-                    return []
-                }
-                vibeRecipe.recipeIds.forEach { recipeID in
-                    group.addTask { [weak self] in
-                        try await self?.recipeService.getRecipe(id: recipeID)
-                    }
-                }
-                var recipes: [Components.Schemas.Recipe] = []
-                for try await recipe in group {
-                    guard let recipe else {
-                        continue
-                    }
-                    recipes.append(recipe)
-                }
-                return recipes
-            }
-            state.recipes = .success(recipes)
-        } catch {
-            Logger.error(error)
-            state.recipes = .failure(.init(error))
-            return
-        }
-
-        guard
-            case let .success(vibeRecipe) = state.vibeRecipe,
-            case let .success(recipes) = state.recipes
-        else {
-            return
-        }
-        let recipeInstructions = recipes.flatMap { $0.instructions }
-        let instructions = vibeRecipe.vibeInstructions.sorted(by: { $0.step < $1.step }).map { vibeInstruction in
-            recipeInstructions.first {
-                $0.id == vibeInstruction.instructionId && $0.recipeId == vibeInstruction.recipeId
-            }
-        }.compactMap { $0 }
-        let resteppedInstructions = instructions.enumerated().map { index, instruction in
-            var instruction = instruction
-            instruction.step = index + 1
-            return instruction
-        }
-        state.instructions = .success(resteppedInstructions)
-
-        guard let instruction = resteppedInstructions.first else {
-            return
-        }
-        await playAudio(of: instruction)
+        UIApplication.shared.isIdleTimerDisabled = true
+        await playAudio()
     }
 
     func onDisappear() async {
@@ -155,38 +90,66 @@ private extension VibeCookingPresenter {
         await cookingService.stopAll()
     }
 
-    func onInstructionChanged(instruction: Components.Schemas.Instruction) async {
-        await playAudio(of: instruction)
+    func onInstructionChanged() async {
+        await playAudio()
+    }
+
+    func onStartTimerButtonTapped() async {
+        await startTimer()
+    }
+
+    func onStopTimerButtonTapped() async {
+        await stopTimer()
     }
 }
 
 private extension VibeCookingPresenter {
     func startSpeechRecognition() async {
         state.isRecognizingVoice = true
+        let currentStep = state.currentStep ?? 1
         for await voiceCommand in await cookingService.startListening() {
             switch voiceCommand {
             case .goBack:
-                if state.currentInstructionStep > 1 {
-                    state.currentInstructionStep -= 1
+                if currentStep > 1 {
+                    state.currentStep = currentStep - 1
                 }
+
             case .goForward:
-                guard case let .success(instructions) = state.instructions else {
-                    return
+                if let instructionsCount = state.vibeRecipe.value?.instructions.count,
+                   currentStep < instructionsCount {
+                    state.currentStep = currentStep + 1
                 }
-                if state.currentInstructionStep < instructions.count {
-                    state.currentInstructionStep += 1
-                }
-            case ._repeat:
-                break
+
+            case .again:
+                await playAudio()
+
+            case .startTimer:
+                await startTimer()
+
+            case .stopTimer:
+                await stopTimer()
+
             case .none:
+                break
+            }
+
+            switch voiceCommand {
+            case .goBack, .goForward, .again, .startTimer, .stopTimer:
+                do {
+                    try await cookingService.clearTranscriptions()
+                } catch {
+                    Logger.error(error)
+                }
+
+            default:
                 break
             }
         }
     }
 
-    func playAudio(of instruction: Components.Schemas.Instruction) async {
+    func playAudio() async {
         state.isRecognizingVoice = false
-        guard let url = URL(string: instruction.audioUrl ?? "") else {
+        guard let url = state.currentInstruction?.audioURL else {
             return
         }
         do {
@@ -198,5 +161,50 @@ private extension VibeCookingPresenter {
         } catch {
             Logger.error(error)
         }
+    }
+
+    func startTimer() async {
+        guard
+            let instruction = state.currentInstruction,
+            let interval = instruction.timerDuration
+        else {
+            return
+        }
+        Logger.debug("Starting timer for instruction: \(instruction.id)")
+        do {
+            guard
+                let alarmID = try await cookingService.startTimer(for: instruction)
+            else {
+                return
+            }
+            let now = Date()
+            let duration = now..<now.addingTimeInterval(interval)
+            let cookingTimer = CookingTimer(
+                alarmID: alarmID,
+                instructionID: instruction.id,
+                duration: duration
+            )
+            state.cookingTimers.append(cookingTimer)
+        } catch {
+            Logger.error(error)
+        }
+        Logger.debug("Started timer for instruction: \(instruction.id)")
+    }
+
+    func stopTimer() async {
+        guard
+            let instruction = state.currentInstruction,
+            let timer = state.cookingTimers.first(where: { $0.instructionID == instruction.id })
+        else {
+            return
+        }
+        Logger.debug("Stopping timer for instruction: \(instruction.id)")
+        do {
+            try await cookingService.stopTimer(of: timer.alarmID)
+            state.cookingTimers.removeAll(where: { $0.instructionID == instruction.id })
+        } catch {
+            Logger.error(error)
+        }
+        Logger.debug("Stopped timer for instruction: \(instruction.id)")
     }
 }

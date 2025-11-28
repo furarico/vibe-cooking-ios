@@ -10,7 +10,7 @@ import Observation
 @Observable
 final class RecipeListPresenter: PresenterProtocol {
     struct State: Equatable {
-        var recipes: DataState<[Components.Schemas.Recipe], DomainError> = .idle
+        var recipes: DataState<[Recipe], DomainError> = .idle
     }
 
     enum Action {

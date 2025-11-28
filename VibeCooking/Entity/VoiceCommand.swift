@@ -10,7 +10,9 @@ import Foundation
 enum VoiceCommand: String, Codable, CaseIterable {
     case goBack
     case goForward
-    case _repeat
+    case again
+    case startTimer
+    case stopTimer
     case none
 
     var triggerPhrase: [String] {
@@ -29,6 +31,7 @@ enum VoiceCommand: String, Codable, CaseIterable {
                 "もどって",
                 "戻って",
             ]
+
         case .goForward:
             return [
                 "次",
@@ -42,7 +45,8 @@ enum VoiceCommand: String, Codable, CaseIterable {
                 "うぃシェフ",
                 "ウィシェフ",
             ]
-        case ._repeat:
+
+        case .again:
             return [
                 "もう一度",
                 "もういちど",
@@ -59,6 +63,21 @@ enum VoiceCommand: String, Codable, CaseIterable {
                 "もういっかい",
                 "もういっちょう",
                 "もう一回",
+            ]
+
+        case .startTimer:
+            return [
+                "スタート",
+                "タイマースタート",
+                "タイマー開始",
+            ]
+
+        case .stopTimer:
+            return [
+                "ストップ",
+                "タイマーストップ",
+                "タイマー終了",
+                "タイマー停止",
             ]
 
         case .none:

@@ -8,11 +8,7 @@
 import SwiftUI
 
 struct IngredientsItem: View {
-    private let ingredient: Components.Schemas.Ingredient
-
-    init(ingredient: Components.Schemas.Ingredient) {
-        self.ingredient = ingredient
-    }
+    let ingredient: Ingredient
 
     var body: some View {
         HStack {
@@ -37,17 +33,17 @@ struct IngredientsItem: View {
 }
 
 #Preview {
-    IngredientsItem(ingredient: Components.Schemas.Ingredient.stub0)
+    IngredientsItem(ingredient: .stub0)
 }
 
 #Preview {
-    IngredientsItem(ingredient: Components.Schemas.Ingredient.stub1)
+    IngredientsItem(ingredient: .stub1)
 }
 
 #Preview {
-    IngredientsItem(ingredient: Components.Schemas.Ingredient.stub2)
+    IngredientsItem(ingredient: .stub2)
 }
 
 #Preview {
-    IngredientsItem(ingredient: Components.Schemas.Ingredient.stub3)
+    IngredientsItem(ingredient: .stub3)
 }

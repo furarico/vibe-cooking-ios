@@ -14,7 +14,8 @@ extension Components.Schemas.Instruction {
         description: "鶏もも肉を一口大に切り、玉ねぎを薄切りにします。",
         imageUrl: nil,
         audioUrl: nil,
-        estimatedTime: 10
+        estimatedTime: 10,
+        timerDuration: 300
     )
 
     static let stub1: Components.Schemas.Instruction = .init(

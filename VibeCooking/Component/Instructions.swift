@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct Instructions: View {
-    private let instructions: [Components.Schemas.Instruction]
+    private let instructions: [Instruction]
 
-    init(instructions: [Components.Schemas.Instruction]) {
+    init(instructions: [Instruction]) {
         self.instructions = instructions.sorted { $0.step < $1.step }
     }
 
@@ -30,5 +30,5 @@ struct Instructions: View {
 }
 
 #Preview {
-    Instructions(instructions: Components.Schemas.Instruction.stubs0)
+    Instructions(instructions: Instruction.stubs0)
 }

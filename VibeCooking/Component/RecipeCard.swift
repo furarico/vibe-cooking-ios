@@ -9,7 +9,7 @@ import NukeUI
 import SwiftUI
 
 struct RecipeCard: View {
-    let recipe: Components.Schemas.Recipe
+    let recipe: Recipe
     
     var body: some View {
         HStack(spacing: 16) {
@@ -35,25 +35,11 @@ struct RecipeCard: View {
                     .lineLimit(1)
                     .multilineTextAlignment(.leading)
             }
-            
-            let tagString = recipe.tags.map { "#\($0)" }.joined(separator: " ")
-            Text(tagString)
-                .font(.footnote)
-                .foregroundColor(.secondary)
-                .lineLimit(1)
-                .multilineTextAlignment(.leading)
-            
-            HStack(spacing: 4) {
-                Image(systemName: "clock")
-
-                Text("\(recipe.prepTime + recipe.cookTime) min")
-                    .font(.footnote)
-            }
         }
     }
     
     private var image: some View {
-        LazyImage(url: URL(string: recipe.imageUrl ?? "")) { state in
+        LazyImage(url: recipe.imageURL) { state in
             if let image = state.image {
                 image
                     .resizable()

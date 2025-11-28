@@ -12,7 +12,7 @@ final class ContentPresenter: PresenterProtocol {
     struct State: Equatable {
         var isVibeCookingListPresented = false
         var isVibeCookingPresented = false
-        var vibeCookingListRecipeIDs: [Components.Schemas.Recipe.ID] = []
+        var vibeCookingListRecipeIDs: [Recipe.ID] = []
     }
 
     enum Action: Equatable {

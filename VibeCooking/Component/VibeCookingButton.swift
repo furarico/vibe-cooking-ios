@@ -28,7 +28,6 @@ struct VibeCookingButton: View {
     }
 }
 
-@available(iOS 26.0, *)
 #Preview {
     VibeCookingButton("ボタン") {
     }

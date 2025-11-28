@@ -8,35 +8,20 @@
 import SwiftUI
 
 struct RecipeDetailHeader: View {
-    private let recipe: Components.Schemas.Recipe
-
-    init(recipe: Components.Schemas.Recipe) {
-        self.recipe = recipe
-    }
-
+    let recipe: Recipe
+    
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            VStack(alignment: .leading, spacing: 8) {
-                if !recipe.title.isEmpty {
-                    Text(recipe.title)
-                        .font(.title3)
-                        .bold()
-                }
-                
-                if !recipe.description.isEmpty {
-                    Text(recipe.description)
-                        .font(.footnote)
-                        .fontWeight(.medium)
-                }
+        VStack(alignment: .leading) {
+            if !recipe.title.isEmpty {
+                Text(recipe.title)
+                    .font(.title3)
+                    .bold()
             }
             
-            if !recipe.tags.isEmpty {
-                let tagString = recipe.tags.map { "#\($0)" }.joined(separator: " ")
-                Text(tagString)
+            if !recipe.description.isEmpty {
+                Text(recipe.description)
                     .font(.footnote)
-                    .foregroundColor(.secondary)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.leading)
+                    .fontWeight(.medium)
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)

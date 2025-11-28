@@ -5,6 +5,7 @@
 //  Created by Kanta Oikawa on 2025/06/19.
 //
 
+import AlarmKit
 import Dependencies
 import Foundation
 
@@ -44,13 +45,9 @@ final actor CookingService {
         await audioRepository.stopAudio()
     }
 
-    func startTimer(interval: TimeInterval) async throws {
+    func startTimer(interval: TimeInterval) async throws -> Alarm.ID {
         _ = try await timerRepository.requestAuthorization()
         try await timerRepository.cancelAllAlarms()
-        _ = try await timerRepository.scheduleAlarm(interval: interval)
-    }
-
-    func stopTimer() async throws {
-        try await timerRepository.cancelAllAlarms()
+        return try await timerRepository.scheduleAlarm(interval: interval)
     }
 }

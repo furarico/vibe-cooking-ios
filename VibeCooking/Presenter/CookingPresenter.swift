@@ -21,7 +21,7 @@ final class CookingPresenter: PresenterProtocol {
             }
         }
         var isRecognizingVoice: Bool = false
-        var timerDuration: Range<Date>?
+        var cookingTimers: [CookingTimer] = []
     }
 
     enum Action {
@@ -78,20 +78,7 @@ private extension CookingPresenter {
     }
 
     func onStartTimerButtonTapped() async {
-        guard
-            let instruction = state.currentInstruction,
-            let interval = instruction.timerDuration
-        else {
-            return
-        }
-        do {
-            try await cookingService.startTimer(interval: interval)
-        } catch {
-            Logger.error(error)
-        }
-
-        let now = Date()
-        state.timerDuration = now..<now.addingTimeInterval(interval)
+        await startTimer()
     }
 }
 
@@ -112,7 +99,7 @@ private extension CookingPresenter {
             case .again:
                 await playAudio()
             case .startTimer:
-                break
+                await startTimer()
             case .none:
                 break
             }
@@ -130,6 +117,28 @@ private extension CookingPresenter {
                     await self?.startSpeechRecognition()
                 }
             }
+        } catch {
+            Logger.error(error)
+        }
+    }
+
+    func startTimer() async {
+        guard
+            let instruction = state.currentInstruction,
+            let interval = instruction.timerDuration
+        else {
+            return
+        }
+        do {
+            let alarmID = try await cookingService.startTimer(interval: interval)
+            let now = Date()
+            let duration = now..<now.addingTimeInterval(interval)
+            let cookingTimer = CookingTimer(
+                alarmID: alarmID,
+                instructionID: instruction.id,
+                duration: duration
+            )
+            state.cookingTimers.append(cookingTimer)
         } catch {
             Logger.error(error)
         }

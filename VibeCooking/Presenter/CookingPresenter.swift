@@ -109,6 +109,8 @@ private extension CookingPresenter {
                 }
             case .again:
                 break
+            case .startTimer:
+                break
             case .none:
                 break
             }

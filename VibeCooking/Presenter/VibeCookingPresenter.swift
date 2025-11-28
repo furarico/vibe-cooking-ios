@@ -178,6 +178,8 @@ private extension VibeCookingPresenter {
                 }
             case .again:
                 break
+            case .startTimer:
+                break
             case .none:
                 break
             }

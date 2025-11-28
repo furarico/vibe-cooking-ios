@@ -73,3 +73,10 @@ extension TimerRepository: DependencyKey {
         }
     }
 }
+
+extension DependencyValues {
+    var timerRepository: TimerRepository {
+        get { self[TimerRepository.self] }
+        set { self[TimerRepository.self] = newValue }
+    }
+}

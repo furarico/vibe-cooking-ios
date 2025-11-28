@@ -200,10 +200,10 @@ components:
           type: integer
           description: この手順の推定時間（分）
         timerDuration:
-          type: string
-          format: duration
+          type: number
+          format: double
           description: |-
-            タイマーの所要時間
+            タイマーの所要時間 (秒)
 
             タイマーセットが必要な手順のみ値を返却
 

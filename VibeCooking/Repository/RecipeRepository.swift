@@ -73,7 +73,7 @@ extension RecipeRepository: DependencyKey {
                                     title: $0.title,
                                     description: $0.description,
                                     audioURL: $0.audioUrl.flatMap { URL(string: $0) },
-                                    timerDuration: $0.timerDuration.flatMap { TimeInterval($0) }
+                                    timerDuration: $0.timerDuration
                                 )
                             },
                             imageURL: $0.imageUrl.flatMap { URL(string: $0) }
@@ -122,7 +122,7 @@ extension RecipeRepository: DependencyKey {
                                 title: $0.title,
                                 description: $0.description,
                                 audioURL: $0.audioUrl.flatMap { URL(string: $0) },
-                                timerDuration: $0.timerDuration.flatMap { TimeInterval($0) }
+                                timerDuration: $0.timerDuration
                             )
                         },
                         imageURL: value.imageUrl.flatMap { URL(string: $0) }

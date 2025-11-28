@@ -15,7 +15,7 @@ extension Components.Schemas.Instruction {
         imageUrl: nil,
         audioUrl: nil,
         estimatedTime: 10,
-        timerDuration: "00:05:00"
+        timerDuration: 300
     )
 
     static let stub1: Components.Schemas.Instruction = .init(

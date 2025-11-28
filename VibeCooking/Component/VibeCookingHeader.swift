@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct VibeCookingHeader: View {
-    let recipes: [Components.Schemas.Recipe]
-    let selectedRecipeID: Components.Schemas.Recipe.ID?
+    let recipes: [Recipe]
+    let selectedRecipeID: Recipe.ID?
 
     var body: some View {
         HStack(spacing: 16) {
@@ -33,8 +33,8 @@ struct VibeCookingHeader: View {
 
 #Preview {
     VibeCookingHeader(
-        recipes: Components.Schemas.Recipe.stubs,
-        selectedRecipeID: Components.Schemas.Recipe.stub0.id
+        recipes: Recipe.stubs,
+        selectedRecipeID: Recipe.stub0.id
     )
     .padding()
 }

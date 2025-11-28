@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct InstructionsItem: View {
-    let instruction: Components.Schemas.Instruction
+    let instruction: Instruction
 
     var body: some View {
         HStack(alignment: .top) {

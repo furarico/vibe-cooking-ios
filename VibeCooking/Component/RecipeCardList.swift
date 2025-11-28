@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct RecipeCardList: View {
-    let recipes: [Components.Schemas.Recipe]
+    let recipes: [Recipe]
 
     var body: some View {
         List(recipes) { recipe in
@@ -18,5 +18,5 @@ struct RecipeCardList: View {
 }
 
 #Preview {
-    RecipeCardList(recipes: Components.Schemas.Recipe.stubs)
+    RecipeCardList(recipes: Recipe.stubs)
 }

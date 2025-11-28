@@ -17,6 +17,7 @@ struct VibeCookingScreen: View {
 
     var body: some View {
         content
+            .padding(.vertical)
             .task {
                 presenter.dispatch(.onAppear)
             }
@@ -24,28 +25,36 @@ struct VibeCookingScreen: View {
                 presenter.dispatch(.onDisappear)
             }
             .alert(presenter.state.vibeRecipe)
-            .alert(presenter.state.recipes)
-            .alert(presenter.state.instructions)
     }
 
     @ViewBuilder
     private var content: some View {
         switch presenter.state.vibeRecipe {
-        case .success, .reloading:
+        case .success(let vibeCooking), .reloading(let vibeCooking):
             VStack {
-                recipes
+                VibeCookingHeader(
+                    recipes: vibeCooking.recipes,
+                    selectedRecipeID: presenter.state.currentRecipe?.id
+                )
+                .padding(.horizontal)
 
-                instructions
+                instructions(instructions: vibeCooking.instructions)
+
+                InstructionProgress(
+                    totalSteps: vibeCooking.instructions.count,
+                    currentStep: presenter.state.currentStep ?? 1
+                )
+                .padding(.horizontal)
 
                 VibeChefAnimation(isListening: presenter.state.isRecognizingVoice)
-                    .frame(height: 100)
+                    .frame(height: 80)
 
                 VibeCookingButton("Vibe Cooking をおわる") {
                     dismiss()
                 }
                 .font(.footnote)
                 .lineLimit(1)
-                .padding()
+                .padding(.horizontal)
             }
 
         case .loading, .retrying:
@@ -75,62 +84,24 @@ struct VibeCookingScreen: View {
         }
     }
 
-    @ViewBuilder
-    private var recipes: some View {
-        switch presenter.state.recipes {
-        case .success(let recipes), .reloading(let recipes):
-            VibeCookingHeader(
-                recipes: recipes,
-                selectedRecipeID: presenter.state.currentRecipe?.id
-            )
-            .padding()
-
-        case .loading, .retrying:
-            EmptyView()
-
-        case .idle, .failure:
-            EmptyView()
-        }
-    }
-
-    @ViewBuilder
-    private var instructions: some View {
-        switch presenter.state.instructions {
-        case .success(let instructions), .reloading(let instructions):
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack {
-                    ForEach(instructions) { instruction in
-                        VStack {
-                            InstructionsItem(instruction: instruction)
-                            Spacer()
-                        }
-                        .containerRelativeFrame(.horizontal)
+    private func instructions(instructions: [Instruction]) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            LazyHStack {
+                ForEach(instructions, id: \.step) { instruction in
+                    ScrollView {
+                        InstructionsItem(instruction: instruction)
                     }
-                }
-                .scrollTargetLayout()
-                .padding(.vertical, 16)
-            }
-            .scrollPosition(id: $presenter.state.currentInstructionID)
-            .scrollTargetBehavior(.viewAligned)
-            .safeAreaPadding(.horizontal, 16)
-            .onChange(of: presenter.state.currentInstructionID) { _, newValue in
-                if let newValue,
-                   let instruction = instructions.first(where: { $0.id == newValue }) {
-                    presenter.dispatch(.onInstructionChanged(instruction: instruction))
+                    .containerRelativeFrame(.horizontal)
                 }
             }
-
-            InstructionProgress(
-                totalSteps: instructions.count,
-                currentStep: presenter.state.currentInstructionStep
-            )
-            .padding()
-
-        case .loading, .retrying:
-            EmptyView()
-
-        case .idle, .failure:
-            EmptyView()
+            .scrollTargetLayout()
+            .padding(.vertical)
+        }
+        .scrollPosition(id: $presenter.state.currentStep)
+        .scrollTargetBehavior(.viewAligned)
+        .safeAreaPadding(.horizontal, 16)
+        .onChange(of: presenter.state.currentStep) { _, _ in
+            presenter.dispatch(.onInstructionChanged)
         }
     }
 }

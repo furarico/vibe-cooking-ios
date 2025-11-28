@@ -11,7 +11,7 @@ struct CookingScreen: View {
     @SwiftUI.Environment(\.dismiss) private var dismiss
     @State private var presenter: CookingPresenter
 
-    init(recipe: Components.Schemas.Recipe) {
+    init(recipe: Recipe) {
         presenter = .init(recipe: recipe)
     }
 
@@ -20,14 +20,14 @@ struct CookingScreen: View {
             RecipeCard(recipe: presenter.state.recipe)
                 .padding(.horizontal)
 
-            instructions
+            instructions(instructions: presenter.state.recipe.instructions)
 
             timerControl
                 .padding(.horizontal)
 
             InstructionProgress(
                 totalSteps: presenter.state.recipe.instructions.count,
-                currentStep: presenter.state.currentInstructionStep
+                currentStep: presenter.state.currentStep ?? 1
             )
             .padding(.horizontal)
 
@@ -50,10 +50,10 @@ struct CookingScreen: View {
         }
     }
 
-    private var instructions: some View {
+    private func instructions(instructions: [Instruction]) -> some View {
         ScrollView(.horizontal, showsIndicators: false) {
-            LazyHStack(spacing: 16) {
-                ForEach(presenter.state.recipe.instructions) { instruction in
+            LazyHStack {
+                ForEach(instructions, id: \.step) { instruction in
                     ScrollView {
                         InstructionsItem(instruction: instruction)
                     }
@@ -61,22 +61,19 @@ struct CookingScreen: View {
                 }
             }
             .scrollTargetLayout()
-            .padding(.vertical, 16)
+            .padding(.vertical)
         }
-        .scrollPosition(id: $presenter.state.currentInstructionID)
+        .scrollPosition(id: $presenter.state.currentStep)
         .scrollTargetBehavior(.viewAligned)
         .safeAreaPadding(.horizontal, 16)
-        .onChange(of: presenter.state.currentInstructionID) { _, newValue in
-            if let newValue,
-               let instruction = presenter.state.recipe.instructions.first(where: { $0.id == newValue }) {
-                presenter.dispatch(.onInstructionChanged(instruction))
-            }
+        .onChange(of: presenter.state.currentStep) { _, _ in
+            presenter.dispatch(.onInstructionChanged)
         }
     }
 
     @ViewBuilder
     private var timerControl: some View {
-        if let timerInterval = presenter.state.timerInterval {
+        if let timerInterval = presenter.state.currentInstruction?.timerDuration {
             TimerPopup(interval: timerInterval) {
             }
         }

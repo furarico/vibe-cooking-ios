@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct Ingredients: View {
-    private let ingredients: [Components.Schemas.Ingredient]
+    private let ingredients: [Ingredient]
     private let label: String
 
     init(
-        ingredients: [Components.Schemas.Ingredient],
+        ingredients: [Ingredient],
         label: String = "材料"
     ) {
         self.ingredients = ingredients
@@ -37,13 +37,13 @@ struct Ingredients: View {
 }
 
 #Preview {
-    Ingredients(ingredients: Components.Schemas.Ingredient.stubs0)
+    Ingredients(ingredients: Ingredient.stubs0)
 }
 
 #Preview {
-    Ingredients(ingredients: Components.Schemas.Ingredient.stubs1)
+    Ingredients(ingredients: Ingredient.stubs1)
 }
 
 #Preview {
-    Ingredients(ingredients: Components.Schemas.Ingredient.stubs2)
+    Ingredients(ingredients: Ingredient.stubs2)
 }

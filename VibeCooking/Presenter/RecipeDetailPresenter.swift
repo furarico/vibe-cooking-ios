@@ -10,9 +10,9 @@ import Observation
 @Observable
 final class RecipeDetailPresenter: PresenterProtocol {
     struct State: Equatable {
-        var recipe: DataState<Components.Schemas.Recipe, DomainError> = .idle
+        var recipe: DataState<Recipe, DomainError> = .idle
         var isCookingScreenPresented: Bool = false
-        var vibeCookingList: DataState<[Components.Schemas.Recipe.ID], DomainError> = .idle
+        var vibeCookingList: DataState<[Recipe.ID], DomainError> = .idle
         var isInVibeCookingList: Bool? {
             get {
                 guard case let .success(recipe) = recipe else { return nil }

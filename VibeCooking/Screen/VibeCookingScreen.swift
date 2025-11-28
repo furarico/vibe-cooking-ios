@@ -32,13 +32,18 @@ struct VibeCookingScreen: View {
         switch presenter.state.vibeRecipe {
         case .success(let vibeCooking), .reloading(let vibeCooking):
             VStack {
-                VibeCookingHeader(
-                    recipes: vibeCooking.recipes,
-                    selectedRecipeID: presenter.state.currentRecipe?.id
-                )
-                .padding(.horizontal)
+                if let selectedRecipeID = presenter.state.currentInstruction?.recipeID {
+                    VibeCookingHeader(
+                        recipes: vibeCooking.recipes,
+                        selectedRecipeID: selectedRecipeID
+                    )
+                    .padding(.horizontal)
+                }
 
                 instructions(instructions: vibeCooking.instructions)
+
+                timerControl
+                    .padding(.horizontal)
 
                 InstructionProgress(
                     totalSteps: vibeCooking.instructions.count,
@@ -102,6 +107,21 @@ struct VibeCookingScreen: View {
         .safeAreaPadding(.horizontal, 16)
         .onChange(of: presenter.state.currentStep) { _, _ in
             presenter.dispatch(.onInstructionChanged)
+        }
+    }
+
+    @ViewBuilder
+    private var timerControl: some View {
+        if let instruction = presenter.state.currentInstruction {
+            if let timer = presenter.state.cookingTimers.first(where: { $0.instructionID == instruction.id }) {
+                RunningTimerPopup(timer: timer) {
+                    presenter.dispatch(.onStopTimerButtonTapped)
+                }
+            } else if let interval = instruction.timerDuration {
+                TimerPopup(interval: interval) {
+                    presenter.dispatch(.onStartTimerButtonTapped)
+                }
+            }
         }
     }
 }

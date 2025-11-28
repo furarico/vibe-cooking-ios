@@ -124,6 +124,7 @@ private extension CookingPresenter {
                 } catch {
                     Logger.error(error)
                 }
+
             default:
                 break
             }

@@ -18,23 +18,16 @@ final class VibeCookingPresenter: PresenterProtocol {
                 vibeRecipe.value?.instructions.first { $0.step == currentStep }
             }
         }
-        var currentRecipe: Recipe? {
-            get {
-                guard
-                    let instructionID = currentInstruction?.id
-                else {
-                    return nil
-                }
-                return vibeRecipe.value?.recipes.first(where: { $0.instructions.map(\.id).contains(instructionID) })
-            }
-        }
         var isRecognizingVoice: Bool = false
+        var cookingTimers: [CookingTimer] = []
     }
 
     enum Action: Equatable {
         case onAppear
         case onDisappear
         case onInstructionChanged
+        case onStartTimerButtonTapped
+        case onStopTimerButtonTapped
     }
 
     var state = State()
@@ -64,6 +57,12 @@ final class VibeCookingPresenter: PresenterProtocol {
 
         case .onInstructionChanged:
             await onInstructionChanged()
+
+        case .onStartTimerButtonTapped:
+            await onStartTimerButtonTapped()
+
+        case .onStopTimerButtonTapped:
+            await onStopTimerButtonTapped()
         }
     }
 }
@@ -94,6 +93,14 @@ private extension VibeCookingPresenter {
     func onInstructionChanged() async {
         await playAudio()
     }
+
+    func onStartTimerButtonTapped() async {
+        await startTimer()
+    }
+
+    func onStopTimerButtonTapped() async {
+        await stopTimer()
+    }
 }
 
 private extension VibeCookingPresenter {
@@ -106,18 +113,35 @@ private extension VibeCookingPresenter {
                 if currentStep > 1 {
                     state.currentStep = currentStep - 1
                 }
+
             case .goForward:
                 if let instructionsCount = state.vibeRecipe.value?.instructions.count,
                    currentStep < instructionsCount {
                     state.currentStep = currentStep + 1
                 }
+
             case .again:
                 await playAudio()
+
             case .startTimer:
-                break
+                await startTimer()
+
             case .stopTimer:
-                break
+                await stopTimer()
+
             case .none:
+                break
+            }
+
+            switch voiceCommand {
+            case .goBack, .goForward, .again, .startTimer, .stopTimer:
+                do {
+                    try await cookingService.clearTranscriptions()
+                } catch {
+                    Logger.error(error)
+                }
+
+            default:
                 break
             }
         }
@@ -137,5 +161,50 @@ private extension VibeCookingPresenter {
         } catch {
             Logger.error(error)
         }
+    }
+
+    func startTimer() async {
+        guard
+            let instruction = state.currentInstruction,
+            let interval = instruction.timerDuration
+        else {
+            return
+        }
+        Logger.debug("Starting timer for instruction: \(instruction.id)")
+        do {
+            guard
+                let alarmID = try await cookingService.startTimer(for: instruction)
+            else {
+                return
+            }
+            let now = Date()
+            let duration = now..<now.addingTimeInterval(interval)
+            let cookingTimer = CookingTimer(
+                alarmID: alarmID,
+                instructionID: instruction.id,
+                duration: duration
+            )
+            state.cookingTimers.append(cookingTimer)
+        } catch {
+            Logger.error(error)
+        }
+        Logger.debug("Started timer for instruction: \(instruction.id)")
+    }
+
+    func stopTimer() async {
+        guard
+            let instruction = state.currentInstruction,
+            let timer = state.cookingTimers.first(where: { $0.instructionID == instruction.id })
+        else {
+            return
+        }
+        Logger.debug("Stopping timer for instruction: \(instruction.id)")
+        do {
+            try await cookingService.stopTimer(of: timer.alarmID)
+            state.cookingTimers.removeAll(where: { $0.instructionID == instruction.id })
+        } catch {
+            Logger.error(error)
+        }
+        Logger.debug("Stopped timer for instruction: \(instruction.id)")
     }
 }

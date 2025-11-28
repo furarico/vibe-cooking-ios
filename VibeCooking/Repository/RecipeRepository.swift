@@ -203,7 +203,7 @@ extension RecipeRepository: DependencyKey {
 
                 return Instruction(
                     id: vibeInstruction.id,
-                    recipeID: vibeInstruction.instructionId,
+                    recipeID: vibeInstruction.recipeId,
                     step: vibeInstruction.step,
                     title: recipeInstruction.title,
                     description: recipeInstruction.description,

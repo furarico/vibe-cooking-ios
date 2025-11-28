@@ -9,7 +9,7 @@ import SwiftUI
 
 struct VibeCookingHeader: View {
     let recipes: [Recipe]
-    let selectedRecipeID: Recipe.ID?
+    let selectedRecipeID: Recipe.ID
 
     var body: some View {
         HStack(spacing: 16) {

@@ -75,6 +75,7 @@ struct VibeCookingListScreen: View {
                         VibeCookingButton("Vibe Cooking をはじめる") {
                             onStartVibeCookingButtonTapped(recipes.map(\.id))
                         }
+                        .disabled(recipes.count < 2 || recipes.count > 3)
                         .font(.footnote)
                         .lineLimit(1)
                         .padding()

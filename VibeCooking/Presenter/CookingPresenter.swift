@@ -21,12 +21,14 @@ final class CookingPresenter: PresenterProtocol {
             }
         }
         var isRecognizingVoice: Bool = false
+        var timerDuration: Range<Date>?
     }
 
     enum Action {
         case onAppear
         case onDisappear
         case onInstructionChanged
+        case onStartTimerButtonTapped
     }
 
     var state: State
@@ -53,6 +55,9 @@ final class CookingPresenter: PresenterProtocol {
 
         case .onInstructionChanged:
             await onInstructionChanged()
+
+        case .onStartTimerButtonTapped:
+            await onStartTimerButtonTapped()
         }
     }
 }
@@ -70,6 +75,23 @@ private extension CookingPresenter {
 
     func onInstructionChanged() async {
         await playAudio()
+    }
+
+    func onStartTimerButtonTapped() async {
+        guard
+            let instruction = state.currentInstruction,
+            let interval = instruction.timerDuration
+        else {
+            return
+        }
+        do {
+            try await cookingService.startTimer(interval: interval)
+        } catch {
+            Logger.error(error)
+        }
+
+        let now = Date()
+        state.timerDuration = now..<now.addingTimeInterval(interval)
     }
 }
 

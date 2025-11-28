@@ -21,21 +21,21 @@ struct RecipeListPresenterTests {
     @Test("onAppearでレシピが取得できること")
     func testOnAppearSuccess() async {
         let presenter = withDependencies {
-            $0.recipeRepository.fetchRecipes = { _, _, _, _ in
-                Components.Schemas.Recipe.stubs
+            $0.recipeRepository.fetchRecipes = {
+                Recipe.stubs
             }
         } operation: {
             RecipeListPresenter()
         }
         await presenter.dispatch(.onAppear)
-        #expect(presenter.state.recipes == .success(Components.Schemas.Recipe.stubs))
+        #expect(presenter.state.recipes == .success(Recipe.stubs))
     }
 
     @Test("onAppearでレシピの取得に失敗すること")
     func onAppearFailure() async {
         let presenter = withDependencies {
-            $0.recipeRepository.fetchRecipes = { _, _, _, _ in
-                throw DomainError(RepositoryError.server(.unauthorized, nil))
+            $0.recipeRepository.fetchRecipes = {
+                throw RepositoryError.server(.unauthorized, nil)
             }
         } operation: {
             RecipeListPresenter()

@@ -10,36 +10,38 @@ import SwiftUI
 struct CookingScreen: View {
     @SwiftUI.Environment(\.dismiss) private var dismiss
     @State private var presenter: CookingPresenter
-    
+
     init(recipe: Components.Schemas.Recipe) {
         presenter = .init(recipe: recipe)
     }
-    
+
     var body: some View {
         VStack {
-            VStack(spacing: 24) {
-                RecipeCard(recipe: presenter.state.recipe)
-                    .padding()
-                
-                instructions
-                
-                InstructionProgress(
-                    totalSteps: presenter.state.recipe.instructions.count,
-                    currentStep: presenter.state.currentInstructionStep
-                )
-                .padding()
-                
-                animation
-                    .frame(height: 100)
-            }
-            
+            RecipeCard(recipe: presenter.state.recipe)
+                .padding(.horizontal)
+
+            instructions
+
+            timerControl
+                .padding(.horizontal)
+
+            InstructionProgress(
+                totalSteps: presenter.state.recipe.instructions.count,
+                currentStep: presenter.state.currentInstructionStep
+            )
+            .padding(.horizontal)
+
+            animation
+                .frame(height: 80)
+
             VibeCookingButton("Vibe Cooking をおわる") {
                 dismiss()
             }
             .font(.footnote)
             .lineLimit(1)
-            .padding()
+            .padding(.horizontal)
         }
+        .padding(.vertical)
         .task {
             presenter.dispatch(.onAppear)
         }
@@ -47,14 +49,13 @@ struct CookingScreen: View {
             presenter.dispatch(.onDisappear)
         }
     }
-    
+
     private var instructions: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             LazyHStack(spacing: 16) {
                 ForEach(presenter.state.recipe.instructions) { instruction in
-                    VStack {
+                    ScrollView {
                         InstructionsItem(instruction: instruction)
-                        Spacer()
                     }
                     .containerRelativeFrame(.horizontal)
                 }
@@ -70,6 +71,12 @@ struct CookingScreen: View {
                let instruction = presenter.state.recipe.instructions.first(where: { $0.id == newValue }) {
                 presenter.dispatch(.onInstructionChanged(instruction))
             }
+        }
+    }
+
+    @ViewBuilder
+    private var timerControl: some View {
+        TimerPopup(interval: 60) {
         }
     }
 

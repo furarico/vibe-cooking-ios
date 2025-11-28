@@ -49,9 +49,15 @@ final actor CookingService {
         await audioRepository.stopAudio()
     }
 
-    func startTimer(interval: TimeInterval) async throws -> Alarm.ID {
+    func startTimer(for instruction: Instruction) async throws -> Alarm.ID? {
         _ = try await timerRepository.requestAuthorization()
-        return try await timerRepository.scheduleAlarm(interval: interval)
+        guard let interval = instruction.timerDuration else {
+            return nil
+        }
+        return try await timerRepository.scheduleAlarm(
+            interval: interval,
+            metadata: TimerMetadata(instruction: instruction)
+        )
     }
 
     func stopTimer(of id: Alarm.ID) async throws {

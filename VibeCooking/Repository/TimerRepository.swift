@@ -12,7 +12,7 @@ import DependenciesMacros
 @DependencyClient
 struct TimerRepository {
     var requestAuthorization: @Sendable () async throws -> AlarmManager.AuthorizationState
-    var scheduleAlarm: @Sendable (_ interval: TimeInterval) async throws -> Alarm.ID
+    var scheduleAlarm: @Sendable (_ interval: TimeInterval, _ metadata: TimerMetadata) async throws -> Alarm.ID
     var cancelAlarm: @Sendable (_ id: Alarm.ID) async throws -> Void
     var cancelAllAlarms: @Sendable () async throws -> Void
 }
@@ -22,9 +22,9 @@ extension TimerRepository: DependencyKey {
         requestAuthorization: {
             try await AlarmManager.shared.requestAuthorization()
         },
-        scheduleAlarm: { interval in
+        scheduleAlarm: { interval, metadata in
             let stopButton = AlarmButton(
-                text: "",
+                text: "ストップ",
                 textColor: .white,
                 systemImageName: "stop.fill"
             )
@@ -32,16 +32,17 @@ extension TimerRepository: DependencyKey {
                 title: "次の手順に進んでください。",
                 stopButton: stopButton
             )
-            let countDown = AlarmPresentation.Countdown(
-                title: ""
+            let countdown = AlarmPresentation.Countdown(
+                title: .init(stringLiteral: metadata.instruction.title)
             )
             let presentation = AlarmPresentation(
                 alert: alert,
-                countdown: countDown
+                countdown: countdown
             )
             let attributes = AlarmAttributes<TimerMetadata>(
                 presentation: presentation,
-                tintColor: .orange
+                metadata: metadata,
+                tintColor: .black
             )
             let countdownDuration = Alarm.CountdownDuration(
                 preAlert: interval,

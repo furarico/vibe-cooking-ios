@@ -8,4 +8,5 @@
 import AlarmKit
 
 struct TimerMetadata: AlarmMetadata {
+    let instruction: Instruction
 }

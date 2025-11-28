@@ -155,7 +155,11 @@ private extension CookingPresenter {
         }
         Logger.debug("Starting timer for instruction: \(instruction.id)")
         do {
-            let alarmID = try await cookingService.startTimer(interval: interval)
+            guard
+                let alarmID = try await cookingService.startTimer(for: instruction)
+            else {
+                return
+            }
             let now = Date()
             let duration = now..<now.addingTimeInterval(interval)
             let cookingTimer = CookingTimer(

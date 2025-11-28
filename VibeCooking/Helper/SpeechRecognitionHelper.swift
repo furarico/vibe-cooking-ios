@@ -21,7 +21,7 @@ final actor SpeechRecognitionHelper {
     }
 
     func startTranscribing() async throws -> AsyncStream<TranscriptionResult> {
-        guard let recognizer = recognizer else {
+        guard let recognizer else {
             throw SpeechRecognitionRepositoryError.nilRecognizer
         }
 
@@ -96,22 +96,11 @@ final actor SpeechRecognitionHelper {
     }
 
     private func recognitionHandler(result: SFSpeechRecognitionResult?, error: Error?) {
-        let receivedFinalResult = result?.isFinal ?? false
-        let receivedError = error != nil
-
-        if receivedFinalResult || receivedError {
-            audioEngine?.stop()
-            audioEngine?.inputNode.removeTap(onBus: 0)
-        }
-
         if let result {
-            let transcriptionResult = TranscriptionResult.success(result.bestTranscription.formattedString)
-            transcriptionContinuation.yield(transcriptionResult)
+            transcriptionContinuation.yield(.success(result.bestTranscription.formattedString))
         }
-
-        if let error = error {
-            let transcriptionResult = TranscriptionResult.failure(error)
-            transcriptionContinuation.yield(transcriptionResult)
+        if let error {
+            transcriptionContinuation.yield(.failure(error))
         }
     }
 }

@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Instruction: Hashable, Identifiable {
+struct Instruction: Codable, Hashable, Identifiable {
     let id: String
     let recipeID: String
     let step: Int

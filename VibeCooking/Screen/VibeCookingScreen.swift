@@ -33,12 +33,12 @@ struct VibeCookingScreen: View {
         switch presenter.state.vibeRecipe {
         case .success, .reloading:
             VStack {
-                VStack(spacing: 24) {
-                    recipes
-                    instructions
-                    animation
-                        .frame(height: 100)
-                }
+                recipes
+
+                instructions
+
+                VibeChefAnimation(isListening: presenter.state.isRecognizingVoice)
+                    .frame(height: 100)
 
                 VibeCookingButton("Vibe Cooking をおわる") {
                     dismiss()
@@ -131,15 +131,6 @@ struct VibeCookingScreen: View {
 
         case .idle, .failure:
             EmptyView()
-        }
-    }
-
-    @ViewBuilder
-    private var animation: some View {
-        if presenter.state.isRecognizingVoice {
-            LottieView(name: "listening")
-        } else {
-            LottieView(name: "speaking")
         }
     }
 }

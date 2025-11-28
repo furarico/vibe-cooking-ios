@@ -31,7 +31,7 @@ struct CookingScreen: View {
             )
             .padding(.horizontal)
 
-            animation
+            VibeChefAnimation(isListening: presenter.state.isRecognizingVoice)
                 .frame(height: 80)
 
             VibeCookingButton("Vibe Cooking をおわる") {
@@ -77,15 +77,6 @@ struct CookingScreen: View {
     @ViewBuilder
     private var timerControl: some View {
         TimerPopup(interval: 60) {
-        }
-    }
-
-    @ViewBuilder
-    private var animation: some View {
-        if presenter.state.isRecognizingVoice {
-            LottieView(name: "listening")
-        } else {
-            LottieView(name: "speaking")
         }
     }
 }

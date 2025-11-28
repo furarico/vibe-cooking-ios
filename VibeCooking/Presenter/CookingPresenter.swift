@@ -98,17 +98,33 @@ private extension CookingPresenter {
                 if currentStep > 1 {
                     state.currentStep = currentStep - 1
                 }
+
             case .goForward:
                 if currentStep < state.recipe.instructions.count {
                     state.currentStep = currentStep + 1
                 }
+
             case .again:
                 await playAudio()
+
             case .startTimer:
                 await startTimer()
+
             case .stopTimer:
                 await stopTimer()
+
             case .none:
+                break
+            }
+
+            switch voiceCommand {
+            case .goBack, .goForward, .again, .startTimer, .stopTimer:
+                do {
+                    try await cookingService.clearTranscriptions()
+                } catch {
+                    Logger.error(error)
+                }
+            default:
                 break
             }
         }

@@ -33,6 +33,10 @@ final actor CookingService {
         }
     }
 
+    func clearTranscriptions() async throws {
+        try await speechRecognitionRepository.clearTranscriptions()
+    }
+
     func playAudio(url: URL, onFinished: @escaping @Sendable () -> Void) async throws {
         await speechRecognitionRepository.stopTranscribing()
         Logger.debug("Playing audio from \(url)")

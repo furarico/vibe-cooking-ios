@@ -14,6 +14,7 @@ struct TimerRepository {
     var requestAuthorization: @Sendable () async throws -> AlarmManager.AuthorizationState
     var scheduleAlarm: @Sendable (_ interval: TimeInterval) async throws -> Alarm.ID
     var cancelAlarm: @Sendable (_ id: Alarm.ID) async throws -> Void
+    var cancelAllAlarms: @Sendable () async throws -> Void
 }
 
 extension TimerRepository: DependencyKey {
@@ -58,6 +59,11 @@ extension TimerRepository: DependencyKey {
         },
         cancelAlarm: { id in
             try AlarmManager.shared.cancel(id: id)
+        },
+        cancelAllAlarms: {
+            for alarm in try AlarmManager.shared.alarms {
+                try? AlarmManager.shared.cancel(id: alarm.id)
+            }
         }
     )
 }

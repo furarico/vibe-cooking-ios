@@ -13,67 +13,46 @@ final actor SpeechRecognitionHelper {
     private var request: SFSpeechAudioBufferRecognitionRequest?
     private var task: SFSpeechRecognitionTask?
     private let recognizer: SFSpeechRecognizer?
-    private var transcriptionContinuation: AsyncStream<TranscriptionResult>.Continuation?
+    private let (transcriptionStream, transcriptionContinuation): (AsyncStream<TranscriptionResult>, AsyncStream<TranscriptionResult>.Continuation)
 
-    /**
-     Initializes a new speech recognizer. If this is the first time you've used the class, it
-     requests access to the speech recognizer and the microphone.
-     */
     init() {
         recognizer = SFSpeechRecognizer(locale: .current)
+        (transcriptionStream, transcriptionContinuation) = AsyncStream<TranscriptionResult>.makeStream()
     }
 
-    func startTranscribing() -> AsyncStream<TranscriptionResult> {
-        AsyncStream { continuation in
-            self.transcriptionContinuation = continuation
-
-            Task {
-                guard let recognizer = recognizer else {
-                    continuation.yield(TranscriptionResult.failure(SpeechRecognitionRepositoryError.nilRecognizer))
-                    continuation.finish()
-                    return
-                }
-
-                guard await SFSpeechRecognizer.hasAuthorizationToRecognize() else {
-                    continuation.yield(TranscriptionResult.failure(SpeechRecognitionRepositoryError.notAuthorizedToRecognize))
-                    continuation.finish()
-                    return
-                }
-
-                guard await AVAudioSession.sharedInstance().hasPermissionToRecord() else {
-                    continuation.yield(TranscriptionResult.failure(SpeechRecognitionRepositoryError.notPermittedToRecord))
-                    continuation.finish()
-                    return
-                }
-
-                transcribe(recognizer: recognizer)
-            }
-
-            continuation.onTermination = { @Sendable _ in
-                Task {
-                    await self.reset()
-                }
-            }
+    func startTranscribing() async throws -> AsyncStream<TranscriptionResult> {
+        guard let recognizer = recognizer else {
+            throw SpeechRecognitionRepositoryError.nilRecognizer
         }
+
+        guard await SFSpeechRecognizer.hasAuthorizationToRecognize() else {
+            throw SpeechRecognitionRepositoryError.notAuthorizedToRecognize
+        }
+
+        guard await AVAudioSession.sharedInstance().hasPermissionToRecord() else {
+            throw SpeechRecognitionRepositoryError.notPermittedToRecord
+        }
+
+        try transcribe(recognizer: recognizer)
+
+        return transcriptionStream
     }
 
     func stopTranscribing() {
-        transcriptionContinuation?.finish()
-        transcriptionContinuation = nil
         reset()
     }
 
-    /**
-     Begin transcribing audio.
-
-     Creates a `SFSpeechRecognitionTask` that transcribes speech to text until you call `stopTranscribing()`.
-     The resulting transcription is continuously written to the AsyncStream.
-     */
-    private func transcribe(recognizer: SFSpeechRecognizer) {
-        guard recognizer.isAvailable else {
-            transcriptionContinuation?.yield(TranscriptionResult.failure(SpeechRecognitionRepositoryError.recognizerIsUnavailable))
-            transcriptionContinuation?.finish()
+    func clearTranscriptions() throws {
+        reset()
+        guard let recognizer else {
             return
+        }
+        try transcribe(recognizer: recognizer)
+    }
+
+    private func transcribe(recognizer: SFSpeechRecognizer) throws {
+        guard recognizer.isAvailable else {
+            throw SpeechRecognitionRepositoryError.recognizerIsUnavailable
         }
 
         do {
@@ -82,13 +61,11 @@ final actor SpeechRecognitionHelper {
             self.request = request
             self.task = recognizer.recognitionTask(with: request, resultHandler: recognitionHandler)
         } catch {
-            self.reset()
-            transcriptionContinuation?.yield(TranscriptionResult.failure(error))
-            transcriptionContinuation?.finish()
+            reset()
+            throw error
         }
     }
 
-    /// Reset the speech recognizer.
     private func reset() {
         task?.cancel()
         audioEngine?.stop()
@@ -129,16 +106,12 @@ final actor SpeechRecognitionHelper {
 
         if let result {
             let transcriptionResult = TranscriptionResult.success(result.bestTranscription.formattedString)
-            transcriptionContinuation?.yield(transcriptionResult)
+            transcriptionContinuation.yield(transcriptionResult)
         }
 
         if let error = error {
             let transcriptionResult = TranscriptionResult.failure(error)
-            transcriptionContinuation?.yield(transcriptionResult)
-        }
-
-        if receivedFinalResult || receivedError {
-            transcriptionContinuation?.finish()
+            transcriptionContinuation.yield(transcriptionResult)
         }
     }
 }

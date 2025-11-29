@@ -42,7 +42,7 @@ extension TimerRepository: DependencyKey {
             let attributes = AlarmAttributes<TimerMetadata>(
                 presentation: presentation,
                 metadata: metadata,
-                tintColor: .black
+                tintColor: .white
             )
             let countdownDuration = Alarm.CountdownDuration(
                 preAlert: interval,

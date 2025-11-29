@@ -57,6 +57,7 @@ struct CookingScreen: View {
                     ScrollView {
                         InstructionsItem(instruction: instruction)
                     }
+                    .padding(.horizontal, 4)
                     .containerRelativeFrame(.horizontal)
                 }
             }
@@ -65,7 +66,7 @@ struct CookingScreen: View {
         }
         .scrollPosition(id: $presenter.state.currentStep)
         .scrollTargetBehavior(.viewAligned)
-        .safeAreaPadding(.horizontal, 16)
+        .safeAreaPadding(.horizontal, 12)
         .onChange(of: presenter.state.currentStep) { _, _ in
             presenter.dispatch(.onInstructionChanged)
         }

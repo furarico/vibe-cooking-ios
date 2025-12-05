@@ -1,63 +1,37 @@
 openapi: 3.1.0
 info:
-  title: Vibe Cooking Service
+  title: Recipe Service
   version: 1.0.0
-  contact:
-    name: Vibe Cooking
-    email: contact@vibe-cooking.app
-  description: Vibe CookingのためのAPI
 tags: []
 paths:
-  /categories:
-    get:
-      operationId: getCategories
-      summary: カテゴリ一覧取得
-      description: 全てのカテゴリ一覧を取得
-      parameters: []
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  categories:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Category'
-                required:
-                  - categories
   /recipes:
     get:
       operationId: getRecipes
       summary: レシピ一覧取得
-      description: フィルター条件を指定してレシピ一覧を取得
+      description: |-
+        レシピ一覧を取得
+
+        idsが指定されている場合は、指定されたレシピIDのレシピを返却
+
+        isVibeRecipeがtrueの場合は、バイブレシピを返却
       parameters:
-        - name: q
+        - name: ids
           in: query
           required: false
-          description: テキスト検索（レシピタイトル、説明、材料名、手順で検索）
+          description: レシピIDの配列
           schema:
-            type: string
-        - name: tag
+            type: array
+            items:
+              type: string
+          explode: false
+        - name: isVibeRecipe
           in: query
           required: false
-          description: タグフィルター（カンマ区切りで複数指定可能、全て含むレシピを取得）
+          description: バイブレシピかどうか
           schema:
-            type: string
-        - name: category
-          in: query
-          required: false
-          description: カテゴリ名でフィルター
-          schema:
-            type: string
-        - name: categoryId
-          in: query
-          required: false
-          description: カテゴリIDでフィルター
-          schema:
-            type: string
+            type: boolean
+            default: false
+          explode: false
       responses:
         '200':
           description: The request has succeeded.
@@ -72,75 +46,8 @@ paths:
                       $ref: '#/components/schemas/Recipe'
                 required:
                   - recipes
-  /recipes/{id}:
-    get:
-      operationId: getRecipeById
-      summary: レシピ詳細取得
-      description: IDで指定されたレシピの詳細を取得
-      parameters:
-        - name: id
-          in: path
-          required: true
-          description: レシピID
-          schema:
-            type: string
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Recipe'
-        '404':
-          description: The server cannot find the requested resource.
-  /vibe-recipe:
-    post:
-      operationId: createVibeRecipe
-      summary: バイブレシピ作成
-      description: 指定されたレシピIDsからバイブレシピを作成
-      parameters: []
-      responses:
-        '200':
-          description: The request has succeeded.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VibeRecipe'
-        '201':
-          description: The request has succeeded and a new resource has been created as a result.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/VibeRecipe'
-        '400':
-          description: The server could not understand the request due to invalid syntax.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                recipeIds:
-                  type: array
-                  items:
-                    type: string
-              required:
-                - recipeIds
 components:
   schemas:
-    Category:
-      type: object
-      required:
-        - id
-        - name
-      properties:
-        id:
-          type: string
-          description: カテゴリID
-        name:
-          type: string
-          description: カテゴリ名（例：ご飯、おかず、デザート、汁物）
     Ingredient:
       type: object
       required:
@@ -188,17 +95,10 @@ components:
         description:
           type: string
           description: 手順の説明
-        imageUrl:
-          type: string
-          format: uri
-          description: 手順の画像URL
         audioUrl:
           type: string
           format: uri
           description: 手順の音声URL
-        estimatedTime:
-          type: integer
-          description: この手順の推定時間（分）
         timerDuration:
           type: number
           format: double
@@ -214,104 +114,41 @@ components:
         - id
         - title
         - description
-        - category
-        - prepTime
-        - cookTime
-        - servings
         - ingredients
         - instructions
-        - tags
-        - createdAt
-        - updatedAt
       properties:
         id:
           type: string
         title:
           type: string
+          description: レシピのタイトル
         description:
           type: string
-        category:
-          $ref: '#/components/schemas/Category'
-        prepTime:
-          type: integer
-          description: 準備時間（分）
-        cookTime:
-          type: integer
-          description: 調理時間（分）
-        servings:
-          type: integer
-          description: 人数分
+          description: レシピの説明
         ingredients:
           type: array
           items:
             $ref: '#/components/schemas/Ingredient'
+          description: 材料
         instructions:
           type: array
           items:
             $ref: '#/components/schemas/Instruction'
+          description: 手順
         imageUrl:
           type: string
           format: uri
-        tags:
-          type: array
-          items:
-            type: string
-        createdAt:
-          type: string
-          format: date-time
-        updatedAt:
-          type: string
-          format: date-time
-    VibeInstruction:
-      type: object
-      required:
-        - id
-        - instructionId
-        - step
-        - recipeId
-      properties:
-        id:
-          type: string
-          description: バイブレシピ手順ID
-        instructionId:
-          type: string
-          description: 手順ID
-        step:
-          type: integer
-          description: バイブレシピの手順番号
-        recipeId:
-          type: string
-          description: レシピID
-    VibeRecipe:
-      type: object
-      required:
-        - id
-        - recipeIds
-        - vibeInstructions
-      properties:
-        id:
-          type: string
-          description: VibeレシピID
-        recipeIds:
-          type: array
-          items:
-            type: string
-          description: 関連するレシピIDの配列
-        vibeInstructions:
-          type: array
-          items:
-            $ref: '#/components/schemas/VibeInstruction'
-          description: Vibe手順の配列
+          description: レシピの画像URL
 servers:
-  - url: http://localhost:8080/api
+  - url: http://localhost:8080
     description: Local
     variables: {}
-  - url: https://dev.vibe-cooking.app/api
+  - url: https://dev.recipe-api.vibe-cooking.app
     description: Development
     variables: {}
-  - url: https://stg.vibe-cooking.app/api
+  - url: https://stg.recipe-api.vibe-cooking.app
     description: Staging
     variables: {}
-  - url: https://vibe-cooking.app/api
+  - url: https://recipe-api.vibe-cooking.app
     description: Production
     variables: {}

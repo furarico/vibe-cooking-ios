@@ -7,7 +7,6 @@
 
 import Foundation
 
-protocol RecipeProtocol: Hashable, Identifiable {
-    var id: String { get }
+protocol RecipeProtocol: Hashable {
     var instructions: [Instruction] { get }
 }

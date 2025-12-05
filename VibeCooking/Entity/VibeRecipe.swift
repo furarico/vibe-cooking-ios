@@ -8,7 +8,6 @@
 import Foundation
 
 struct VibeRecipe: RecipeProtocol {
-    let id: String
     let recipes: [Recipe]
     let instructions: [Instruction]
 }

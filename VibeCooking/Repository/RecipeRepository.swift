@@ -37,16 +37,7 @@ extension RecipeRepository: DependencyKey {
     ) async throws -> [Recipe] {
         do {
             let client = try await Client.build()
-            let response = try await client.getRecipes(
-                .init(
-                    query: .init(
-                        q: query,
-                        tag: tags?.joined(separator: ","),
-                        category: category,
-                        categoryId: categoryID
-                    )
-                )
-            )
+            let response = try await client.getRecipes()
             switch response {
             case .ok(let okResponse):
                 if case let .json(body) = okResponse.body {
@@ -97,15 +88,24 @@ extension RecipeRepository: DependencyKey {
     private static func fetchRecipe(id: String) async throws -> Recipe {
         do {
             let client = try await Client.build()
-            let response = try await client.getRecipeById(path: .init(id: id))
+            let response = try await client.getRecipes(
+                .init(
+                    query: .init(
+                        ids: [id]
+                    )
+                )
+            )
             switch response {
             case .ok(let okResponse):
                 if case let .json(value) = okResponse.body {
+                    guard let recipe = value.recipes.first else {
+                        throw RepositoryError.invalidResponseBody(okResponse.body)
+                    }
                     return Recipe(
-                        id: value.id,
-                        title: value.title,
-                        description: value.description,
-                        ingredients: value.ingredients.map {
+                        id: recipe.id,
+                        title: recipe.title,
+                        description: recipe.description,
+                        ingredients: recipe.ingredients.map {
                             Ingredient(
                                 id: $0.id,
                                 name: $0.name,
@@ -114,7 +114,7 @@ extension RecipeRepository: DependencyKey {
                                 notes: $0.notes
                             )
                         },
-                        instructions: value.instructions.map {
+                        instructions: recipe.instructions.map {
                             Instruction(
                                 id: $0.id,
                                 recipeID: $0.recipeId,
@@ -125,13 +125,10 @@ extension RecipeRepository: DependencyKey {
                                 timerDuration: $0.timerDuration
                             )
                         },
-                        imageURL: value.imageUrl.flatMap { URL(string: $0) }
+                        imageURL: recipe.imageUrl.flatMap { URL(string: $0) }
                     )
                 }
                 throw RepositoryError.invalidResponseBody(okResponse.body)
-
-            case .notFound:
-                throw RepositoryError.server(.notFound, nil)
 
             case .undocumented(let statusCode, let payload):
                 throw RepositoryError.server(.init(rawValue: statusCode), payload)
@@ -148,22 +145,20 @@ extension RecipeRepository: DependencyKey {
     private static func fetchVibeRecipe(recipeIDs: [String]) async throws -> VibeRecipe {
         do {
             let client = try await Client.build()
-            let response = try await client.createVibeRecipe(body: .json(.init(recipeIds: recipeIDs)))
+            let response = try await client.getRecipes(
+                .init(
+                    query: .init(
+                        ids: recipeIDs,
+                        isVibeRecipe: true
+                    )
+                )
+            )
             switch response {
             case .ok(let okResponse):
                 if case let .json(value) = okResponse.body {
-                    return try await translateToVibeRecipe(from: value)
+                    return try await translateToVibeRecipe(from: value.recipes)
                 }
                 throw RepositoryError.invalidResponseBody(okResponse.body)
-
-            case .created(let okResponse):
-                if case let .json(value) = okResponse.body {
-                    return try await translateToVibeRecipe(from: value)
-                }
-                throw RepositoryError.invalidResponseBody(okResponse.body)
-
-            case .badRequest:
-                throw RepositoryError.server(.badRequest, nil)
 
             case .undocumented(let statusCode, let payload):
                 throw RepositoryError.server(.init(rawValue: statusCode), payload)
@@ -177,40 +172,49 @@ extension RecipeRepository: DependencyKey {
         }
     }
 
-    private static func translateToVibeRecipe(from response: Components.Schemas.VibeRecipe) async throws -> VibeRecipe {
-        let recipes = try await withThrowingTaskGroup(of: Recipe.self, returning: [Recipe].self) { group in
-            response.recipeIds.forEach { recipeID in
-                group.addTask {
-                    try await fetchRecipe(id: recipeID)
-                }
-            }
-            var recipes: [Recipe] = []
-            for try await recipe in group {
-                recipes.append(recipe)
-            }
-            return recipes
-        }
+    private static func translateToVibeRecipe(from recipes: [Components.Schemas.Recipe]) async throws -> VibeRecipe {
         return VibeRecipe(
-            id: response.id,
-            recipes: recipes,
-            instructions: response.vibeInstructions.compactMap { vibeInstruction in
-                guard
-                    let recipe = recipes.first(where: { $0.id == vibeInstruction.recipeId }),
-                    let recipeInstruction = recipe.instructions.first(where: { $0.id == vibeInstruction.instructionId })
-                else {
-                    return nil
-                }
-
-                return Instruction(
-                    id: vibeInstruction.id,
-                    recipeID: vibeInstruction.recipeId,
-                    step: vibeInstruction.step,
-                    title: recipeInstruction.title,
-                    description: recipeInstruction.description,
-                    audioURL: recipeInstruction.audioURL,
-                    timerDuration: recipeInstruction.timerDuration
+            recipes: recipes.map {
+                Recipe(
+                    id: $0.id,
+                    title: $0.title,
+                    description: $0.description,
+                    ingredients: $0.ingredients.map {
+                        Ingredient(
+                            id: $0.id,
+                            name: $0.name,
+                            amount: $0.amount,
+                            unit: $0.unit,
+                            notes: $0.notes
+                        )
+                    },
+                    instructions: $0.instructions.map {
+                        Instruction(
+                            id: $0.id,
+                            recipeID: $0.recipeId,
+                            step: $0.step,
+                            title: $0.title,
+                            description: $0.description,
+                            audioURL: $0.audioUrl.flatMap { URL(string: $0) },
+                            timerDuration: $0.timerDuration
+                        )
+                    },
+                    imageURL: $0.imageUrl.flatMap { URL(string: $0) }
                 )
-            }
+            },
+            instructions: recipes.flatMap {
+                $0.instructions
+            }.map {
+                Instruction(
+                    id: $0.id,
+                    recipeID: $0.recipeId,
+                    step: $0.step,
+                    title: $0.title,
+                    description: $0.description,
+                    audioURL: $0.audioUrl.flatMap { URL(string: $0) },
+                    timerDuration: $0.timerDuration
+                )
+            }.sorted { $0.step < $1.step }
         )
     }
 }

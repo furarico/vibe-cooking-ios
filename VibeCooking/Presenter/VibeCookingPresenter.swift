@@ -11,11 +11,14 @@ import SwiftUI
 @Observable
 final class VibeCookingPresenter: PresenterProtocol {
     struct State: Equatable {
-        var vibeRecipe: DataState<VibeRecipe, DomainError> = .idle
+        var vibeRecipe: DataState<[Recipe], DomainError> = .idle
+        var instructions: [Instruction]? {
+            vibeRecipe.value?.flatMap { $0.instructions }.sorted { $0.step < $1.step }
+        }
         var currentStep: Int? = 1
         var currentInstruction: Instruction? {
             get {
-                vibeRecipe.value?.instructions.first { $0.step == currentStep }
+                instructions?.first { $0.step == currentStep }
             }
         }
         var isRecognizingVoice: Bool = false
@@ -115,7 +118,7 @@ private extension VibeCookingPresenter {
                 }
 
             case .goForward:
-                if let instructionsCount = state.vibeRecipe.value?.instructions.count,
+                if let instructionsCount = state.instructions?.count,
                    currentStep < instructionsCount {
                     state.currentStep = currentStep + 1
                 }

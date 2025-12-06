@@ -13,7 +13,7 @@ import Foundation
 struct RecipeRepository {
     var fetchRecipes: @Sendable () async throws -> [Recipe]
     var fetchRecipe: @Sendable (_ id: String) async throws -> Recipe
-    var fetchVibeRecipe: @Sendable (_ recipeIDs: [String]) async throws -> VibeRecipe
+    var fetchVibeRecipe: @Sendable (_ recipeIDs: [String]) async throws -> [Recipe]
 }
 
 extension RecipeRepository: DependencyKey {
@@ -142,7 +142,7 @@ extension RecipeRepository: DependencyKey {
         }
     }
 
-    private static func fetchVibeRecipe(recipeIDs: [String]) async throws -> VibeRecipe {
+    private static func fetchVibeRecipe(recipeIDs: [String]) async throws -> [Recipe] {
         do {
             let client = try await Client.build()
             let response = try await client.getRecipes(
@@ -156,7 +156,34 @@ extension RecipeRepository: DependencyKey {
             switch response {
             case .ok(let okResponse):
                 if case let .json(value) = okResponse.body {
-                    return try await translateToVibeRecipe(from: value.recipes)
+                    return value.recipes.map {
+                        Recipe(
+                            id: $0.id,
+                            title: $0.title,
+                            description: $0.description,
+                            ingredients: $0.ingredients.map {
+                                Ingredient(
+                                    id: $0.id,
+                                    name: $0.name,
+                                    amount: $0.amount,
+                                    unit: $0.unit,
+                                    notes: $0.notes
+                                )
+                            },
+                            instructions: $0.instructions.map {
+                                Instruction(
+                                    id: $0.id,
+                                    recipeID: $0.recipeId,
+                                    step: $0.step,
+                                    title: $0.title,
+                                    description: $0.description,
+                                    audioURL: $0.audioUrl.flatMap { URL(string: $0) },
+                                    timerDuration: $0.timerDuration
+                                )
+                            },
+                            imageURL: $0.imageUrl.flatMap { URL(string: $0) }
+                        )
+                    }
                 }
                 throw RepositoryError.invalidResponseBody(okResponse.body)
 
@@ -170,52 +197,6 @@ extension RecipeRepository: DependencyKey {
             Logger.error("RepositoryError: \(error)")
             throw error
         }
-    }
-
-    private static func translateToVibeRecipe(from recipes: [Components.Schemas.Recipe]) async throws -> VibeRecipe {
-        return VibeRecipe(
-            recipes: recipes.map {
-                Recipe(
-                    id: $0.id,
-                    title: $0.title,
-                    description: $0.description,
-                    ingredients: $0.ingredients.map {
-                        Ingredient(
-                            id: $0.id,
-                            name: $0.name,
-                            amount: $0.amount,
-                            unit: $0.unit,
-                            notes: $0.notes
-                        )
-                    },
-                    instructions: $0.instructions.map {
-                        Instruction(
-                            id: $0.id,
-                            recipeID: $0.recipeId,
-                            step: $0.step,
-                            title: $0.title,
-                            description: $0.description,
-                            audioURL: $0.audioUrl.flatMap { URL(string: $0) },
-                            timerDuration: $0.timerDuration
-                        )
-                    },
-                    imageURL: $0.imageUrl.flatMap { URL(string: $0) }
-                )
-            },
-            instructions: recipes.flatMap {
-                $0.instructions
-            }.map {
-                Instruction(
-                    id: $0.id,
-                    recipeID: $0.recipeId,
-                    step: $0.step,
-                    title: $0.title,
-                    description: $0.description,
-                    audioURL: $0.audioUrl.flatMap { URL(string: $0) },
-                    timerDuration: $0.timerDuration
-                )
-            }.sorted { $0.step < $1.step }
-        )
     }
 }
 

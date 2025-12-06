@@ -19,7 +19,7 @@ final actor RecipeService {
         try await recipeRepository.fetchRecipe(id: id)
     }
 
-    func getVibeRecipe(recipeIDs: [String]) async throws -> VibeRecipe {
+    func getVibeRecipe(recipeIDs: [String]) async throws -> [Recipe] {
         try await recipeRepository.fetchVibeRecipe(recipeIDs: recipeIDs)
     }
 }

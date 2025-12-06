@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Recipe: RecipeProtocol, Identifiable {
+struct Recipe: Hashable, Identifiable {
     let id: String
     let title: String
     let description: String

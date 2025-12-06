@@ -30,23 +30,23 @@ struct VibeCookingScreen: View {
     @ViewBuilder
     private var content: some View {
         switch presenter.state.vibeRecipe {
-        case .success(let vibeCooking), .reloading(let vibeCooking):
+        case .success(let recipes), .reloading(let recipes):
             VStack {
                 if let selectedRecipeID = presenter.state.currentInstruction?.recipeID {
                     VibeCookingHeader(
-                        recipes: vibeCooking.recipes,
+                        recipes: recipes,
                         selectedRecipeID: selectedRecipeID
                     )
                     .padding(.horizontal)
                 }
 
-                instructions(instructions: vibeCooking.instructions)
+                instructions(instructions: presenter.state.instructions ?? [])
 
                 timerControl
                     .padding(.horizontal)
 
                 InstructionProgress(
-                    totalSteps: vibeCooking.instructions.count,
+                    totalSteps: presenter.state.instructions?.count ?? 1,
                     currentStep: presenter.state.currentStep ?? 1
                 )
                 .padding(.horizontal)

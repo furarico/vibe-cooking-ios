@@ -32,7 +32,11 @@ struct VibeCookingScreen: View {
         switch presenter.state.recipes {
         case .success(let recipes), .reloading(let recipes):
             VStack {
-                if let selectedRecipeID = presenter.state.currentInstruction?.recipeID {
+                if recipes.count == 1,
+                   let recipe = recipes.first {
+                    RecipeCard(recipe: recipe)
+                        .padding(.horizontal)
+                } else if let selectedRecipeID = presenter.state.currentInstruction?.recipeID {
                     VibeCookingHeader(
                         recipes: recipes,
                         selectedRecipeID: selectedRecipeID

@@ -20,7 +20,6 @@ final class RecipeDetailPresenter: PresenterProtocol {
                 return vibeCookingList.contains(recipe.id)
             }
         }
-        var vibeRecipe: Components.Schemas.VibeRecipe? = nil
     }
 
     enum Action {

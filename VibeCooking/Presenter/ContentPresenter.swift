@@ -46,7 +46,7 @@ private extension ContentPresenter {
         state.isVibeCookingListPresented = true
     }
 
-    func onStartVibeCookingButtonTapped(recipeIDs: [Components.Schemas.Recipe.ID]) async {
+    func onStartVibeCookingButtonTapped(recipeIDs: [Recipe.ID]) async {
         do {
             try await vibeCookingListService.clearRecipes()
             state.isVibeCookingListPresented = false

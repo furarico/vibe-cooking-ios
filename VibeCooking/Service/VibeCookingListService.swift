@@ -14,18 +14,7 @@ final actor VibeCookingListService {
 
     func getRecipes() async throws -> [Recipe] {
         let recipeIDs: [String] = (try? await localRepository.getVibeCookingList()) ?? []
-        return try await withThrowingTaskGroup(of: Recipe.self, returning: [Recipe].self) { [recipeRepository] group in
-            recipeIDs.forEach { id in
-                group.addTask {
-                    try await recipeRepository.fetchRecipe(id: id)
-                }
-            }
-            var recipes: [Recipe] = []
-            for try await recipe in group {
-                recipes.append(recipe)
-            }
-            return recipes
-        }
+        return try await recipeRepository.fetchRecipes(recipeIDs: recipeIDs, isVibeRecipe: nil)
     }
 
     func addRecipe(id: String) async throws {

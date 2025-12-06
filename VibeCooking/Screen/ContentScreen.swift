@@ -29,7 +29,7 @@ struct ContentScreen: View {
             }
         }
         .fullScreenCover(isPresented: $presenter.state.isVibeCookingPresented) {
-            VibeCookingScreen(
+            CookingScreen(
                 recipeIDs: presenter.state.vibeCookingListRecipeIDs
             )
         }

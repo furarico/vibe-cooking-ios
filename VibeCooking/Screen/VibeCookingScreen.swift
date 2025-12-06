@@ -24,12 +24,12 @@ struct VibeCookingScreen: View {
             .onDisappear {
                 presenter.dispatch(.onDisappear)
             }
-            .alert(presenter.state.vibeRecipe)
+            .alert(presenter.state.recipes)
     }
 
     @ViewBuilder
     private var content: some View {
-        switch presenter.state.vibeRecipe {
+        switch presenter.state.recipes {
         case .success(let recipes), .reloading(let recipes):
             VStack {
                 if let selectedRecipeID = presenter.state.currentInstruction?.recipeID {

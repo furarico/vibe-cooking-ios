@@ -11,9 +11,9 @@ import SwiftUI
 @Observable
 final class VibeCookingPresenter: PresenterProtocol {
     struct State: Equatable {
-        var vibeRecipe: DataState<[Recipe], DomainError> = .idle
+        var recipes: DataState<[Recipe], DomainError> = .idle
         var instructions: [Instruction]? {
-            vibeRecipe.value?.flatMap { $0.instructions }.sorted { $0.step < $1.step }
+            recipes.value?.flatMap { $0.instructions }.sorted { $0.step < $1.step }
         }
         var currentStep: Int? = 1
         var currentInstruction: Instruction? {
@@ -75,13 +75,13 @@ private extension VibeCookingPresenter {
         if recipeIDs.count < 2 || recipeIDs.count > 3 {
             return
         }
-        state.vibeRecipe = .loading
+        state.recipes = .loading
         do {
-            let vibeRecipe = try await recipeService.getVibeRecipe(recipeIDs: recipeIDs)
-            state.vibeRecipe = .success(vibeRecipe)
+            let recipes = try await recipeService.getVibeRecipe(recipeIDs: recipeIDs)
+            state.recipes = .success(recipes)
         } catch {
             Logger.error(error)
-            state.vibeRecipe = .failure(.init(error))
+            state.recipes = .failure(.init(error))
             return
         }
         UIApplication.shared.isIdleTimerDisabled = true

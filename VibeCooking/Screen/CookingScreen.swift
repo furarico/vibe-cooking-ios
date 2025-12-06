@@ -1,5 +1,5 @@
 //
-//  VibeCookingScreen.swift
+//  CookingScreen.swift
 //  VibeCooking
 //
 //  Created by Kanta Oikawa on 2025/06/21.
@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct VibeCookingScreen: View {
+struct CookingScreen: View {
     @SwiftUI.Environment(\.dismiss) private var dismiss
-    @State private var presenter: VibeCookingPresenter
+    @State private var presenter: CookingPresenter
 
     init(recipeIDs: [String]) {
         self.presenter = .init(recipeIDs: recipeIDs)
@@ -132,5 +132,5 @@ struct VibeCookingScreen: View {
 }
 
 #Preview {
-    VibeCookingScreen(recipeIDs: [])
+    CookingScreen(recipeIDs: [])
 }

@@ -24,7 +24,7 @@ struct RecipeDetailScreen: View {
             .alert(presenter.state.vibeCookingList)
             .fullScreenCover(isPresented: $presenter.state.isCookingScreenPresented) {
                 if case .success(let recipe) = presenter.state.recipe {
-                    VibeCookingScreen(recipeIDs: [recipe.id])
+                    CookingScreen(recipeIDs: [recipe.id])
                 }
             }
             .toolbar {

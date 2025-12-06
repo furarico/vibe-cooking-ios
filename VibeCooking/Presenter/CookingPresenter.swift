@@ -1,5 +1,5 @@
 //
-//  VibeCookingPresenter.swift
+//  CookingPresenter.swift
 //  VibeCooking
 //
 //  Created by Kanta Oikawa on 2025/06/21.
@@ -9,7 +9,7 @@ import Observation
 import SwiftUI
 
 @Observable
-final class VibeCookingPresenter: PresenterProtocol {
+final class CookingPresenter: PresenterProtocol {
     struct State: Equatable {
         var recipes: DataState<[Recipe], DomainError> = .idle
         var instructions: [Instruction]? {
@@ -70,7 +70,7 @@ final class VibeCookingPresenter: PresenterProtocol {
     }
 }
 
-private extension VibeCookingPresenter {
+private extension CookingPresenter {
     func onAppear() async {
         if recipeIDs.count < 2 || recipeIDs.count > 3 {
             return
@@ -106,7 +106,7 @@ private extension VibeCookingPresenter {
     }
 }
 
-private extension VibeCookingPresenter {
+private extension CookingPresenter {
     func startSpeechRecognition() async {
         state.isRecognizingVoice = true
         let currentStep = state.currentStep ?? 1

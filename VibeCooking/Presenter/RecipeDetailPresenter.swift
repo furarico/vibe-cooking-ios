@@ -20,10 +20,6 @@ final class RecipeDetailPresenter: PresenterProtocol {
                 return vibeCookingList.contains(recipe.id)
             }
         }
-        var vibeRecipe: [Recipe]? = nil
-        var instructions: [Instruction]? {
-            vibeRecipe?.flatMap { $0.instructions }.sorted { $0.step < $1.step }
-        }
     }
 
     enum Action {

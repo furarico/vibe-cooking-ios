@@ -21,7 +21,7 @@ struct RecipeListPresenterTests {
     @Test("onAppearでレシピが取得できること")
     func testOnAppearSuccess() async {
         let presenter = withDependencies {
-            $0.recipeRepository.fetchRecipes = {
+            $0.recipeRepository.fetchRecipes = { _, _ in
                 Recipe.stubs
             }
         } operation: {
@@ -34,7 +34,7 @@ struct RecipeListPresenterTests {
     @Test("onAppearでレシピの取得に失敗すること")
     func onAppearFailure() async {
         let presenter = withDependencies {
-            $0.recipeRepository.fetchRecipes = {
+            $0.recipeRepository.fetchRecipes = { _, _ in
                 throw RepositoryError.server(.unauthorized, nil)
             }
         } operation: {

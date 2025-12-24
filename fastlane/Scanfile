@@ -1,4 +1,4 @@
 scheme("VibeCooking")
-devices(["iPhone 16 Pro"])
+devices(["iPhone 17 Pro"])
 clean(true)
 skip_testing(["VibeCookingUITests"])

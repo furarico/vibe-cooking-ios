@@ -2,7 +2,7 @@
 //  CookingPresenter.swift
 //  VibeCooking
 //
-//  Created by Kanta Oikawa on 2025/06/19.
+//  Created by Kanta Oikawa on 2025/06/21.
 //
 
 import Observation
@@ -11,18 +11,21 @@ import SwiftUI
 @Observable
 final class CookingPresenter: PresenterProtocol {
     struct State: Equatable {
-        var recipe: Recipe
+        var recipes: DataState<[Recipe], DomainError> = .idle
+        var instructions: [Instruction]? {
+            recipes.value?.flatMap { $0.instructions }.sorted { $0.step < $1.step }
+        }
         var currentStep: Int? = 1
         var currentInstruction: Instruction? {
             get {
-                recipe.instructions.first { $0.step == currentStep }
+                instructions?.first { $0.step == currentStep }
             }
         }
         var isRecognizingVoice: Bool = false
         var cookingTimers: [CookingTimer] = []
     }
 
-    enum Action {
+    enum Action: Equatable {
         case onAppear
         case onDisappear
         case onInstructionChanged
@@ -30,12 +33,15 @@ final class CookingPresenter: PresenterProtocol {
         case onStopTimerButtonTapped
     }
 
-    var state: State
+    var state = State()
+
+    private let recipeIDs: [String]
 
     private let cookingService = CookingService()
+    private let recipeService = RecipeService()
 
-    init(recipe: Recipe) {
-        state = .init(recipe: recipe)
+    init(recipeIDs: [String]) {
+        self.recipeIDs = recipeIDs
     }
 
     func dispatch(_ action: Action) {
@@ -66,6 +72,18 @@ final class CookingPresenter: PresenterProtocol {
 
 private extension CookingPresenter {
     func onAppear() async {
+        if recipeIDs.count < 2 || recipeIDs.count > 3 {
+            return
+        }
+        state.recipes = .loading
+        do {
+            let recipes = try await recipeService.getVibeRecipe(recipeIDs: recipeIDs)
+            state.recipes = .success(recipes)
+        } catch {
+            Logger.error(error)
+            state.recipes = .failure(.init(error))
+            return
+        }
         UIApplication.shared.isIdleTimerDisabled = true
         await playAudio()
     }
@@ -100,7 +118,8 @@ private extension CookingPresenter {
                 }
 
             case .goForward:
-                if currentStep < state.recipe.instructions.count {
+                if let instructionsCount = state.instructions?.count,
+                   currentStep < instructionsCount {
                     state.currentStep = currentStep + 1
                 }
 

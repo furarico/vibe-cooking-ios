@@ -2,7 +2,7 @@
 //  CookingScreen.swift
 //  VibeCooking
 //
-//  Created by Kanta Oikawa on 2025/06/19.
+//  Created by Kanta Oikawa on 2025/06/21.
 //
 
 import SwiftUI
@@ -11,42 +11,85 @@ struct CookingScreen: View {
     @SwiftUI.Environment(\.dismiss) private var dismiss
     @State private var presenter: CookingPresenter
 
-    init(recipe: Recipe) {
-        presenter = .init(recipe: recipe)
+    init(recipeIDs: [String]) {
+        self.presenter = .init(recipeIDs: recipeIDs)
     }
 
     var body: some View {
-        VStack {
-            RecipeCard(recipe: presenter.state.recipe)
-                .padding(.horizontal)
-
-            instructions(instructions: presenter.state.recipe.instructions)
-
-            timerControl
-                .padding(.horizontal)
-
-            InstructionProgress(
-                totalSteps: presenter.state.recipe.instructions.count,
-                currentStep: presenter.state.currentStep ?? 1
-            )
-            .padding(.horizontal)
-
-            VibeChefAnimation(isListening: presenter.state.isRecognizingVoice)
-                .frame(height: 80)
-
-            VibeCookingButton("Vibe Cooking をおわる") {
-                dismiss()
+        content
+            .padding(.vertical)
+            .task {
+                presenter.dispatch(.onAppear)
             }
-            .font(.footnote)
-            .lineLimit(1)
-            .padding(.horizontal)
-        }
-        .padding(.vertical)
-        .task {
-            presenter.dispatch(.onAppear)
-        }
-        .onDisappear {
-            presenter.dispatch(.onDisappear)
+            .onDisappear {
+                presenter.dispatch(.onDisappear)
+            }
+            .alert(presenter.state.recipes)
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        switch presenter.state.recipes {
+        case .success(let recipes), .reloading(let recipes):
+            VStack {
+                if recipes.count == 1,
+                   let recipe = recipes.first {
+                    RecipeCard(recipe: recipe)
+                        .padding(.horizontal)
+                } else if let selectedRecipeID = presenter.state.currentInstruction?.recipeID {
+                    VibeCookingHeader(
+                        recipes: recipes,
+                        selectedRecipeID: selectedRecipeID
+                    )
+                    .padding(.horizontal)
+                }
+
+                instructions(instructions: presenter.state.instructions ?? [])
+
+                timerControl
+                    .padding(.horizontal)
+
+                InstructionProgress(
+                    totalSteps: presenter.state.instructions?.count ?? 1,
+                    currentStep: presenter.state.currentStep ?? 1
+                )
+                .padding(.horizontal)
+
+                VibeChefAnimation(isListening: presenter.state.isRecognizingVoice)
+                    .frame(height: 80)
+
+                VibeCookingButton("Vibe Cooking をおわる") {
+                    dismiss()
+                }
+                .font(.footnote)
+                .lineLimit(1)
+                .padding(.horizontal)
+            }
+
+        case .loading, .retrying:
+            VStack {
+                ProgressView()
+                Text("レシピを構築中...")
+                    .font(.headline)
+                    .foregroundStyle(.secondary)
+            }
+
+        case .idle:
+            Color.clear
+
+        case .failure:
+            VStack {
+                ContentUnavailableView(
+                    "レシピの構築に失敗しました",
+                    systemImage: "list.bullet.clipboard"
+                )
+                .frame(height: .infinity)
+
+                VibeCookingButton("もう一度試す") {
+                    dismiss()
+                }
+                .padding()
+            }
         }
     }
 
@@ -89,5 +132,5 @@ struct CookingScreen: View {
 }
 
 #Preview {
-    CookingScreen(recipe: .stub0)
+    CookingScreen(recipeIDs: [])
 }

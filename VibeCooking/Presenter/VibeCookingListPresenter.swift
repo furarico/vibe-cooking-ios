@@ -66,6 +66,11 @@ private extension VibeCookingListPresenter {
             state.recipes = .success(recipes)
         } catch {
             Logger.error(error)
+            guard let recipes = state.recipes.value else {
+                state.recipes = .failure(.init(error))
+                return
+            }
+            state.recipes = .success(recipes)
         }
     }
 }

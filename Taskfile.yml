@@ -1,18 +1,13 @@
 version: "3"
 
 vars:
-  FASTLANE: "bundle exec fastlane"
+  FASTLANE: fastlane
 
 tasks:
   default:
     cmds:
       - task --list-all
     silent: true
-  install:
-    cmds:
-      - bundle install
   test:
     cmds:
       - "{{.FASTLANE}} test"
-    deps:
-      - install

@@ -30,8 +30,8 @@ jobs:
       - tartelet
     timeout-minutes: 30
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v6
+      - uses: jdx/mise-action@v3
       - name: Setup Xcode
         run: |
           xcodes select

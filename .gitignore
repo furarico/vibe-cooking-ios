@@ -134,5 +134,4 @@ iOSInjectionProject/
 # End of https://www.toptal.com/developers/gitignore/api/macos,xcode,swift
 
 GoogleService-Info.plist
-.env*
-!.env**.example
+firebase-debug.log

@@ -1,3 +1,5 @@
+# https://taskfile.dev
+
 version: "3"
 
 vars:
@@ -8,11 +10,13 @@ tasks:
     cmds:
       - task --list
     silent: true
+
   install:
-    desc: "Install"
+    desc: "Install dependencies"
     cmds:
       - "bundle install"
+
   test:
-    desc: "Test"
+    desc: "Run tests"
     cmds:
       - "{{.FASTLANE}} test"

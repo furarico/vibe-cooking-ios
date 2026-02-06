@@ -37,6 +37,8 @@ jobs:
           xcodes select
           defaults write com.apple.dt.Xcode IDESkipPackagePluginFingerprintValidatation -bool YES
           defaults write com.apple.dt.Xcode IDESkipMacroFingerprintValidation -bool YES
+      - name: Install dependencies
+        run: task install
       - name: Setup Firebase
         run: echo "${{ secrets.GOOGLE_SERVICES_INFO_PLIST }}" > ./VibeCooking/GoogleService-Info.plist
       - name: Test
